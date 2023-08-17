@@ -70,10 +70,8 @@ def _lipschitz_constant(W):
     # scipy.sparse.linalg._eigen.arpack.arpack.ArpackError: ARPACK error 3: No shifts could be applied during
     # a cycle of the Implicitly restarted Arnoldi iteration.
     # One possibility is to increase the size of NCV relative to NEV.
-    try:
-        L = eigsh(WtW.detach().cpu().numpy(), k=1, which='LM', return_eigenvectors=False).item()
-    except:
-        breakpoint()
+
+    L = eigsh(WtW.detach().cpu().numpy(), k=1, which='LM', return_eigenvectors=False).item()
     if not np.isfinite(L):  # sometimes L is not finite because of potential cublas error.
         L = torch.linalg.norm(W, ord=2) ** 2
     return L

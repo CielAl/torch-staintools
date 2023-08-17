@@ -55,7 +55,7 @@ def lasso_loss(X, Z, weight, alpha=1.0):
 
 def update_dict(dictionary: torch.Tensor, x: torch.Tensor, code: torch.Tensor,
                 random_seed=None, positive=True,
-                eps=1e-10):
+                eps=1e-7):
     """Update the dense dictionary factor in place.
 
     Modified from `_update_dict` in sklearn.decomposition._dict_learning
@@ -148,7 +148,9 @@ def dict_learning(X, n_components, alpha=1.0, constrained=True, persist=False,
     with tqdm(total=steps, disable=not progbar) as progress_bar:
         for i in range(steps):
             # infer sparse coefficients and compute loss
+
             Z = sparse_encode(X, weight, alpha, Z0, **solver_kwargs)
+
             losses[i] = lasso_loss(X, Z, weight, alpha)
             if persist:
                 Z0 = Z
@@ -181,14 +183,14 @@ def get_concentrations_helper(od_flatten, stain_matrix, regularizer=0.01, method
     raise NotImplementedError(f"{method} is not a valid optimizer")
 
 
-def get_concentrations(image, stain_matrix, regularizer=0.01, method='ista'):
+def get_concentrations(image, stain_matrix, regularizer=0.01, algorithm='ista'):
     """
     Estimate concentration matrix given an image and stain matrix.
     Args:
         image: BCHW
         stain_matrix: Bx2x3
         regularizer:
-        method:
+        algorithm:
 
     Returns:
 
@@ -201,6 +203,6 @@ def get_concentrations(image, stain_matrix, regularizer=0.01, method='ista'):
     od_flatten = od.flatten(start_dim=2, end_dim=-1).permute(0, 2, 1)
     result = list()
     for od_single, stain_mat_single in zip(od_flatten, stain_matrix):
-        result.append(get_concentrations_helper(od_single, stain_mat_single, regularizer, method))
+        result.append(get_concentrations_helper(od_single, stain_mat_single, regularizer, algorithm))
     # get_concentrations_helper(od_flatten, stain_matrix, regularizer, method)
     return torch.stack(result)
