@@ -1,9 +1,12 @@
-# Torch Stain Tools
+# Torch StainTools
 
 ## Description
 * Stain Normalization (Reinhard, Macenko, and Vahadane) for pytorch. Input tensors (fit and transform) must be in shape of `NxCxHxW`, with value scaled to [0, 1] in format of torch.float32.
 * Simulate the workflow in [StainTools library](https://github.com/Peter554/StainTools) but use the Iterative Shrinkage Thresholding Algorithm (ISTA), or optionally, the coordinate descent (CD) to solve the dictionary learning for stain matrix/concentration computation in Vahadane or Macenko (stain concentration only) algorithm. The implementation of ISTA and CD are derived from Cédric Walker's [torchvahadane](https://github.com/cwlkr/torchvahadane)
 * No SPAMS requirement (which is a dependency in StainTools).
+
+![Screenshot](showcases/sample_out.png)
+
 
 ## Usecase
 * For details, follow the example in demo.py
@@ -11,7 +14,8 @@
   (Note that CUDA has poor support in multiprocessing and therefore it may not be the best practice to perform GPU-accelerated on-the-fly stain transformation in pytorch's dataset/dataloader)
 
 
-```import cv2
+```
+import cv2
 import torch
 from torchvision.transforms import ToTensor
 from torchvision.transforms.functional import convert_image_dtype

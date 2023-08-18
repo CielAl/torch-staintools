@@ -45,6 +45,11 @@ plt.imshow(target)
 plt.title("Template")
 plt.show()
 
+
+def postprocess(image_tensor): return convert_image_dtype(image_tensor, torch.uint8)\
+    .squeeze().detach().cpu().permute(1, 2, 0).numpy()
+
+
 # ######### Vahadane
 normalizer_vahadane = NormalizerBuilder.build('vahadane', reconst_method='ista')
 normalizer_vahadane = normalizer_vahadane.to(device)
@@ -55,8 +60,8 @@ with torch.no_grad():
         tile_single = tile_single.unsqueeze(0)
         # BCHW - scaled to [0 1] torch.float32
         test_out = normalizer_vahadane(tile_single, algorithm='ista', constrained=True, verbose=False)
-        test_out = convert_image_dtype(test_out, torch.uint8)
-        plt.imshow((test_out.squeeze().detach().cpu().permute(1, 2, 0).numpy()))
+        test_out = postprocess(test_out)
+        plt.imshow(test_out)
         plt.title(f"Vahadane: {idx}")
         plt.show()
 
@@ -74,8 +79,8 @@ with torch.no_grad():
         tile_single = tile_single.unsqueeze(0).contiguous()
         # BCHW - scaled to [0 1] torch.float32
         test_out = normalizer_macenko(tile_single)
-        test_out = convert_image_dtype(test_out, torch.uint8)
-        plt.imshow(test_out.squeeze().detach().cpu().permute(1, 2, 0).numpy())
+        test_out = postprocess(test_out)
+        plt.imshow(test_out)
         plt.title(f"Macenko: {idx}")
         plt.show()
 # # %timeit normalizer_macenko(norm_tensor, algorithm='ista', constrained=True, verbose=False)
@@ -91,8 +96,8 @@ with torch.no_grad():
         tile_single = tile_single.unsqueeze(0).contiguous()
         # BCHW - scaled to [0 1] torch.float32
         test_out = normalizer_reinhard(tile_single)
-        test_out = convert_image_dtype(test_out, torch.uint8)
-        plt.imshow(test_out.squeeze().detach().cpu().permute(1, 2, 0).numpy())
+        test_out = postprocess(test_out)
+        plt.imshow(test_out)
         plt.title(f"Reinhard: {idx}")
         plt.show()
 # %timeit normalizer_reinhard(norm_tensor)
@@ -139,3 +144,18 @@ for idx, tile_single in enumerate(tqdm(tiles_np)):
     plt.title(f"Reinhard ST: {idx}")
     plt.show()
 
+# ########## sample generation
+images = [norm, target,
+          postprocess(normalizer_vahadane(norm_tensor)),
+          postprocess(normalizer_macenko(norm_tensor)),
+          postprocess(normalizer_reinhard(norm_tensor))
+          ]
+titles = ["Source", "Template", "Vahadane", "Macenko", "Reinhard"]
+assert len(images) == len(titles)
+fig, axs = plt.subplots(1, len(images), figsize=(15, 4), dpi=300)
+for i, ax in enumerate(axs):
+    ax.imshow(images[i])
+    ax.set_title(titles[i])
+    ax.axis('off')
+plt.savefig(os.path.join('.', 'showcases', 'sample_out.png'), bbox_inches='tight')
+plt.show()
