@@ -1,5 +1,5 @@
 import torch
-from torch_stain_norm.functional.dict_learning.dict_learning import dict_learning
+from torch_stain_norm.functional.optimization.dict_learning import dict_learning
 from torch_stain_norm.functional.tissue_mask import get_tissue_mask
 from torch_stain_norm.functional.conversion.od import rgb2od
 from .extractor import BaseExtractor
@@ -11,7 +11,7 @@ class VahadaneExtractor(BaseExtractor):
     def get_stain_matrix_from_od(od: torch.Tensor, tissue_mask: torch.Tensor,
                                  regularizer: float = 0.1, lambd=0.01,
                                  algorithm='ista', steps=30,
-                                 constrained=True, persist=True, init='ridge') -> torch.Tensor:
+                                 constrained=True, persist=True, init='ridge', verbose: bool = False) -> torch.Tensor:
         """
         Stain matrix estimation via method of:
         A. Vahadane et al. 'Structure-Preserving Color Normalization
@@ -26,7 +26,7 @@ class VahadaneExtractor(BaseExtractor):
             constrained:
             persist:
             init:
-
+            verbose:
         Returns:
             List of HE matrix (B*2x3 - H on the 1st row in the 2nd dimension)
         """
@@ -46,7 +46,8 @@ class VahadaneExtractor(BaseExtractor):
 
             dictionary, losses = dict_learning(x, n_components=2, alpha=regularizer, lambd=lambd,
                                                algorithm=algorithm, device=device, steps=steps,
-                                               constrained=constrained, progbar=False, persist=True, init=init)
+                                               constrained=constrained, progbar=False, persist=True, init=init,
+                                               verbose=verbose)
         # H on first row.
             dictionary = dictionary.T
             if dictionary[0, 0] < dictionary[1, 0]:
