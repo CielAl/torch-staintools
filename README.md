@@ -5,8 +5,13 @@
 * Simulate the workflow in [StainTools library](https://github.com/Peter554/StainTools) but use the Iterative Shrinkage Thresholding Algorithm (ISTA), or optionally, the coordinate descent (CD) to solve the dictionary learning for stain matrix/concentration computation in Vahadane or Macenko (stain concentration only) algorithm. The implementation of ISTA and CD are derived from Cédric Walker's [torchvahadane](https://github.com/cwlkr/torchvahadane)
 * No SPAMS requirement (which is a dependency in StainTools).
 
+<br />
+
+#### Sample Output of Torch StainTools
 ![Screenshot](showcases/sample_out.png)
 
+#### Sample Output of StainTools
+![Screenshot](showcases/sample_out_staintools.png)
 
 ## Usecase
 * For details, follow the example in demo.py

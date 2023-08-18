@@ -159,3 +159,21 @@ for i, ax in enumerate(axs):
     ax.axis('off')
 plt.savefig(os.path.join('.', 'showcases', 'sample_out.png'), bbox_inches='tight')
 plt.show()
+
+
+# stain tool comparison
+
+images = [norm, target,
+          st_vahadane.transform(norm),
+          st_macenko.transform(norm),
+          st_reinhard.transform(norm),
+          ]
+titles = ["Source", "Template", "Vahadane - StainTools", "Macenko - StainTools", "Reinhard - StainTools"]
+assert len(images) == len(titles)
+fig, axs = plt.subplots(1, len(images), figsize=(15, 4), dpi=300)
+for i, ax in enumerate(axs):
+    ax.imshow(images[i])
+    ax.set_title(titles[i])
+    ax.axis('off')
+plt.savefig(os.path.join('.', 'showcases', 'sample_out_staintools.png'), bbox_inches='tight')
+plt.show()
