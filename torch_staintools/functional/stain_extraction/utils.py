@@ -1,5 +1,4 @@
 import torch
-from typing import Union
 
 
 def percentile(t: torch.Tensor, q: float, dim: int) -> torch.Tensor:

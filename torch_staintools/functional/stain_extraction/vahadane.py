@@ -1,7 +1,7 @@
 import torch
-from torch_stain_tools.functional.optimization.dict_learning import dict_learning
-from torch_stain_tools.functional.tissue_mask import get_tissue_mask
-from torch_stain_tools.functional.conversion.od import rgb2od
+from torch_staintools.functional.optimization.dict_learning import dict_learning
+from torch_staintools.functional.tissue_mask import get_tissue_mask
+from torch_staintools.functional.conversion.od import rgb2od
 from .extractor import BaseExtractor
 
 

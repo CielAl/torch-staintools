@@ -1,7 +1,7 @@
 import torch
 
-from torch_stain_tools.functional.conversion.lab import rgb_to_lab, lab_to_rgb
-from torch_stain_tools.normalizer.base import Normalizer
+from torch_staintools.functional.conversion.lab import rgb_to_lab, lab_to_rgb
+from torch_staintools.normalizer.base import Normalizer
 
 
 class ReinhardNormalizer(Normalizer):

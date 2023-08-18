@@ -2,9 +2,9 @@ from typing import Callable
 
 import torch
 
-from torch_stain_tools.functional.optimization.dict_learning import get_concentrations
-from torch_stain_tools.functional.stain_extraction.factory import build_from_name
-from torch_stain_tools.functional.stain_extraction.utils import percentile
+from torch_staintools.functional.optimization.dict_learning import get_concentrations
+from torch_staintools.functional.stain_extraction.factory import build_from_name
+from torch_staintools.functional.stain_extraction.utils import percentile
 from .base import Normalizer
 
 

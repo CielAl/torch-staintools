@@ -4,7 +4,7 @@ code directly adapted from https://github.com/rfeinman/pytorch-lasso
 import warnings
 from .solver import coord_descent, ista
 from .sparse_util import initialize_code
-from torch_stain_tools.functional.conversion.od import rgb2od
+from torch_staintools.functional.conversion.od import rgb2od
 from tqdm import tqdm
 import torch
 import torch.nn as nn

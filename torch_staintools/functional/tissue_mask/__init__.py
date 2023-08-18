@@ -1,5 +1,5 @@
 import torch
-from torch_stain_tools.functional.conversion.lab import rgb_to_lab
+from torch_staintools.functional.conversion.lab import rgb_to_lab
 from torchvision.transforms.functional import convert_image_dtype
 
 

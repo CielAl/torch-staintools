@@ -2,7 +2,7 @@ import cv2
 import torch
 from torchvision.transforms import ToTensor
 from torchvision.transforms.functional import convert_image_dtype
-from torch_stain_tools.normalizer.factory import NormalizerBuilder
+from torch_staintools.normalizer.factory import NormalizerBuilder
 import matplotlib.pyplot as plt
 import numpy as np
 from tqdm import tqdm
