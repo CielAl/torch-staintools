@@ -12,7 +12,7 @@ torch.manual_seed(seed)
 torch.cuda.manual_seed(seed)
 
 # cpu or gpu
-device = torch.device("cpu")  # torch.device("cuda:0")
+device = torch.device("cuda:0")  # torch.device("cpu")
 
 root_dir = '.'
 target = cv2.imread(os.path.join(root_dir, 'test_images/TCGA-33-4547-01Z-00-DX7.'
