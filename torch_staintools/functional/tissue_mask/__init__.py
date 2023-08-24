@@ -7,14 +7,14 @@ class TissueMaskException(Exception):
     ...
 
 
-def get_tissue_mask(image: torch.Tensor, luminosity_threshold=0.8) -> torch.Tensor:
+def get_tissue_mask(image: torch.Tensor, luminosity_threshold=0.8, throw_error: bool = True) -> torch.Tensor:
     """
     Get a binary mask where true denotes pixels with a luminosity less than the specified threshold.
     Typically we use to identify tissue in the image and exclude the bright white background.
     Args:
         image: RGB [0, 1]. -> BCHW
         luminosity_threshold:
-
+        throw_error: whether to throw error
     Returns:
         mask (B1HW)
     """
@@ -36,6 +36,6 @@ def get_tissue_mask(image: torch.Tensor, luminosity_threshold=0.8) -> torch.Tens
     mask = (L < luminosity_threshold) & (
                 L > 0)  # fix bug in original stain tools code where black background is not ignored.
     # Check it's not empty
-    if mask.sum() == 0:
+    if throw_error and mask.sum() == 0:
         raise TissueMaskException("Empty tissue mask computed")
     return mask
