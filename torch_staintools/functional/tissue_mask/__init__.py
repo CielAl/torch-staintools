@@ -1,6 +1,8 @@
 import torch
 from torch_staintools.functional.conversion.lab import rgb_to_lab
 from torchvision.transforms.functional import convert_image_dtype
+from skimage.util import img_as_ubyte
+import cv2
 
 
 class TissueMaskException(Exception):
@@ -35,6 +37,30 @@ def get_tissue_mask(image: torch.Tensor, luminosity_threshold=0.8, throw_error: 
     L = img_lab[:, 0:1, :, :] / 100
     mask = (L < luminosity_threshold) & (
                 L > 0)  # fix bug in original stain tools code where black background is not ignored.
+    # Check it's not empty
+    if throw_error and mask.sum() == 0:
+        raise TissueMaskException("Empty tissue mask computed")
+    return mask
+
+
+# todo refactor later
+def get_tissue_mask_np(I, luminosity_threshold=0.8,  throw_error: bool = True):
+    """
+    Get a binary mask where true denotes pixels with a luminosity less than the specified threshold.
+    Typically we use to identify tissue in the image and exclude the bright white background.
+    Args:
+        I:
+        luminosity_threshold:
+        throw_error:
+
+    Returns:
+
+    """
+    I = img_as_ubyte(I)
+    I_LAB = cv2.cvtColor(I, cv2.COLOR_RGB2LAB)
+    L = I_LAB[:, :, 0] / 255.0  # Convert to range [0,1].
+    mask = L < luminosity_threshold
+
     # Check it's not empty
     if throw_error and mask.sum() == 0:
         raise TissueMaskException("Empty tissue mask computed")
