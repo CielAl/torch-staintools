@@ -9,12 +9,20 @@ TYPE_IMAGE = Union[np.ndarray, torch.Tensor, Image.Image]
 
 
 class DataInput(TypedDict):
+    """For future compatibility - e.g., moving average of stain matrix from same wsi which needs uri to identify.
+
+    """
     # todo - for other information passed in the pipeline
     img: TYPE_IMAGE
     uri: str
 
 
 class Normalizer(nn.Module):
+    """Generic normalizer interface with fit/transform, and the forward call that will at least call transform.
+
+    Note that the inputs are always supposed to be pytorch tensors in BCHW convention.
+
+    """
 
     @abstractmethod
     def fit(self, *args, **kwargs):

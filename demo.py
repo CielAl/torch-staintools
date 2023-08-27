@@ -33,7 +33,7 @@ norm_tensor = ToTensor()(norm).unsqueeze(0).to(device)
 
 
 # test with multiple smaller regions from the sample image
-tile_size = 1024
+tile_size = 2048
 tiles: torch.Tensor = norm_tensor.unfold(2, tile_size, tile_size)\
     .unfold(3, tile_size, tile_size).reshape(1, 3, -1, tile_size, tile_size).squeeze(0).permute(1, 0, 2, 3).contiguous()
 

@@ -11,6 +11,9 @@ TYPE_SUPPORTED = Literal[TYPE_REINHARD, TYPE_VAHADANE, TYPE_MACENKO]
 
 
 class NormalizerBuilder:
+    """Factory Builder for all supported normalizers: reinhard, macenko, and vahadane
+
+    """
 
     @staticmethod
     def build(method: TYPE_SUPPORTED, *args, **kwargs) -> Normalizer:
@@ -23,4 +26,3 @@ class NormalizerBuilder:
             case _:
                 raise NotImplementedError(f"{method} not implemented.")
         return norm_method(*args, **kwargs)
-
