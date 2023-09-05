@@ -17,7 +17,7 @@ device = torch.device("cuda:0")  # torch.device("cpu")
 root_dir = '.'
 target = cv2.imread(os.path.join(root_dir, 'test_images/TCGA-33-4547-01Z-00-DX7.'
                                            '91be6f90-d9ab-4345-a3bd-91805d9761b9_8270_5932_0.png'))
-# shape: HWC
+# shape: HWC (Height Width Channel)
 target = cv2.cvtColor(target, cv2.COLOR_BGR2RGB)
 norm = cv2.imread(os.path.join(root_dir, 'test_images/TCGA-95-8494-01Z-00-DX1.'
                                          '716299EF-71BB-4095-8F4D-F0C2252CE594_5932_5708_0.png'))
@@ -25,7 +25,7 @@ norm = cv2.imread(os.path.join(root_dir, 'test_images/TCGA-95-8494-01Z-00-DX1.'
 norm = cv2.cvtColor(norm, cv2.COLOR_BGR2RGB)
 
 
-# shape: BCHW - scaled to [0, 1] torch.float32
+# shape: BCHW (Batch Channel Height Width) - scaled to [0, 1] torch.float32
 target_tensor = ToTensor()(target).unsqueeze(0).to(device)
 
 # shape: BCHW - scaled to [0, 1] torch.float32
@@ -33,7 +33,7 @@ norm_tensor = ToTensor()(norm).unsqueeze(0).to(device)
 
 
 # test with multiple smaller regions from the sample image
-tile_size = 2048
+tile_size = 1024
 tiles: torch.Tensor = norm_tensor.unfold(2, tile_size, tile_size)\
     .unfold(3, tile_size, tile_size).reshape(1, 3, -1, tile_size, tile_size).squeeze(0).permute(1, 0, 2, 3).contiguous()
 
@@ -54,6 +54,8 @@ def postprocess(image_tensor): return convert_image_dtype(image_tensor, torch.ui
 normalizer_vahadane = NormalizerBuilder.build('vahadane', reconst_method='ista')
 normalizer_vahadane = normalizer_vahadane.to(device)
 normalizer_vahadane.fit(target_tensor)
+# the normalizer has no parameters so torch.no_grad() has no effect. Leave it here for future demo of models
+# that may enclose parameters.
 with torch.no_grad():
     for idx, tile_single in enumerate(tqdm(tiles, disable=False)):
 

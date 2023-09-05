@@ -17,6 +17,16 @@ class NormalizerBuilder:
 
     @staticmethod
     def build(method: TYPE_SUPPORTED, *args, **kwargs) -> Normalizer:
+        """build from specified algorithm name `method`.
+
+        Args:
+            method: Name of stain normalization algorithm. Support `reinhard`, `macenko`, and `vahadane`
+            *args:
+            **kwargs:
+
+        Returns:
+
+        """
         norm_method: Callable
         match method:
             case 'reinhard':

@@ -1,8 +1,5 @@
-opencv-python~=4.7.0.72
-matplotlib~=3.7.1
+opencv-python
 numpy~=1.23.5
-torchvision~=0.14.1
-torch~=1.13.1
 tqdm~=4.65.0
 staintools~=2.1.2
 kornia~=0.7.0
@@ -10,3 +7,5 @@ scipy~=1.10.0
 pillow~=9.4.0
 setuptools~=65.6.3
 scikit-image~=0.19.3
+torchvision
+torch

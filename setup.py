@@ -1,19 +1,21 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 from pkg_resources import parse_requirements
 with open('requirements.txt') as root:
     requirements = [str(req) for req in parse_requirements(root)]
 
+version_dict = {}
+with open("./torch_staintools/version.py") as fp:
+    exec(fp.read(), version_dict)
+version = version_dict["__version__"]
+
 setup(
     name='torch_stain_tools',
-    version='0.0.1',
-    packages=['torch_stain_tools', 'torch_stain_tools.functional', 'torch_stain_tools.functional.conversion',
-              'torch_stain_tools.functional.tissue_mask', 'torch_stain_tools.functional.optimization',
-              'torch_stain_tools.functional.preprocessing', 'torch_stain_tools.functional.stain_extraction',
-              'torch_stain_tools.normalizer'],
+    version=version,
+    packages=find_packages(),
     url='',
     license='MIT',
-    author='YZ',
+    author='Y Z',
     author_email='cielmercy@gmail.com',
-    description='',
+    description='GPU-accelerated stain normalization as nn.Module.',
     install_requires=requirements,
 )
