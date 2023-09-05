@@ -9,7 +9,7 @@ with open("./torch_staintools/version.py") as fp:
 version = version_dict["__version__"]
 
 setup(
-    name='torch_stain_tools',
+    name='torch-staintools',
     version=version,
     packages=find_packages(),
     url='',
