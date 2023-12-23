@@ -192,12 +192,12 @@ def get_concentrations(image, stain_matrix, regularizer=0.01, algorithm='ista'):
     Estimate concentration matrix given an image and stain matrix.
     Args:
         image: BCHW
-        stain_matrix: Bx2x3
+        stain_matrix: B x num_stain x input channel
         regularizer:
         algorithm:
 
     Returns:
-
+        concentration matrix: B x num_stains x num_pixel_in_mask
     """
     device = image.device
     stain_matrix = stain_matrix.to(device)

@@ -1,7 +1,8 @@
-# Torch StainTools
+# Torch StainTools for Stain Normalization and Augmentation for Histopathological Images
 
 ## Description
 * Stain Normalization (Reinhard, Macenko, and Vahadane) for pytorch. Input tensors (fit and transform) must be in shape of `NxCxHxW`, with value scaled to [0, 1] in format of torch.float32.
+* Stain Augmentation using Macenko and Vahadane as stain extraction.
 * Simulate the workflow in [StainTools library](https://github.com/Peter554/StainTools) but use the Iterative Shrinkage Thresholding Algorithm (ISTA), or optionally, the coordinate descent (CD) to solve the dictionary learning for stain matrix/concentration computation in Vahadane or Macenko (stain concentration only) algorithm. The implementation of ISTA and CD are derived from Cédric Walker's [torchvahadane](https://github.com/cwlkr/torchvahadane)
 * No SPAMS requirement (which is a dependency in StainTools).
 

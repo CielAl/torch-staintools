@@ -19,12 +19,12 @@ class BaseExtractor(ABC, Callable):
 
     @staticmethod
     @abstractmethod
-    def get_stain_matrix_from_od(od: torch.Tensor, tissue_mask: torch.Tensor,
+    def get_stain_matrix_from_od(od: torch.Tensor, tissue_mask: torch.Tensor, num_stains: int,
                                  *args, **kwargs):
         ...
 
     @classmethod
-    def __call__(cls, image: torch.Tensor, luminosity_threshold: float = 0.8,
+    def __call__(cls, image: torch.Tensor, luminosity_threshold: float = 0.8,  num_stains: int = 2,
                  *args, **kwargs):
         # device = image.device
         # B x 1 x H x W
@@ -32,4 +32,4 @@ class BaseExtractor(ABC, Callable):
         #  B x (HxWx1)
 
         od = rgb2od(image)
-        return cls.get_stain_matrix_from_od(od, tissue_mask, *args, **kwargs)
+        return cls.get_stain_matrix_from_od(od, tissue_mask, num_stains, *args, **kwargs)
