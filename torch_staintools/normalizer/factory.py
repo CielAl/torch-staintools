@@ -1,7 +1,7 @@
 from typing import Literal, Callable
 from .base import Normalizer
 from .reinhard import ReinhardNormalizer
-from .separation import StainSeperation
+from .separation import StainSeparation
 from functools import partial
 TYPE_REINHARD = Literal['reinhard']
 TYPE_VAHADANE = Literal['vahadane']
@@ -16,13 +16,12 @@ class NormalizerBuilder:
     """
 
     @staticmethod
-    def build(method: TYPE_SUPPORTED, *args, **kwargs) -> Normalizer:
+    def build(method: TYPE_SUPPORTED, **kwargs) -> Normalizer:
         """build from specified algorithm name `method`.
 
         Args:
             method: Name of stain normalization algorithm. Support `reinhard`, `macenko`, and `vahadane`
-            *args:
-            **kwargs:
+            **kwargs: keyword arguments for StainSeparation - num_stains, luminosity_threshold, and reconst_method
 
         Returns:
 
@@ -32,7 +31,7 @@ class NormalizerBuilder:
             case 'reinhard':
                 norm_method = ReinhardNormalizer.build
             case 'macenko' | 'vahadane':
-                norm_method = partial(StainSeperation.build, method=method)
+                norm_method = partial(StainSeparation.build, method=method)
             case _:
                 raise NotImplementedError(f"{method} not implemented.")
-        return norm_method(*args, **kwargs)
+        return norm_method(**kwargs)

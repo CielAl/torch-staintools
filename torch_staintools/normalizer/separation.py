@@ -1,10 +1,9 @@
 """Note that some of the codes are derived from torchvahadane and staintools
 
 """
-from typing import Callable
 
 import torch
-
+from torch_staintools.functional.stain_extraction.extractor import BaseExtractor
 from torch_staintools.functional.optimization.dict_learning import get_concentrations
 from torch_staintools.functional.stain_extraction.factory import build_from_name
 from torch_staintools.functional.stain_extraction.utils import percentile
@@ -12,17 +11,20 @@ from torch_staintools.functional.utility.implementation import transpose_trailin
 from .base import Normalizer
 
 
-class StainSeperation(Normalizer):
+class StainSeparation(Normalizer):
     """Stain Seperation-based normalizer's interface: Macenko and Vahadane
 
     """
-    get_stain_matrix: Callable
+    get_stain_matrix: BaseExtractor
     stain_matrix_target: torch.Tensor
     target_concentrations: torch.Tensor
 
     num_stains: int
+    regularizer: float
 
-    def __init__(self, get_stain_matrix: Callable, reconst_method: str = 'ista', num_stains: int = 2):
+    def __init__(self, get_stain_matrix: BaseExtractor, reconst_method: str = 'ista', num_stains: int = 2,
+                 luminosity_threshold: float = 0.8,
+                 regularizer: float = 0.1):
         """Init
 
         Args:
@@ -30,14 +32,18 @@ class StainSeperation(Normalizer):
                 macenko's SVD
             reconst_method:  How to get stain concentration from stain matrix
             num_stains: number of stains to separate
-
+            luminosity_threshold: threshold of luminosity to get tissue
+            regularizer: Regularizer term in dict learning. Note that similar to staintools, for image
+                reconstruction step, we also use dictionary learning to get the target stain concentration.
         """
         super().__init__()
         self.reconst_method = reconst_method
         self.get_stain_matrix = get_stain_matrix
         self.num_stains = num_stains
+        self.luminosity_threshold = luminosity_threshold
+        self.regularizer = regularizer
 
-    def fit(self, target, regularizer: float = 0.01, **kwargs):
+    def fit(self, target, **stainmat_kwargs):
         """Fit to a target image.
 
         Note that the stain matrices are registered into buffers so that it's move to specified device
@@ -45,19 +51,20 @@ class StainSeperation(Normalizer):
 
         Args:
             target: BCHW. Assume it's cast to torch.float32 and scaled to [0, 1]
-            regularizer: Regularizer term in dict learning. Note that similar to staintools, for image
-                reconstruction step, we also use dictionary learning to get the target stain concentration.
-            # *args: Positional argument of stain seperator (get_stain_matrix)
-            **kwargs: Keyword argument of stain seperator, besides the num_stains that's set in the __init__
+            **stainmat_kwargs: Extra keyword argument of stain seperator, besides the num_stains/luminosity_threshold
+              that are set in the __init__
 
         Returns:
 
         """
         assert target.shape[0] == 1
-        stain_matrix_target = self.get_stain_matrix(target, num_stains=self.num_stains, **kwargs)
+        stain_matrix_target = self.get_stain_matrix(target, num_stains=self.num_stains,
+                                                    regularizer=self.regularizer,
+                                                    luminosity_threshold=self.luminosity_threshold,
+                                                    **stainmat_kwargs)
 
         self.register_buffer('stain_matrix_target', stain_matrix_target)
-        target_conc = get_concentrations(target, self.stain_matrix_target, regularizer=regularizer,
+        target_conc = get_concentrations(target, self.stain_matrix_target, regularizer=self.regularizer,
                                          algorithm=self.reconst_method)
         self.register_buffer('target_concentrations', target_conc)
         # B x (HW) x 2
@@ -66,15 +73,6 @@ class StainSeperation(Normalizer):
         max_c_target = percentile(conc_transpose, 99, dim=1)
         self.register_buffer('maxC_target', max_c_target)
         # self.maxC_target = np.percentile(self.target_concentrations, 99, axis=0).reshape((1, 2))
-
-    def fix_source_stain_matrix(self, image, *args, **kwargs):
-        """there could also be a way of fixing a target matrix.
-
-        If a set of transformations are done on same wsi, stain matrix should not meaningfully change over time,
-        have a moving average and if average converges to new samples then set as matrix?
-        """
-
-        self.register_buffer('stain_matrix_source', self.get_stain_matrix(image, *args, **kwargs))
 
     @staticmethod
     def repeat_stain_mat(stain_mat: torch.Tensor, image: torch.Tensor) -> torch.Tensor:
@@ -105,8 +103,10 @@ class StainSeperation(Normalizer):
         Args:
             image: Image input must be BxCxHxW cast to torch.float32 and rescaled to [0, 1]
                 Check torchvision.transforms.convert_image_dtype.
-            **stain_mat_kwargs: Keyword argument of stain seperator besides the num_stains that was already set
-                in __init__
+            **stain_mat_kwargs: Extra keyword argument of stain seperator besides the num_stains
+                and luminosity_threshold that was already set in __init__.
+                For Macenko, an angular percentile argument "perc" may be selected to separate the angles of OD
+                vector projected on SVD and the x-positive axis.
 
         Returns:
             torch.Tensor: normalized output in BxCxHxW and float32. Note that some pixel value may exceed [0, 1] and
@@ -115,15 +115,18 @@ class StainSeperation(Normalizer):
         # one source matrix - multiple target
         if not hasattr(self, 'stain_matrix_source'):
             stain_matrix_source = self.get_stain_matrix(image, num_stains=self.num_stains,
+                                                        regularizer=self.regularizer,
+                                                        luminosity_threshold=self.luminosity_threshold,
                                                         **stain_mat_kwargs)
         else:
             stain_matrix_source = self.stain_matrix_source
         # stain_matrix_source -- B x 2 x 3 wherein B is 1. Note that the input batch size is independent of how many
         # template were used and for now we only accept one template a time. todo - multiple template for sampling later
         stain_matrix_source: torch.Tensor
-        stain_matrix_source = StainSeperation.repeat_stain_mat(stain_matrix_source, image)
+        stain_matrix_source = StainSeparation.repeat_stain_mat(stain_matrix_source, image)
         # B * 2 * (HW)
-        source_concentration = get_concentrations(image, stain_matrix_source, algorithm=self.reconst_method)
+        source_concentration = get_concentrations(image, stain_matrix_source, algorithm=self.reconst_method,
+                                                  regularizer=self.regularizer)
         # individual shape (2,) (HE)
         # note that c_transposed_src is just a view of source_concentration and therefore any inplace operation on
         # them will be reflected to each other, but this should be avoided for better readability
@@ -140,17 +143,24 @@ class StainSeperation(Normalizer):
         return self.transform(x, **stain_mat_kwargs)
 
     @classmethod
-    def build(cls, method: str, *args, **kwargs) -> "StainSeperation":
+    def build(cls, method: str,
+              reconst_method: str = 'ista',
+              num_stains: int = 2,
+              luminosity_threshold: float = 0.8,
+              regularizer: float = 0.1) -> "StainSeparation":
         """Builder.
 
         Args:
             method: method of stain extractor name: vadahane or macenko
-            *args: Positional argument of stain seperator (get_stain_matrix)
-            **kwargs: Keyword argument of stain seperator.
-
+            reconst_method: method to obtain the concentration. default ista.
+            num_stains: number of stains to separate. Currently, Macenko only supports 2.
+            luminosity_threshold: luminosity threshold to ignore the background. None means all regions are considered
+                as tissue.
+            regularizer: regularizer term in dictionary learning for stain separation and concentration computation.
         Returns:
-            StainSeperation normalizer.
+            StainSeparation normalizer.
         """
         method = method.lower()
         extractor = build_from_name(method)
-        return cls(extractor, *args, **kwargs)
+        return cls(extractor, reconst_method=reconst_method, num_stains=num_stains,
+                   luminosity_threshold=luminosity_threshold, regularizer=regularizer)

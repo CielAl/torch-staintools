@@ -54,7 +54,7 @@ def postprocess(image_tensor): return convert_image_dtype(image_tensor, torch.ui
 # ######### Vahadane
 normalizer_vahadane = NormalizerBuilder.build('vahadane', reconst_method='ista')
 normalizer_vahadane = normalizer_vahadane.to(device)
-normalizer_vahadane.fit(target_tensor, num_stains=2)
+normalizer_vahadane.fit(target_tensor)
 # the normalizer has no parameters so torch.no_grad() has no effect. Leave it here for future demo of models
 # that may enclose parameters.
 with torch.no_grad():
@@ -62,7 +62,7 @@ with torch.no_grad():
 
         tile_single = tile_single.unsqueeze(0)
         # BCHW - scaled to [0 1] torch.float32
-        test_out = normalizer_vahadane(tile_single, algorithm='ista', constrained=True, verbose=False,  num_stains=2)
+        test_out = normalizer_vahadane(tile_single)
         test_out = postprocess(test_out)
         plt.imshow(test_out)
         plt.title(f"Vahadane: {idx}")
@@ -73,7 +73,7 @@ with torch.no_grad():
 #   #################### Macenko
 
 
-normalizer_macenko = NormalizerBuilder.build('macenko', reconst_method='ista')
+normalizer_macenko = NormalizerBuilder.build('macenko')
 normalizer_macenko = normalizer_macenko.to(device)
 normalizer_macenko.fit(target_tensor)
 

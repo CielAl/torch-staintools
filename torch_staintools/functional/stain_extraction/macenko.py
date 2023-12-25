@@ -71,13 +71,27 @@ class MacenkoExtractor(BaseExtractor):
         return torch.stack(stain_mat_list)
 
     @classmethod
-    def __call__(cls, image: torch.Tensor, luminosity_threshold: float = 0.8,
+    def __call__(cls, image: torch.Tensor, *, luminosity_threshold: float = 0.8,
+                 regularizer: float = 0.01,
                  num_stains: int = 2, perc: int = 1,
                  **kwargs):
+        """
+
+        Args:
+            image:
+            luminosity_threshold:
+            regularizer: For compatibility. Not used.
+            num_stains:
+            perc:
+            **kwargs:
+
+        Returns:
+
+        """
         # device = image.device
         # B x 1 x H x W
         tissue_mask = get_tissue_mask(image, luminosity_threshold=luminosity_threshold)  # .reshape((-1,))
         #  B x (HxWx1)
 
         od = rgb2od(image)
-        return cls.get_stain_matrix_from_od(od, tissue_mask, num_stains=num_stains, perc=1, **kwargs)
+        return cls.get_stain_matrix_from_od(od, tissue_mask, num_stains=num_stains, perc=perc, **kwargs)

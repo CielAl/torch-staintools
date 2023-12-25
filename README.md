@@ -20,12 +20,13 @@
   (Note that CUDA has poor support in multiprocessing and therefore it may not be the best practice to perform GPU-accelerated on-the-fly stain transformation in pytorch's dataset/dataloader)
 
 
-```
+```python
 import cv2
 import torch
 from torchvision.transforms import ToTensor
 from torchvision.transforms.functional import convert_image_dtype
 from torch_staintools.normalizer.factory import NormalizerBuilder
+from torch_staintools.augmentor.factory import AugmentorBuilder
 import os
 seed = 0
 torch.manual_seed(seed)
@@ -37,7 +38,7 @@ device = torch.device("cuda:0")
 root_dir = '.'
 target = cv2.imread(os.path.join(root_dir, 'test_images/TCGA-33-4547-01Z-00-DX7.'
                                            '91be6f90-d9ab-4345-a3bd-91805d9761b9_8270_5932_0.png'))
-# shape: HWC
+# shape: Height (H) x Width (W) x Channel (C, for RGB C=3)
 target = cv2.cvtColor(target, cv2.COLOR_BGR2RGB)
 norm = cv2.imread(os.path.join(root_dir, 'test_images/TCGA-95-8494-01Z-00-DX1.'
                                          '716299EF-71BB-4095-8F4D-F0C2252CE594_5932_5708_0.png'))
@@ -45,19 +46,34 @@ norm = cv2.imread(os.path.join(root_dir, 'test_images/TCGA-95-8494-01Z-00-DX1.'
 norm = cv2.cvtColor(norm, cv2.COLOR_BGR2RGB)
 
 
-# shape: BCHW - scaled to [0, 1] torch.float32
+# shape: Batch x Channel x Height x Width (BCHW); in the showcase here batch size is 1 (B=1) - scaled to [0, 1] torch.float32
 target_tensor = ToTensor()(target).unsqueeze(0).to(device)
 
 # shape: BCHW - scaled to [0, 1] torch.float32
 norm_tensor = ToTensor()(norm).unsqueeze(0).to(device)
 
+# ######## Normalization
 # fit
-normalizer_vahadane = NormalizerBuilder.build('vahadane', reconst_method='ista')
+normalizer_vahadane = NormalizerBuilder.build('vahadane')
 normalizer_vahadane = normalizer_vahadane.to(device)
 normalizer_vahadane.fit(target_tensor)
 # transform
 # BCHW - scaled to [0, 1] torch.float32
-output = normalizer_vahadane(norm_tensor, algorithm='ista', constrained=True, verbose=False)
+output = normalizer_vahadane(norm_tensor)
+
+# ###### Augmentation
+# augment by: alpha * concentration + beta, while alpha is uniformly randomly sampled from (1 - sigma_alpha, 1 + sigma_alpha),
+# and beta is uniformly randomly sampled from (-sigma_beta, sigma_beta).
+augmentor = AugmentorBuilder.build('vahadane',
+                                   rng=314159,
+                                   sigma_alpha=0.2,
+                                   sigma_beta=0.2, target_stain_idx=(0, 1)
+                                   )
+
+num_augment = 5
+for _ in range(num_augment):
+    # B x C x H x W
+    aug_out = augmentor(norm_tensor)
 ```
 
 ## Installation

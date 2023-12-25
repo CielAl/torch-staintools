@@ -63,7 +63,7 @@ class VahadaneExtractor(BaseExtractor):
         return torch.stack(out_dict_list)
 
     @classmethod
-    def __call__(cls, image: torch.Tensor, luminosity_threshold: float = 0.8,
+    def __call__(cls, image: torch.Tensor, *, luminosity_threshold: float = 0.8,
                  regularizer: float = 0.1, num_stains: int = 2, **kwargs) -> torch.Tensor:
         """
         Stain matrix estimation via method of:
