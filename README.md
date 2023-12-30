@@ -53,9 +53,11 @@ target_tensor = ToTensor()(target).unsqueeze(0).to(device)
 norm_tensor = ToTensor()(norm).unsqueeze(0).to(device)
 
 # ######## Normalization
-# fit
+# create the normalizer - using vahadane. Alternatively can use 'macenko' or 'reinhard'.
 normalizer_vahadane = NormalizerBuilder.build('vahadane')
+# move the normalizer to the device (CPU or GPU)
 normalizer_vahadane = normalizer_vahadane.to(device)
+# fit. For macenko and vahadane this step will compute the stain matrix and concentration
 normalizer_vahadane.fit(target_tensor)
 # transform
 # BCHW - scaled to [0, 1] torch.float32
@@ -65,15 +67,37 @@ output = normalizer_vahadane(norm_tensor)
 # augment by: alpha * concentration + beta, while alpha is uniformly randomly sampled from (1 - sigma_alpha, 1 + sigma_alpha),
 # and beta is uniformly randomly sampled from (-sigma_beta, sigma_beta).
 augmentor = AugmentorBuilder.build('vahadane',
+                                   # fix the random number generator seed for reproducibility.
                                    rng=314159,
+                                   # the luminosity threshold to find the tissue region to augment
+                                   # if set to None means all pixels are treated as tissue
+                                   luminosity_threshold=0.8,
+                                   
                                    sigma_alpha=0.2,
-                                   sigma_beta=0.2, target_stain_idx=(0, 1)
+                                   sigma_beta=0.2, target_stain_idx=(0, 1),
+                                   # this allows to cache the stain matrix if it's too time-consuming to recompute.
+                                   # e.g., if using Vahadane algorithm
+                                   use_cache=True,
+                                   # size limit of cache. -1 means no limit (stain matrix is often small in size, e.g., 2 x 3)
+                                   cache_size_limit=-1,
+                                   # if specified, the augmentor will load the cached stain matrices from file system.
+                                   load_path=None,
                                    )
 
 num_augment = 5
+# multiple copies of different random augmentation of the same tile may be generated
 for _ in range(num_augment):
     # B x C x H x W
-    aug_out = augmentor(norm_tensor)
+    # use a list of Hashable key (e.g., str) to map the batch input to its corresponding stain matrix in cache.
+    # this key should be unique, e.g., using the filename of the input tile.
+    # leave it as None if no caching is intended, even if use_cache is enabled.
+    # note since the inputs are all batchified, the cache_key are in form of a list, with each element in the 
+    # list corresponding to a data point in the batch.
+    aug_out = augmentor(norm_tensor, cache_keys=['some unique key'])
+    # do anything to the augmentation output
+    
+# dump the cache of stain matrices for future usage
+augmentor.dump_cache('./cache.pickle')
 ```
 
 ## Installation

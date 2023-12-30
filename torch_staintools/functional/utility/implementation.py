@@ -1,5 +1,5 @@
 import torch
-from typing import Tuple
+from typing import Tuple, Optional
 
 
 def transpose_trailing(mat: torch.Tensor):
@@ -31,3 +31,7 @@ def img_from_concentration(concentration: torch.Tensor,
     out = torch.exp(-1 * torch.matmul(concentration, stain_matrix))
     out = transpose_trailing(out)
     return out.reshape(img_shape).clamp_(*out_range)
+
+
+def default_device(device: Optional[torch.device] = None) -> Optional[torch.device]:
+    return torch.device('cpu') if device is None else device

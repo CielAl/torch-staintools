@@ -115,7 +115,7 @@ with torch.no_grad():
     for idx, tile_single in enumerate(tqdm(tiles)):
         tile_single = tile_single.unsqueeze(0).contiguous()
         # BCHW - scaled to [0 1] torch.float32
-        test_out_tensor = augmentor(tile_single, regularizer=0.01, )
+        test_out_tensor = augmentor(tile_single)
         test_out = postprocess(test_out_tensor)
         plt.imshow(test_out)
         plt.title(f"Augmented: {idx}")
