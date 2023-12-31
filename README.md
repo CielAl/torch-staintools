@@ -1,4 +1,4 @@
-# Torch StainTools for Stain Normalization and Augmentation for Histopathological Images
+# Torch StainTools for Stain Normalization and Augmentation of Histopathological Images
 
 ## Description
 * Stain Normalization (Reinhard, Macenko, and Vahadane) for pytorch. Input tensors (fit and transform) must be in shape of `NxCxHxW`, with value scaled to [0, 1] in format of torch.float32.
