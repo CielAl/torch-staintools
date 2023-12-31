@@ -1,9 +1,11 @@
-from typing import TypedDict, Union
+from typing import TypedDict, Union, Optional
 from abc import abstractmethod
 import torch
-from torch import nn
 import numpy as np
 from PIL import Image
+from ..base_module.base import CachedRNGModule
+from ..cache.tensor_cache import TensorCache
+
 
 TYPE_IMAGE = Union[np.ndarray, torch.Tensor, Image.Image]
 
@@ -17,7 +19,7 @@ class DataInput(TypedDict):
     uri: str
 
 
-class Normalizer(nn.Module):
+class Normalizer(CachedRNGModule):
     """Generic normalizer interface with fit/transform, and the forward call that will at least call transform.
 
     Note that the inputs are always supposed to be pytorch tensors in BCHW convention.
@@ -36,8 +38,9 @@ class Normalizer(nn.Module):
     def forward(self, x: Union[DataInput, torch.Tensor], *args, **kwargs):
         ...
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, cache: Optional[TensorCache], device: Optional[torch.device],
+                 rng: Optional[int | torch.Generator]):
+        super().__init__(cache, device, rng)
 
     @classmethod
     def build(cls, *args, **kwargs) -> "Normalizer":

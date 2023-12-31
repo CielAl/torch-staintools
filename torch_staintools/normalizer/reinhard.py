@@ -14,7 +14,7 @@ class ReinhardNormalizer(Normalizer):
     target_stds: torch.Tensor
 
     def __init__(self):
-        super().__init__()
+        super().__init__(cache=None, device=None, rng=None)
 
     @staticmethod
     def _mean_std_helper(image: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:

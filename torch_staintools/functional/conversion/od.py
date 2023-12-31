@@ -6,9 +6,11 @@ _eps_val = torch.finfo(torch.float32).eps
 
 
 def rgb2od(image: torch.Tensor):
-    """
-    Note: Cedric Walker's adaptation from: torchvahadane/torchvahadane at main · cwlkr/torchvahadane
+    """Convert RGB to Optical Density space.
+
+    Cedric Walker's adaptation from torchvahadane
     RGB = 255 * exp(-1*OD_RGB) --> od_rgb = -1 * log(RGB / 255)
+
     Args:
         image: Image RGB. Input scale does not matter.
 
@@ -25,10 +27,12 @@ def rgb2od(image: torch.Tensor):
     return torch.maximum(-1 * torch.log(image / 255), eps)
 
 
-def od2rgb(OD):
-    """
-    Note: Cedric Walker's adaptation from: torchvahadane/torchvahadane at main · cwlkr/torchvahadane
+def od2rgb(OD: torch.Tensor):
+    """Convert Optical Density to RGB space
+
+    Cedric Walker's adaptation from torchvahadane
     RGB = 255 * exp(-1*OD_RGB)
+
     Args:
         OD: OD
     Returns:

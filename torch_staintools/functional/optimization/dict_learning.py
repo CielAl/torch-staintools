@@ -27,30 +27,28 @@ def lasso_loss(X, Z, weight, alpha=1.0):
 
 
 def update_dict(dictionary: torch.Tensor, x: torch.Tensor, code: torch.Tensor,
-                random_seed=None, positive=True,
-                eps=1e-7):
-    """Update the dense dictionary factor in place.
+                positive=True,
+                eps=1e-7, rng: torch.Generator = None):
+    """
+    Update the dense dictionary factor in place.
 
     Modified from `_update_dict` in sklearn.decomposition._dict_learning
 
-    Parameters
-    ----------
-    dictionary : Tensor of shape (n_features, n_components)
-        Value of the dictionary at the previous iteration.
-    x : Tensor of shape (n_samples, n_features)
-        Data matrix.
-    code : Tensor of shape (n_samples, n_components)
-        Sparse coding of the data against which to optimize the dictionary.
-    random_seed : int
-        Seed for randomly initializing the dictionary.
-    positive : bool
-        Whether to enforce positivity when finding the dictionary.
-    eps : float
-        Minimum vector norm before considering "degenerate"
+
+    Args:
+        dictionary:  Tensor of shape (n_features, n_components) Value of the dictionary at the previous iteration.
+        x: Tensor of shape (n_samples, n_components)
+            Sparse coding of the data against which to optimize the dictionary.
+        code:  Tensor of shape (n_samples, n_components)
+            Sparse coding of the data against which to optimize the dictionary.
+        positive: Whether to enforce positivity when finding the dictionary.
+        eps: Minimum vector norm before considering "degenerate"
+        rng: torch.Generator for initialization of dictionary and code.
+
+    Returns:
+
     """
     n_components = dictionary.size(1)
-    if random_seed is not None:
-        torch.manual_seed(random_seed)
 
     # Residuals
     R = x - torch.matmul(code, dictionary.T)  # (n_samples, n_features)
@@ -64,7 +62,7 @@ def update_dict(dictionary: torch.Tensor, x: torch.Tensor, code: torch.Tensor,
         # Re-scale k'th atom
         atom_norm = dictionary[:, k].norm()
         if atom_norm < eps:
-            dictionary[:, k].normal_()
+            dictionary[:, k].normal_(generator=rng)
 
             if positive:
                 # if all negative then the clamped output will be zero vector.
@@ -102,15 +100,15 @@ def update_dict_ridge(x, code, lambd=1e-4):
     return V
 
 
-def dict_evaluate(x: torch.Tensor, weight: torch.Tensor, alpha: float, **kwargs):
+def dict_evaluate(x: torch.Tensor, weight: torch.Tensor, alpha: float, rng: torch.Generator, **kwargs):
     x = x.to(weight.device)
-    Z = sparse_encode(x, weight, alpha, **kwargs)
+    Z = sparse_encode(x, weight, alpha, rng=rng, **kwargs)
     loss = lasso_loss(x, Z, weight, alpha)
     return loss
 
 
 def sparse_encode(x: torch.Tensor, weight: torch.Tensor, alpha: float = 0.1,
-                  z0=None, algorithm='ista', init=None,
+                  z0=None, algorithm='ista', init=None, rng: torch.Generator = None,
                   **kwargs):
     n_samples = x.size(0)
     n_components = weight.size(1)
@@ -123,26 +121,26 @@ def sparse_encode(x: torch.Tensor, weight: torch.Tensor, alpha: float = 0.1,
             init = _init_defaults.get(algorithm, 'zero')
         elif init == 'zero' and algorithm == 'iter-ridge':
             warnings.warn("Iterative Ridge should not be zero-initialized.")
-        z0 = initialize_code(x, weight, alpha, mode=init)
+        z0 = initialize_code(x, weight, alpha, mode=init, rng=rng)
 
     # perform inference
     match algorithm:
         case 'cd':
             z = coord_descent(x, weight, z0, alpha, **kwargs)
         case 'ista':
-            z = ista(x, z0, weight, alpha, **kwargs)
+            z = ista(x, z0, weight, alpha, rng=rng, **kwargs)
         case _:
             raise ValueError("invalid algorithm parameter '{}'.".format(algorithm))
     return z
 
 
-def dict_learning(x, n_components, alpha=1.0, constrained=True, persist=False,
-                  lambd=1e-2, steps=60, device='cpu', progbar=True, random_seed=None,
+def dict_learning(x, n_components, *, alpha=1.0, constrained=True, persist=False,
+                  lambd=1e-2, steps=60, device='cpu', progbar=True, rng: torch.Generator = None,
                   **solver_kwargs):
     n_samples, n_features = x.shape
     x = x.to(device)
 
-    weight = torch.randn(n_features, n_components, device=device)
+    weight = torch.randn(n_features, n_components, device=device, generator=rng)
     nn.init.orthogonal_(weight)
     # l2(w)
     if constrained:
@@ -154,14 +152,14 @@ def dict_learning(x, n_components, alpha=1.0, constrained=True, persist=False,
         for i in range(steps):
             # infer sparse coefficients and compute loss
 
-            Z = sparse_encode(x, weight, alpha, Z0, **solver_kwargs)
+            Z = sparse_encode(x, weight, alpha, Z0, rng=rng, **solver_kwargs)
             losses[i] = lasso_loss(x, Z, weight, alpha)
             if persist:
                 Z0 = Z
 
             # update dictionary
             if constrained:
-                weight = update_dict(weight, x, Z, positive=True, random_seed=random_seed)
+                weight = update_dict(weight, x, Z, positive=True, rng=rng)
             else:
                 weight = update_dict_ridge(x, Z, lambd=lambd)
 
@@ -172,32 +170,41 @@ def dict_learning(x, n_components, alpha=1.0, constrained=True, persist=False,
     return weight, losses
 
 
-def get_concentrations_helper(od_flatten, stain_matrix, regularizer=0.01, method='ista'):
-    """
-    Estimate concentration matrix given an image and stain matrix.
-    2 x (H*W)
+def get_concentrations_helper(od_flatten, stain_matrix, regularizer=0.01, method='ista', rng: torch.Generator = None):
+    """Helper function to estimate concentration matrix given an image and stain matrix with shape: 2 x (H*W)
+
+    Args:
+        od_flatten: Flattened optical density vectors in shape of B x (H*W) x C (H and W dimensions flattened).
+        stain_matrix: the computed stain matrices in shape of B x num_stain x input channel
+        regularizer: regularization term if ISTA algorithm is used
+        method: which method to compute the concentration: coordinate descent ('cd') or iterative-shrinkage soft
+            thresholding algorithm ('ista')
+        rng: torch.Generator for random initializations
+    Returns:
+        computed concentration: B x num_stains x num_pixel_in_tissue_mask
     """
 
     match method:
         case 'cd':
             return coord_descent(od_flatten, stain_matrix.T, alpha=regularizer).T  # figure out pylasso equivalent
         case 'ista':
-            return ista(od_flatten, 'ridge', stain_matrix.T, alpha=regularizer).T
+            return ista(od_flatten, 'ridge', stain_matrix.T, alpha=regularizer, rng=rng).T
 
     raise NotImplementedError(f"{method} is not a valid optimizer")
 
 
-def get_concentrations(image, stain_matrix, regularizer=0.01, algorithm='ista'):
-    """
-    Estimate concentration matrix given an image and stain matrix.
-    Args:
-        image: BCHW
-        stain_matrix: B x num_stain x input channel
-        regularizer:
-        algorithm:
+def get_concentrations(image, stain_matrix, regularizer=0.01, algorithm='ista', rng: torch.Generator = None):
+    """Estimate concentration matrix given an image and stain matrix.
 
+    Args:
+        image: batched image(s) in shape of BxCxHxW
+        stain_matrix: B x num_stain x input channel
+        regularizer: regularization term if ISTA algorithm is used
+        algorithm: which method to compute the concentration: coordinate descent ('cd') or iterative-shrinkage soft
+            thresholding algorithm ('ista')
+        rng: torch.Generator for random initializations
     Returns:
-        concentration matrix: B x num_stains x num_pixel_in_mask
+        concentration matrix: B x num_stains x num_pixel_in_tissue_mask
     """
     device = image.device
     stain_matrix = stain_matrix.to(device)
@@ -207,6 +214,6 @@ def get_concentrations(image, stain_matrix, regularizer=0.01, algorithm='ista'):
     od_flatten = od.flatten(start_dim=2, end_dim=-1).permute(0, 2, 1)
     result = list()
     for od_single, stain_mat_single in zip(od_flatten, stain_matrix):
-        result.append(get_concentrations_helper(od_single, stain_mat_single, regularizer, algorithm))
+        result.append(get_concentrations_helper(od_single, stain_mat_single, regularizer, algorithm, rng=rng))
     # get_concentrations_helper(od_flatten, stain_matrix, regularizer, method)
     return torch.stack(result)

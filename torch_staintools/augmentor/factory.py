@@ -8,8 +8,10 @@ AUG_TYPE_SUPPORTED = Literal[AUG_TYPE_VAHADANE, AUG_TYPE_MACENKO]
 
 
 class AugmentorBuilder:
-    """Factory Builder for all supported normalizers: reinhard, macenko, and vahadane
+    """Factory Builder for all supported normalizers: macenko/vahadane
 
+    For any non-stain separation-based augmentation, the factory builders can be integrated here for a unified
+    interface.
     """
 
     @staticmethod
@@ -30,7 +32,7 @@ class AugmentorBuilder:
         Args:
             method: Name of stain normalization algorithm. Support `macenko` and `vahadane`
             reconst_method: how to compute concentration from stain matrix. default ista
-            rng: random seed for augmentation
+            rng: random seed for augmentation and any random initialization may incur.
             target_stain_idx: which stain to augment
             sigma_alpha: alpha sampled from (1-sigma_alpha, 1+sigma_alpha)
             sigma_beta: beta sampled from (-sigma_beta, sigma_beta)
@@ -52,6 +54,7 @@ class AugmentorBuilder:
                                        sigma_alpha=sigma_alpha,
                                        sigma_beta=sigma_beta, luminosity_threshold=luminosity_threshold,
                                        use_cache=use_cache,
+                                       regularizer=regularizer,
                                        cache_size_limit=cache_size_limit, device=device, load_path=load_path)
             case _:
                 raise NotImplementedError(f"{method} not implemented.")

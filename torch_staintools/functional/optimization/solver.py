@@ -61,6 +61,14 @@ def coord_descent(x, W, z0=None, alpha=1.0, lambda1=0.01, maxiter=1000, tol=1e-6
 
 
 def _lipschitz_constant(W):
+    """find the Lipscitz constant to compute the learning rate in ISTA
+
+    Args:
+        W: weights w in f(z) = ||Wz - x||^2
+
+    Returns:
+
+    """
     # L = torch.linalg.norm(W, ord=2) ** 2
     # W has nan
     WtW = torch.matmul(W.t(), W)
@@ -77,9 +85,28 @@ def _lipschitz_constant(W):
 
 
 def ista(x, z0, weight, alpha=1.0, fast=True, lr='auto', maxiter=50,
-         tol=1e-5, lambda1=0.01, verbose=False):
+         tol=1e-5, lambda1=0.01, verbose=False, rng: torch.Generator = None):
+    """ISTA solver
+
+    Args:
+        x: data
+        z0: code, or the initialization mode of the code.
+        weight: dict
+        alpha: eps term for code initialization
+        fast: whether to use FISTA (fast-ista) instead of ISTA
+        lr: learning rate/step size. If `auto` then it will be specified by
+            the Lipschitz constant of f(z) = ||Wz - x||^2
+        maxiter: max number of iteration if not converge.
+        tol: tolerance term of convergence test.
+        lambda1: lambda of the sparse terms.
+        verbose: whether to print the progress
+        rng: torch.Generator for random initialization
+
+    Returns:
+
+    """
     if type(z0) is str:
-        z0 = initialize_code(x, weight, alpha, z0)
+        z0 = initialize_code(x, weight, alpha, z0, rng=rng)
 
     if lr == 'auto':
         # set lr based on the maximum eigenvalue of W^T @ W; i.e. the

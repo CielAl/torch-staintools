@@ -52,7 +52,9 @@ def postprocess(image_tensor): return convert_image_dtype(image_tensor, torch.ui
 
 
 # ######### Vahadane
-normalizer_vahadane = NormalizerBuilder.build('vahadane', reconst_method='ista')
+normalizer_vahadane = NormalizerBuilder.build('vahadane', reconst_method='ista', use_cache=True,
+                                              rng=1,
+                                              )
 normalizer_vahadane = normalizer_vahadane.to(device)
 normalizer_vahadane.fit(target_tensor)
 # the normalizer has no parameters so torch.no_grad() has no effect. Leave it here for future demo of models
@@ -62,7 +64,7 @@ with torch.no_grad():
 
         tile_single = tile_single.unsqueeze(0)
         # BCHW - scaled to [0 1] torch.float32
-        test_out = normalizer_vahadane(tile_single)
+        test_out = normalizer_vahadane(tile_single, cache_keys=[idx])
         test_out = postprocess(test_out)
         plt.imshow(test_out)
         plt.title(f"Vahadane: {idx}")
@@ -106,16 +108,20 @@ with torch.no_grad():
 # %timeit normalizer_reinhard(norm_tensor)
 
 # Augmentation
+
 augmentor = AugmentorBuilder.build('vahadane',
                                    rng=314159,
                                    sigma_alpha=0.2,
-                                   sigma_beta=0.2, target_stain_idx=(0, 1)
+                                   sigma_beta=0.2, target_stain_idx=(0, 1),
+                                   use_cache=True,
                                    )
+# move augmentor to the device
+augmentor.to(device)
 with torch.no_grad():
     for idx, tile_single in enumerate(tqdm(tiles)):
         tile_single = tile_single.unsqueeze(0).contiguous()
         # BCHW - scaled to [0 1] torch.float32
-        test_out_tensor = augmentor(tile_single)
+        test_out_tensor = augmentor(tile_single, cache_keys=[idx])
         test_out = postprocess(test_out_tensor)
         plt.imshow(test_out)
         plt.title(f"Augmented: {idx}")

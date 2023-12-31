@@ -1,31 +1,27 @@
-from torch import nn
 import torch
 from typing import Optional, Sequence, Tuple, Hashable, List
-from ..functional.utility.implementation import default_device
-# from operator import mul
-# from functools import reduce
-# import multiprocessing as mp
-# import ctypes
-# import numpy as np
 from ..functional.stain_extraction.factory import build_from_name
 from ..functional.optimization.dict_learning import get_concentrations
 from ..functional.stain_extraction.extractor import BaseExtractor
-from ..functional.utility.implementation import transpose_trailing, img_from_concentration
+from ..functional.utility.implementation import transpose_trailing, img_from_concentration, default_rng
 from ..functional.tissue_mask import get_tissue_mask
 from ..cache.tensor_cache import TensorCache
+from ..base_module.base import CachedRNGModule
 from ..loggers import GlobalLoggers
 
 logger = GlobalLoggers.instance().get_logger(__name__)
 
 
-class Augmentor(nn.Module):
+class Augmentor(CachedRNGModule):
+    """Basic augmentation object as a nn.Module with stain matrices cache.
+
+    """
     device: torch.device
 
-    _tensor_cache: TensorCache
-    CACHE_FIELD: str = '_tensor_cache'
+    # _tensor_cache: TensorCache
+    # CACHE_FIELD: str = '_tensor_cache'
 
     target_stain_idx: Optional[Sequence[int]]
-    rng: torch.Generator
 
     reconst_method: str
     get_stain_matrix: BaseExtractor  # can be any callable following the signature of BaseExtractor's __call__
@@ -37,13 +33,6 @@ class Augmentor(nn.Module):
     num_stains: int
     luminosity_threshold: float
     regularizer: float
-
-    @staticmethod
-    def _init_cache(use_cache: bool, cache_size_limit: int, device: Optional[torch.device] = None,
-                    load_path: Optional[str] = None) -> Optional[TensorCache]:
-        if not use_cache:
-            return None
-        return TensorCache.build(size_limit=cache_size_limit, device=device, path=load_path)
 
     def __init__(self, get_stain_matrix: BaseExtractor, reconst_method: str = 'ista',
                  rng: Optional[int | torch.Generator] = None,
@@ -69,13 +58,13 @@ class Augmentor(nn.Module):
                 If None, all image pixels will be considered as tissue for stain matrix/concentration computation.
             regularizer: the regularizer to compute concentration used in ISTA or CD algorithm.
             cache: the external cache object
+
         """
-        super().__init__()
+        super().__init__(cache, device, rng)
         self.reconst_method = reconst_method
         self.get_stain_matrix = get_stain_matrix
 
         self.target_stain_idx = target_stain_idx
-        self.rng = Augmentor._default_rng(rng)
         self.sigma_alpha = sigma_alpha
         self.sigma_beta = sigma_beta
 
@@ -83,62 +72,18 @@ class Augmentor(nn.Module):
         self.luminosity_threshold = luminosity_threshold
         self.regularizer = regularizer
 
-        self._tensor_cache = cache
-        self.device = default_device(device)
-
-    def to(self, device: torch.device):
-        self.device = device
-        if self.cache_initialized():
-            self.tensor_cache.to(device)
-        return super().to(device)
-
-    @property
-    def cache_size_limit(self) -> int:
-        if self.cache_initialized():
-            return self.tensor_cache.size_limit
-        return 0
-
-    def dump_cache(self, path: str):
-        assert self.cache_initialized()
-        self.tensor_cache.dump(path)
-
-    @staticmethod
-    def _default_rng(rng: Optional[torch.Generator | int]):
-        if rng is None:
-            return torch.Generator()
-        if isinstance(rng, int):
-            return torch.Generator().manual_seed(rng)
-        assert isinstance(rng, torch.Generator)
-        return rng
-
-    # @staticmethod
-    # def new_cache(shape):
-    #     """
-    #     Args:
-    #         shape:
-    #
-    #     Returns:
-    #
-    #     """
-    #     # Todo map the key to the corresponding cached data -- cached in file or to memory?
-    #     #
-    #     shared_array_base = mp.Array(ctypes.c_float, reduce(mul, shape))
-    #     shared_array = np.ctypeslib.as_array(shared_array_base.get_obj())
-    #     shared_array = shared_array.reshape(*shape)
-    #     return shared_array
-
     @staticmethod
     def __concentration_selected(target_concentration: torch.Tensor,
                                  target_stain_idx: Optional[Sequence[int]],
-                                 ):
+                                 ) -> torch.Tensor:
         """Return concentration of selected stain channels
 
         Args:
             target_concentration: B x num_stains x num_pixel_in_mask
-            target_stain_idx:
+            target_stain_idx: Basic indices of the selected stains. If None then returns all stain.
 
         Returns:
-
+            The view of the selected stain (no copies)
         """
         if target_stain_idx is None:
             return target_concentration
@@ -153,10 +98,12 @@ class Augmentor(nn.Module):
         Args:
             target_concentration: B x num_stains x num_pixel
             tissue_mask: mask of tissue regions. only augment concentration within the mask
-            alpha:
-            beta:
-        Returns:
+            alpha: alpha value for augmentation
+            beta: beta value for augmentation
 
+        Returns:
+            augmented concentration. The result is in-place (as for the target_concentration here). It might be
+            cloned beforehand in prior.
         """
         alpha = alpha.to(target_concentration.device)
         beta = beta.to(target_concentration.device)
@@ -170,8 +117,20 @@ class Augmentor(nn.Module):
         return target_concentration
 
     @staticmethod
-    def randn_range(*size, low, high, rng: torch.Generator):
-        rand_num = torch.randn(*size, generator=rng)
+    def randn_range(*size, low, high, device: torch.device, rng: torch.Generator):
+        """Helper function to get the uniform random float within low/high given the torch.Generator
+
+        Args:
+            *size: size of the random number
+            low: lower bound (inclusive)
+            high: upper bound (inclusive)
+            device: device to create the random numbers
+            rng: random number generator
+
+        Returns:
+            random sample given the size and the bounds using the specified rng.
+        """
+        rand_num = torch.randn(*size, device=device, generator=rng)
         return low + (high - low) * rand_num
 
     @staticmethod
@@ -194,13 +153,23 @@ class Augmentor(nn.Module):
         assert target_concentration_selected.ndimension() == 3
         b, num_stain, _ = target_concentration_selected.shape
         size = (b, num_stain, 1)  # torch.randn(b, num_stain, 1, generator=rng)
-        alpha = Augmentor.randn_range(*size, low=1 - sigma_alpha, high=1 + sigma_alpha, rng=rng)
-        beta = Augmentor.randn_range(*size, low=-sigma_beta, high=sigma_beta, rng=rng)
+        device = target_concentration_selected.device
+        alpha = Augmentor.randn_range(*size, low=1 - sigma_alpha, high=1 + sigma_alpha, device=device, rng=rng)
+        beta = Augmentor.randn_range(*size, low=-sigma_beta, high=sigma_beta, device=device, rng=rng)
 
         return alpha, beta
 
     @staticmethod
     def __inplace_tensor(target_concentration, inplace: bool) -> torch.Tensor:
+        """Helper function to get the clone or the original concentration.
+
+        Args:
+            target_concentration: concentration tensor
+            inplace: bool. If True then returns itself, otherwise returns a clone.
+
+        Returns:
+            The original or cloned concentration tensor
+        """
         if not inplace:
             target_concentration = target_concentration.clone()
         return target_concentration
@@ -238,80 +207,12 @@ class Augmentor(nn.Module):
                                                                   alpha=alpha, beta=beta)
         return target_concentration
 
-    @staticmethod
-    def _stain_mat_kwargs_helper(luminosity_threshold,
-                                 num_stains,
-                                 regularizer,
-                                 **stain_mat_kwargs):
-        arg_dict = {
-            'luminosity_threshold': luminosity_threshold,
-            'num_stains': num_stains,
-            'regularizer': regularizer,
-        }
-        stain_mat_kwargs = {k: v for k, v in stain_mat_kwargs.items()}
-        stain_mat_kwargs.update(arg_dict)
-        return stain_mat_kwargs
-
-    @staticmethod
-    def stain_mat_from_cache(cache: TensorCache, *,
-                             cache_keys: List[Hashable],
-                             get_stain_matrix: BaseExtractor,
-                             target,
-                             luminosity_threshold,
-                             num_stains,
-                             regularizer,
-                             **stain_mat_kwargs) -> torch.Tensor:
-        cache_func_kwargs = Augmentor._stain_mat_kwargs_helper(luminosity_threshold, num_stains, regularizer,
-                                                               **stain_mat_kwargs)
-        stain_mat_list = cache.get_batch(cache_keys, get_stain_matrix, target, **cache_func_kwargs)
-        if isinstance(stain_mat_list, torch.Tensor):
-            return stain_mat_list
-
-        return torch.stack(stain_mat_list, dim=0)
-
-    def _tensor_cache_helper(self) -> Optional[TensorCache]:
-        return getattr(self, Augmentor.CACHE_FIELD)
-
-    def cache_initialized(self):
-        return hasattr(self, Augmentor.CACHE_FIELD) and self._tensor_cache_helper() is not None
-
-    @property
-    def tensor_cache(self) -> Optional[TensorCache]:
-        return self._tensor_cache_helper()
-
-    def stain_matrix_helper(self,
-                            *,
-                            cache_keys: Optional[List[Hashable]],
-                            get_stain_matrix: BaseExtractor,
-                            target,
-                            luminosity_threshold,
-                            num_stains,
-                            regularizer,
-                            **stain_mat_kwargs) -> torch.Tensor:
-        if not self.cache_initialized() or cache_keys is None:
-            logger.debug(f'{self.cache_initialized()} + {cache_keys is None} - no cache')
-            return get_stain_matrix(target, luminosity_threshold=luminosity_threshold,
-                                    num_stains=num_stains,
-                                    regularizer=regularizer,
-                                    **stain_mat_kwargs)
-        # if use cache
-        assert self.cache_initialized(), f"Attempt to fetch data from cache but cache is not initialized"
-        assert cache_keys is not None, f"Attempt to fetch data from cache but key is not given"
-        # move fetched stain matrix to the same device of the target
-        logger.debug(f"{cache_keys[0:3]}. cache initialized")
-        return Augmentor.stain_mat_from_cache(cache=self.tensor_cache, cache_keys=cache_keys,
-                                              get_stain_matrix=get_stain_matrix,
-                                              target=target,
-                                              luminosity_threshold=luminosity_threshold, num_stains=num_stains,
-                                              regularizer=regularizer, **stain_mat_kwargs,
-                                              ).to(target.device)
-
     def forward(self, target: torch.Tensor, cache_keys: Optional[List[Hashable]] = None, **stain_mat_kwargs):
         """
 
         Args:
             target: input tensor to augment. Shape B x C x H x W and intensity range is [0, 1].
-            cache_keys: a unique key point the input entry to the cached stain matrix. `None` means no cache.
+            cache_keys: unique keys point the input batch to the cached stain matrices. `None` means no cache.
             **stain_mat_kwargs: all extra keyword arguments other than regularizer/num_stains/luminosity_threshold set
                 in __init__.
 
@@ -320,15 +221,18 @@ class Augmentor(nn.Module):
         """
         # stain_matrix_target -- B x num_stain x num_input_color_channel
         # todo cache
-        target_stain_matrix = self.stain_matrix_helper(cache_keys=cache_keys, get_stain_matrix=self.get_stain_matrix,
-                                                       target=target, luminosity_threshold=self.luminosity_threshold,
-                                                       num_stains=self.num_stains,
-                                                       regularizer=self.regularizer,
-                                                       **stain_mat_kwargs)
+        get_stain_mat_partial = self.get_stain_matrix.get_partial(luminosity_threshold=self.luminosity_threshold,
+                                                                  num_stains=self.num_stains,
+                                                                  regularizer=self.regularizer,
+                                                                  rng=self.rng,
+                                                                  **stain_mat_kwargs)
+
+        target_stain_matrix = self.tensor_from_cache(cache_keys=cache_keys, func_partial=get_stain_mat_partial,
+                                                     target=target)
 
         #  B x num_stains x num_pixel_in_mask
         concentration = get_concentrations(target, target_stain_matrix, regularizer=self.regularizer,
-                                           algorithm=self.reconst_method, )
+                                           algorithm=self.reconst_method, rng=self.rng)
         tissue_mask = get_tissue_mask(target, luminosity_threshold=self.luminosity_threshold, throw_error=False,
                                       true_when_empty=False)
         concentration_aug = Augmentor.augment(target_concentration=concentration,
@@ -374,7 +278,7 @@ class Augmentor(nn.Module):
                 module for more details.
 
         Returns:
-
+            Augmentor.
         """
         method = method.lower()
         extractor = build_from_name(method)
@@ -383,4 +287,4 @@ class Augmentor(nn.Module):
         return cls(extractor, reconst_method=reconst_method, rng=rng, target_stain_idx=target_stain_idx,
                    sigma_alpha=sigma_alpha, sigma_beta=sigma_beta,
                    luminosity_threshold=luminosity_threshold, regularizer=regularizer,
-                   cache=cache, device=device)
+                   cache=cache, device=device).to(device)

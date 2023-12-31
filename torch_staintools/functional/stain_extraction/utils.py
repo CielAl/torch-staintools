@@ -2,10 +2,7 @@ import torch
 
 
 def percentile(t: torch.Tensor, q: float, dim: int) -> torch.Tensor:
-    """
-    Author: addapted from https://gist.github.com/spezold/42a451682422beb42bc43ad0c0967a30
-    """
-    """
+    """ Author: adapted from https://gist.github.com/spezold/42a451682422beb42bc43ad0c0967a30
     Return the ``q``-th percentile of the flattenepip d input tensor's data.
 
     CAUTION:

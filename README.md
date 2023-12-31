@@ -83,6 +83,8 @@ augmentor = AugmentorBuilder.build('vahadane',
                                    # if specified, the augmentor will load the cached stain matrices from file system.
                                    load_path=None,
                                    )
+# move augmentor to the corresponding device
+augmentor = augmentor.to(device)
 
 num_augment = 5
 # multiple copies of different random augmentation of the same tile may be generated

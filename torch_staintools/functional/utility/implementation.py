@@ -34,4 +34,32 @@ def img_from_concentration(concentration: torch.Tensor,
 
 
 def default_device(device: Optional[torch.device] = None) -> Optional[torch.device]:
+    """Default device if device is not given.
+
+    Args:
+        device: input device.
+
+    Returns:
+        torch.device('cpu') if None, otherwise the input device itself.
+    """
     return torch.device('cpu') if device is None else device
+
+
+def default_rng(rng: Optional[torch.Generator | int], device: Optional[torch.device]) -> Optional[torch.Generator]:
+    """Helper function to get the default random number generator (torch.Generator)
+
+    Args:
+        rng: Optional. int seed or torch.Generator. If not set (None) then return None.
+            Identity mapping if input is already a generator. Create a new generator and specify
+            the seed if an int seed is given.
+        device: device of the rng
+
+    Returns:
+        torch.Generator
+    """
+    if rng is None:
+        return None
+    if isinstance(rng, int):
+        return torch.Generator(device=device).manual_seed(rng)
+    assert isinstance(rng, torch.Generator)
+    return rng

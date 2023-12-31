@@ -13,15 +13,15 @@ class TissueMaskException(Exception):
 def get_tissue_mask(image: torch.Tensor, luminosity_threshold=0.8,
                     throw_error: bool = True,
                     true_when_empty: bool = False) -> torch.Tensor:
-    """
-    Get a binary mask where true denotes pixels with a luminosity less than the specified threshold.
+    """Get a binary mask where true denotes pixels with a luminosity less than the specified threshold.
 
     Typically, we use to identify tissue in the image and exclude the bright white background.
     If `luminosity_threshold` is None then entire image region is considered as tissue
 
     Args:
         image: RGB [0, 1]. -> BCHW
-        luminosity_threshold: threshold to get the tissue. If None then everywhere is considered as tissue.
+        luminosity_threshold: threshold of luminosity in range of [0, 1].  Pixels with intensity within (0, threshold)
+            are considered as tissue. If None then all pixels are considered as tissue, effectively bypass this step.
         throw_error: whether to throw error
         true_when_empty: if True, then return an all-True mask if no tissue are detected. Effectively bypass the
             tissue detection. Note that in certain cases, both Vahadane and Macenko may either obtain low quality
@@ -51,17 +51,22 @@ def get_tissue_mask(image: torch.Tensor, luminosity_threshold=0.8,
 
 
 # todo refactor later
-def get_tissue_mask_np(I, luminosity_threshold=0.8,  throw_error: bool = True):
-    """
-    Get a binary mask where true denotes pixels with a luminosity less than the specified threshold.
+def get_tissue_mask_np(I: np.ndarray, luminosity_threshold: float = 0.8,  throw_error: bool = True) -> np.ndarray:
+    """Get a binary mask where true denotes pixels with a luminosity less than the specified threshold.
+
+    A numpy version for preprocessing purposes. Note that both Macenko and Vahadane may fail due to mathematical
+    instability to process image that is mostly bright background and no tissue at all.
+
     Typically we use to identify tissue in the image and exclude the bright white background.
+
     Args:
-        I:
-        luminosity_threshold:
-        throw_error:
+        I: numpy image. H x W x C. Input will be automatically converted to uint8 format and range [0, 255]
+        luminosity_threshold: threshold of luminosity in range of [0, 1].  Pixels with intensity within (0, threshold)
+            are considered as tissue. If None then all pixels are considered as tissue, effectively bypass this step.
+        throw_error: Whether to throw an error if no tissue is found.
 
     Returns:
-
+        binary mask in H x W
     """
     I = img_as_ubyte(I)
     I_LAB = cv2.cvtColor(I, cv2.COLOR_RGB2LAB)
