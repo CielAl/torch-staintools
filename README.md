@@ -3,6 +3,7 @@
 ## Description
 * Stain Normalization (Reinhard, Macenko, and Vahadane) for pytorch. Input tensors (fit and transform) must be in shape of `NxCxHxW`, with value scaled to [0, 1] in format of torch.float32.
 * Stain Augmentation using Macenko and Vahadane as stain extraction.
+* Fast normalization/augmentation on GPU with stain matrices caching.
 * Simulate the workflow in [StainTools library](https://github.com/Peter554/StainTools) but use the Iterative Shrinkage Thresholding Algorithm (ISTA), or optionally, the coordinate descent (CD) to solve the dictionary learning for stain matrix/concentration computation in Vahadane or Macenko (stain concentration only) algorithm. The implementation of ISTA and CD are derived from Cédric Walker's [torchvahadane](https://github.com/cwlkr/torchvahadane)
 * No SPAMS requirement (which is a dependency in StainTools).
 
@@ -101,6 +102,20 @@ for _ in range(num_augment):
 # dump the cache of stain matrices for future usage
 augmentor.dump_cache('./cache.pickle')
 ```
+## Stain Matrix Caching
+As elaborated in the below in the running time benchmark of fitting, computation of stain matrix could be time-consuming.
+Therefore, for both `Augmentor` and `Normalizer`, an in-memory (device-specified) cache is implemented to store the previously computed stain matrices (typically with size 2 x 3 in H&E/RGB cases).
+To enable the feature, the `use_cache` must be enabled, should you use the factory builders to instantiate the `Normalizer` or `Augmentor`.
+Upon the normalization/augmentation procedure, a unique cache_key corresponding to the image input must be defined (e.g., file name).
+Since both `Normalizer` and `Augmentor` are designed as `torch.nn.Module` to accept batch inputs (tensors of shape B x C x H x W), a list of cache_keys must be given along with the batch image
+inputs during the forward passing:
+```
+normalizer_vahadane(input_batch, cache_keys=list_of_keys_corresponding_to_input_batch)
+augmentor(input_batch, cache_keys=list_of_keys_corresponding_to_input_batch)
+
+```
+The next time `Normalizer` or `Augmentor` process the images, the corresponding stain matrices will be queried and fetched from cache if they are stored already, rather than recomputing from scratch.
+
 
 ## Installation
 `pip install git+https://github.com/CielAl/torch-staintools.git`
