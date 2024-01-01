@@ -52,7 +52,7 @@ jobs:
         
       - name: compile
         run: |
-            cd docs/src
+            cd ./docs
             make html
 
       - name: Deploy
