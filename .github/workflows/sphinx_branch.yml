@@ -57,6 +57,8 @@ jobs:
             
       - name: Create .nojekyll file
         run: |
+          pwd
+          touch ./.nojekyll
           touch ./docs/_build/html/.nojekyll
           touch ./docs/.nojekyll
     
