@@ -1,7 +1,6 @@
 from .base import Cache
 from typing import Dict, Hashable, Optional
 import torch
-import os
 import numpy as np
 from ..functional.utility.implementation import default_device
 from ..loggers import GlobalLoggers
