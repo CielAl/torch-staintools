@@ -53,7 +53,7 @@ jobs:
       - name: compile
         run: |
             cd ./docs
-            sphinx-build -b html . _build/html
+            sphinx-build -b html ./source _build/html
             
       - name: Create .nojekyll file
         run: |
