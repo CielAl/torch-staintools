@@ -46,7 +46,10 @@ jobs:
 
       - name: print pwd
         run: pwd
-
+        
+      - name: list files
+        run: ls -al
+        
       - name: compile
         run: |
             cd doc/src
