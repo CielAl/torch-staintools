@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>torch_staintools.functional.tissue_mask package &mdash; Torch-StainTools 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=8d563738"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="torch_staintools.functional.utility package" href="torch_staintools.functional.utility.html" />
+    <link rel="prev" title="torch_staintools.functional.stain_extraction package" href="torch_staintools.functional.stain_extraction.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Torch-StainTools
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="torch_staintools.augmentor.html">torch_staintools.augmentor package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="torch_staintools.normalizer.html">torch_staintools.normalizer package</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="torch_staintools.functional.html">torch_staintools.functional package</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="torch_staintools.functional.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="torch_staintools.functional.conversion.html">torch_staintools.functional.conversion package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="torch_staintools.functional.optimization.html">torch_staintools.functional.optimization package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="torch_staintools.functional.stain_extraction.html">torch_staintools.functional.stain_extraction package</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">torch_staintools.functional.tissue_mask package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#module-torch_staintools.functional.tissue_mask">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="torch_staintools.functional.utility.html">torch_staintools.functional.utility package</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="torch_staintools.functional.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_staintools.functional.html#module-torch_staintools.functional.eps">torch_staintools.functional.eps module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_staintools.functional.html#module-torch_staintools.functional">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="torch_staintools.cache.html">torch_staintools.cache package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="torch_staintools.base_module.html">torch_staintools.base_module package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Torch-StainTools</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="torch_staintools.functional.html">torch_staintools.functional package</a></li>
+      <li class="breadcrumb-item active">torch_staintools.functional.tissue_mask package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/torch_staintools.functional.tissue_mask.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="torch-staintools-functional-tissue-mask-package">
+<h1>torch_staintools.functional.tissue_mask package<a class="headerlink" href="#torch-staintools-functional-tissue-mask-package" title="Link to this heading"></a></h1>
+<section id="module-torch_staintools.functional.tissue_mask">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-torch_staintools.functional.tissue_mask" title="Link to this heading"></a></h2>
+<dl class="py exception">
+<dt class="sig sig-object py" id="torch_staintools.functional.tissue_mask.TissueMaskException">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torch_staintools.functional.tissue_mask.</span></span><span class="sig-name descname"><span class="pre">TissueMaskException</span></span><a class="headerlink" href="#torch_staintools.functional.tissue_mask.TissueMaskException" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="torch_staintools.functional.tissue_mask.get_tissue_mask">
+<span class="sig-prename descclassname"><span class="pre">torch_staintools.functional.tissue_mask.</span></span><span class="sig-name descname"><span class="pre">get_tissue_mask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">luminosity_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throw_error</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">true_when_empty</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#torch_staintools.functional.tissue_mask.get_tissue_mask" title="Link to this definition"></a></dt>
+<dd><p>Get a binary mask where true denotes pixels with a luminosity less than the specified threshold.</p>
+<p>Typically, we use to identify tissue in the image and exclude the bright white background.
+If <cite>luminosity_threshold</cite> is None then entire image region is considered as tissue</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>image</strong> – RGB [0, 1]. -&gt; BCHW</p></li>
+<li><p><strong>luminosity_threshold</strong> – threshold of luminosity in range of [0, 1].  Pixels with intensity within (0, threshold)
+are considered as tissue. If None then all pixels are considered as tissue, effectively bypass this step.</p></li>
+<li><p><strong>throw_error</strong> – whether to throw error</p></li>
+<li><p><strong>true_when_empty</strong> – if True, then return an all-True mask if no tissue are detected. Effectively bypass the
+tissue detection. Note that in certain cases, both Vahadane and Macenko may either obtain low quality
+results or even crash if the nearly entire input image is background.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>mask (B1HW)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="torch_staintools.functional.tissue_mask.get_tissue_mask_np">
+<span class="sig-prename descclassname"><span class="pre">torch_staintools.functional.tissue_mask.</span></span><span class="sig-name descname"><span class="pre">get_tissue_mask_np</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">I</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">luminosity_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throw_error</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#torch_staintools.functional.tissue_mask.get_tissue_mask_np" title="Link to this definition"></a></dt>
+<dd><p>Get a binary mask where true denotes pixels with a luminosity less than the specified threshold.</p>
+<p>A numpy version for preprocessing purposes. Note that both Macenko and Vahadane may fail due to mathematical
+instability to process image that is mostly bright background and no tissue at all.</p>
+<p>Typically we use to identify tissue in the image and exclude the bright white background.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>I</strong> – numpy image. H x W x C. Input will be automatically converted to uint8 format and range [0, 255]</p></li>
+<li><p><strong>luminosity_threshold</strong> – threshold of luminosity in range of [0, 1].  Pixels with intensity within (0, threshold)
+are considered as tissue. If None then all pixels are considered as tissue, effectively bypass this step.</p></li>
+<li><p><strong>throw_error</strong> – Whether to throw an error if no tissue is found.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>binary mask in H x W</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="torch_staintools.functional.stain_extraction.html" class="btn btn-neutral float-left" title="torch_staintools.functional.stain_extraction package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="torch_staintools.functional.utility.html" class="btn btn-neutral float-right" title="torch_staintools.functional.utility package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, YZ.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

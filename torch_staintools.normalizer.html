@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>torch_staintools.normalizer package &mdash; Torch-StainTools 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=8d563738"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="torch_staintools.functional package" href="torch_staintools.functional.html" />
+    <link rel="prev" title="torch_staintools.augmentor package" href="torch_staintools.augmentor.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Torch-StainTools
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="torch_staintools.augmentor.html">torch_staintools.augmentor package</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">torch_staintools.normalizer package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-torch_staintools.normalizer.base">torch_staintools.normalizer.base module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#torch_staintools.normalizer.base.DataInput"><code class="docutils literal notranslate"><span class="pre">DataInput</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.normalizer.base.DataInput.img"><code class="docutils literal notranslate"><span class="pre">DataInput.img</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.normalizer.base.DataInput.uri"><code class="docutils literal notranslate"><span class="pre">DataInput.uri</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#torch_staintools.normalizer.base.Normalizer"><code class="docutils literal notranslate"><span class="pre">Normalizer</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.normalizer.base.Normalizer.build"><code class="docutils literal notranslate"><span class="pre">Normalizer.build()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.normalizer.base.Normalizer.fit"><code class="docutils literal notranslate"><span class="pre">Normalizer.fit()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.normalizer.base.Normalizer.forward"><code class="docutils literal notranslate"><span class="pre">Normalizer.forward()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.normalizer.base.Normalizer.transform"><code class="docutils literal notranslate"><span class="pre">Normalizer.transform()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-torch_staintools.normalizer.factory">torch_staintools.normalizer.factory module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#torch_staintools.normalizer.factory.NormalizerBuilder"><code class="docutils literal notranslate"><span class="pre">NormalizerBuilder</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.normalizer.factory.NormalizerBuilder.build"><code class="docutils literal notranslate"><span class="pre">NormalizerBuilder.build()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-torch_staintools.normalizer.reinhard">torch_staintools.normalizer.reinhard module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#torch_staintools.normalizer.reinhard.ReinhardNormalizer"><code class="docutils literal notranslate"><span class="pre">ReinhardNormalizer</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.normalizer.reinhard.ReinhardNormalizer._mean_std_helper"><code class="docutils literal notranslate"><span class="pre">ReinhardNormalizer._mean_std_helper()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.normalizer.reinhard.ReinhardNormalizer.build"><code class="docutils literal notranslate"><span class="pre">ReinhardNormalizer.build()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.normalizer.reinhard.ReinhardNormalizer.fit"><code class="docutils literal notranslate"><span class="pre">ReinhardNormalizer.fit()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.normalizer.reinhard.ReinhardNormalizer.forward"><code class="docutils literal notranslate"><span class="pre">ReinhardNormalizer.forward()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.normalizer.reinhard.ReinhardNormalizer.normalize_helper"><code class="docutils literal notranslate"><span class="pre">ReinhardNormalizer.normalize_helper()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.normalizer.reinhard.ReinhardNormalizer.target_means"><code class="docutils literal notranslate"><span class="pre">ReinhardNormalizer.target_means</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.normalizer.reinhard.ReinhardNormalizer.target_stds"><code class="docutils literal notranslate"><span class="pre">ReinhardNormalizer.target_stds</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.normalizer.reinhard.ReinhardNormalizer.transform"><code class="docutils literal notranslate"><span class="pre">ReinhardNormalizer.transform()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-torch_staintools.normalizer.separation">torch_staintools.normalizer.separation module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#torch_staintools.normalizer.separation.StainSeparation"><code class="docutils literal notranslate"><span class="pre">StainSeparation</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.normalizer.separation.StainSeparation.build"><code class="docutils literal notranslate"><span class="pre">StainSeparation.build()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.normalizer.separation.StainSeparation.fit"><code class="docutils literal notranslate"><span class="pre">StainSeparation.fit()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.normalizer.separation.StainSeparation.forward"><code class="docutils literal notranslate"><span class="pre">StainSeparation.forward()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.normalizer.separation.StainSeparation.get_stain_matrix"><code class="docutils literal notranslate"><span class="pre">StainSeparation.get_stain_matrix</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.normalizer.separation.StainSeparation.num_stains"><code class="docutils literal notranslate"><span class="pre">StainSeparation.num_stains</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.normalizer.separation.StainSeparation.regularizer"><code class="docutils literal notranslate"><span class="pre">StainSeparation.regularizer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.normalizer.separation.StainSeparation.repeat_stain_mat"><code class="docutils literal notranslate"><span class="pre">StainSeparation.repeat_stain_mat()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.normalizer.separation.StainSeparation.rng"><code class="docutils literal notranslate"><span class="pre">StainSeparation.rng</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.normalizer.separation.StainSeparation.stain_matrix_target"><code class="docutils literal notranslate"><span class="pre">StainSeparation.stain_matrix_target</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.normalizer.separation.StainSeparation.target_concentrations"><code class="docutils literal notranslate"><span class="pre">StainSeparation.target_concentrations</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.normalizer.separation.StainSeparation.transform"><code class="docutils literal notranslate"><span class="pre">StainSeparation.transform()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-torch_staintools.normalizer">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="torch_staintools.functional.html">torch_staintools.functional package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="torch_staintools.cache.html">torch_staintools.cache package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="torch_staintools.base_module.html">torch_staintools.base_module package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Torch-StainTools</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">torch_staintools.normalizer package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/torch_staintools.normalizer.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="torch-staintools-normalizer-package">
+<h1>torch_staintools.normalizer package<a class="headerlink" href="#torch-staintools-normalizer-package" title="Link to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+<section id="module-torch_staintools.normalizer.base">
+<span id="torch-staintools-normalizer-base-module"></span><h2>torch_staintools.normalizer.base module<a class="headerlink" href="#module-torch_staintools.normalizer.base" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="torch_staintools.normalizer.base.DataInput">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torch_staintools.normalizer.base.</span></span><span class="sig-name descname"><span class="pre">DataInput</span></span><a class="headerlink" href="#torch_staintools.normalizer.base.DataInput" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">TypedDict</span></code></p>
+<p>For future compatibility - e.g., moving average of stain matrix from same wsi which needs uri to identify.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torch_staintools.normalizer.base.DataInput.img">
+<span class="sig-name descname"><span class="pre">img</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Tensor</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Image</span></em><a class="headerlink" href="#torch_staintools.normalizer.base.DataInput.img" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torch_staintools.normalizer.base.DataInput.uri">
+<span class="sig-name descname"><span class="pre">uri</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#torch_staintools.normalizer.base.DataInput.uri" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="torch_staintools.normalizer.base.Normalizer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torch_staintools.normalizer.base.</span></span><span class="sig-name descname"><span class="pre">Normalizer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cache</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="torch_staintools.cache.html#torch_staintools.cache.tensor_cache.TensorCache" title="torch_staintools.cache.tensor_cache.TensorCache"><span class="pre">TensorCache</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">device</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Generator</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torch_staintools.normalizer.base.Normalizer" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="torch_staintools.base_module.html#torch_staintools.base_module.base.CachedRNGModule" title="torch_staintools.base_module.base.CachedRNGModule"><code class="xref py py-class docutils literal notranslate"><span class="pre">CachedRNGModule</span></code></a></p>
+<p>Generic normalizer interface with fit/transform, and the forward call that will at least call transform.</p>
+<p>Note that the inputs are always supposed to be pytorch tensors in BCHW convention.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="torch_staintools.normalizer.base.Normalizer.build">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#torch_staintools.normalizer.base.Normalizer" title="torch_staintools.normalizer.base.Normalizer"><span class="pre">Normalizer</span></a></span></span><a class="headerlink" href="#torch_staintools.normalizer.base.Normalizer.build" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="torch_staintools.normalizer.base.Normalizer.fit">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torch_staintools.normalizer.base.Normalizer.fit" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="torch_staintools.normalizer.base.Normalizer.forward">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#torch_staintools.normalizer.base.DataInput" title="torch_staintools.normalizer.base.DataInput"><span class="pre">DataInput</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torch_staintools.normalizer.base.Normalizer.forward" title="Link to this definition"></a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although the recipe for forward pass needs to be defined within
+this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="torch_staintools.normalizer.base.Normalizer.transform">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwarags</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torch_staintools.normalizer.base.Normalizer.transform" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-torch_staintools.normalizer.factory">
+<span id="torch-staintools-normalizer-factory-module"></span><h2>torch_staintools.normalizer.factory module<a class="headerlink" href="#module-torch_staintools.normalizer.factory" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="torch_staintools.normalizer.factory.NormalizerBuilder">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torch_staintools.normalizer.factory.</span></span><span class="sig-name descname"><span class="pre">NormalizerBuilder</span></span><a class="headerlink" href="#torch_staintools.normalizer.factory.NormalizerBuilder" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Factory Builder for all supported normalizers: reinhard, macenko, and vahadane</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="torch_staintools.normalizer.factory.NormalizerBuilder.build">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'reinhard'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'vahadane'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'macenko'</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reconst_method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'ista'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_stains</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">luminosity_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regularizer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Generator</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_cache</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_size_limit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">device</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#torch_staintools.normalizer.base.Normalizer" title="torch_staintools.normalizer.base.Normalizer"><span class="pre">Normalizer</span></a></span></span><a class="headerlink" href="#torch_staintools.normalizer.factory.NormalizerBuilder.build" title="Link to this definition"></a></dt>
+<dd><p>build from specified algorithm name <cite>method</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>method</strong> – Name of stain normalization algorithm. Support <cite>reinhard</cite>, <cite>macenko</cite>, and <cite>vahadane</cite></p></li>
+<li><p><strong>reconst_method</strong> – method to obtain the concentration. default ista for computational efficiency on GPU.
+only applied for StainSeparation-based approaches (macenko and vahadane)</p></li>
+<li><p><strong>num_stains</strong> – number of stains to separate. Currently, Macenko only supports 2. Only applies to <cite>macenko</cite> and
+‘vahadane’ methods.</p></li>
+<li><p><strong>luminosity_threshold</strong> – luminosity threshold to ignore the background. None means all regions are considered
+as tissue. Scale of luminiosty threshold is within [0, 1].  Only applies to <cite>macenko</cite> and
+‘vahadane’ methods.</p></li>
+<li><p><strong>regularizer</strong> – regularizer term in ISTA for stain separation and concentration computation. Only applies
+to <cite>macenko</cite> and ‘vahadane’ methods if ‘ista’ is used.</p></li>
+<li><p><strong>rng</strong> – seed or torch.Generator for any random initialization may incur.</p></li>
+<li><p><strong>use_cache</strong> – whether to use cache to save the stain matrix of input image to normalize.  Only applies
+to <cite>macenko</cite> and ‘vahadane’</p></li>
+<li><p><strong>cache_size_limit</strong> – size limit of the cache. negative means no limits. Only applies
+to <cite>macenko</cite> and ‘vahadane’</p></li>
+<li><p><strong>device</strong> – what device to hold the cache and the normalizer. If none the device is set to cpu. Only applies
+to <cite>macenko</cite> and ‘vahadane’</p></li>
+<li><p><strong>load_path</strong> – If specified, then stain matrix cache will be loaded from the file path. See the <cite>cache</cite>
+module for more details. Only applies  to <cite>macenko</cite> and ‘vahadane’</p></li>
+</ul>
+</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-torch_staintools.normalizer.reinhard">
+<span id="torch-staintools-normalizer-reinhard-module"></span><h2>torch_staintools.normalizer.reinhard module<a class="headerlink" href="#module-torch_staintools.normalizer.reinhard" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="torch_staintools.normalizer.reinhard.ReinhardNormalizer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torch_staintools.normalizer.reinhard.</span></span><span class="sig-name descname"><span class="pre">ReinhardNormalizer</span></span><a class="headerlink" href="#torch_staintools.normalizer.reinhard.ReinhardNormalizer" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#torch_staintools.normalizer.base.Normalizer" title="torch_staintools.normalizer.base.Normalizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Normalizer</span></code></a></p>
+<p>Very simple Reinhard normalizer.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="torch_staintools.normalizer.reinhard.ReinhardNormalizer._mean_std_helper">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_mean_std_helper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Tensor</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Tensor</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#torch_staintools.normalizer.reinhard.ReinhardNormalizer._mean_std_helper" title="Link to this definition"></a></dt>
+<dd><p>Get the channel-wise mean and std of input</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>image</strong> – BCHW scaled to [0, 1] torch.float32. Usually in LAB.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>means,</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="torch_staintools.normalizer.reinhard.ReinhardNormalizer.build">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torch_staintools.normalizer.reinhard.ReinhardNormalizer.build" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="torch_staintools.normalizer.reinhard.ReinhardNormalizer.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torch_staintools.normalizer.reinhard.ReinhardNormalizer.fit" title="Link to this definition"></a></dt>
+<dd><p>Fit - compute the means and stds of template in lab space.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>image</strong> – template. BCHW. [0, 1] torch.float32.</p>
+</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="torch_staintools.normalizer.reinhard.ReinhardNormalizer.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torch_staintools.normalizer.reinhard.ReinhardNormalizer.forward" title="Link to this definition"></a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although the recipe for forward pass needs to be defined within
+this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="torch_staintools.normalizer.reinhard.ReinhardNormalizer.normalize_helper">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">normalize_helper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_means</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_stds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torch_staintools.normalizer.reinhard.ReinhardNormalizer.normalize_helper" title="Link to this definition"></a></dt>
+<dd><p>Helper.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>image</strong> – BCHW format. torch.float32 type in range [0, 1].</p></li>
+<li><p><strong>target_means</strong> – channel-wise means of template</p></li>
+<li><p><strong>target_stds</strong> – channel-wise stds of template</p></li>
+</ul>
+</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torch_staintools.normalizer.reinhard.ReinhardNormalizer.target_means">
+<span class="sig-name descname"><span class="pre">target_means</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Tensor</span></em><a class="headerlink" href="#torch_staintools.normalizer.reinhard.ReinhardNormalizer.target_means" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torch_staintools.normalizer.reinhard.ReinhardNormalizer.target_stds">
+<span class="sig-name descname"><span class="pre">target_stds</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Tensor</span></em><a class="headerlink" href="#torch_staintools.normalizer.reinhard.ReinhardNormalizer.target_stds" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="torch_staintools.normalizer.reinhard.ReinhardNormalizer.transform">
+<span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torch_staintools.normalizer.reinhard.ReinhardNormalizer.transform" title="Link to this definition"></a></dt>
+<dd><p>Normalize by (input-mean_input) * (target_std/input_std) + target_mean</p>
+<p>Performed in LAB space. Output is convert back to RGB</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – input tensor</p></li>
+<li><p><strong>*args</strong> – for compatibility of interface.</p></li>
+<li><p><strong>**kwargs</strong> – for compatibility of interface.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>output torch.float32 RGB in range [0, 1] and shape BCHW</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-torch_staintools.normalizer.separation">
+<span id="torch-staintools-normalizer-separation-module"></span><h2>torch_staintools.normalizer.separation module<a class="headerlink" href="#module-torch_staintools.normalizer.separation" title="Link to this heading"></a></h2>
+<p>Note that some of the codes are derived from torchvahadane and staintools</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="torch_staintools.normalizer.separation.StainSeparation">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torch_staintools.normalizer.separation.</span></span><span class="sig-name descname"><span class="pre">StainSeparation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">get_stain_matrix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="torch_staintools.functional.stain_extraction.html#torch_staintools.functional.stain_extraction.extractor.BaseExtractor" title="torch_staintools.functional.stain_extraction.extractor.BaseExtractor"><span class="pre">BaseExtractor</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">reconst_method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'ista'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_stains</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">luminosity_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regularizer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Generator</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="torch_staintools.cache.html#torch_staintools.cache.tensor_cache.TensorCache" title="torch_staintools.cache.tensor_cache.TensorCache"><span class="pre">TensorCache</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">device</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torch_staintools.normalizer.separation.StainSeparation" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#torch_staintools.normalizer.base.Normalizer" title="torch_staintools.normalizer.base.Normalizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Normalizer</span></code></a></p>
+<p>Stain Separation-based normalizer’s interface: Macenko and Vahadane</p>
+<p>The stain matrix of the reference image (i.e., target image) will be dumped to the state_dict should torch.save
+is used to export the normalizer’s state dict.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="torch_staintools.normalizer.separation.StainSeparation.build">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reconst_method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'ista'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_stains</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">luminosity_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regularizer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Generator</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_cache</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_size_limit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">device</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#torch_staintools.normalizer.separation.StainSeparation" title="torch_staintools.normalizer.separation.StainSeparation"><span class="pre">StainSeparation</span></a></span></span><a class="headerlink" href="#torch_staintools.normalizer.separation.StainSeparation.build" title="Link to this definition"></a></dt>
+<dd><p>Builder.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>method</strong> – method of stain extractor name: vadahane or macenko</p></li>
+<li><p><strong>reconst_method</strong> – method to obtain the concentration. default ista for computational efficiency on GPU.</p></li>
+<li><p><strong>num_stains</strong> – number of stains to separate. Currently, Macenko only supports 2. In general cases it is
+recommended to set num_stains as 2.</p></li>
+<li><p><strong>luminosity_threshold</strong> – luminosity threshold to ignore the background. None means all regions are considered
+as tissue.</p></li>
+<li><p><strong>regularizer</strong> – regularizer term in ista for stain separation and concentration computation.</p></li>
+<li><p><strong>rng</strong> – seed or torch.Generator for any random initialization might incurred.</p></li>
+<li><p><strong>use_cache</strong> – whether to use cache to save the stain matrix of input image to normalize</p></li>
+<li><p><strong>cache_size_limit</strong> – size limit of the cache. negative means no limits.</p></li>
+<li><p><strong>device</strong> – what device to hold the cache and the normalizer. If none the device is set to cpu.</p></li>
+<li><p><strong>load_path</strong> – If specified, then stain matrix cache will be loaded from the file path. See the <cite>cache</cite>
+module for more details.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>StainSeparation normalizer.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="torch_staintools.normalizer.separation.StainSeparation.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">stainmat_kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torch_staintools.normalizer.separation.StainSeparation.fit" title="Link to this definition"></a></dt>
+<dd><p>Fit to a target image.</p>
+<p>Note that the stain matrices are registered into buffers so that it’s move to specified device
+along with the nn.Module object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target</strong> – BCHW. Assume it’s cast to torch.float32 and scaled to [0, 1]</p></li>
+<li><p><strong>**stainmat_kwargs</strong> – Extra keyword argument of stain seperator, besides the num_stains/luminosity_threshold
+that are set in the __init__</p></li>
+</ul>
+</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="torch_staintools.normalizer.separation.StainSeparation.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_keys</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Hashable</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">stain_mat_kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#torch_staintools.normalizer.separation.StainSeparation.forward" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – input batch image tensor in shape of BxCxHxW</p></li>
+<li><p><strong>cache_keys</strong> – unique keys point the input batch to the cached stain matrices. <cite>None</cite> means no cache.</p></li>
+<li><p><strong>**stain_mat_kwargs</strong> – Other keyword arguments for stain matrix estimators than those defined in __init__,
+i.e., luminosity_threshold, regularizer, and num_stains.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>normalized output in BxCxHxW shape and float32 dtype. Note that some pixel value may exceed
+[0, 1] and therefore a clipping operation is applied.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>torch.Tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torch_staintools.normalizer.separation.StainSeparation.get_stain_matrix">
+<span class="sig-name descname"><span class="pre">get_stain_matrix</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="torch_staintools.functional.stain_extraction.html#torch_staintools.functional.stain_extraction.extractor.BaseExtractor" title="torch_staintools.functional.stain_extraction.extractor.BaseExtractor"><span class="pre">BaseExtractor</span></a></em><a class="headerlink" href="#torch_staintools.normalizer.separation.StainSeparation.get_stain_matrix" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torch_staintools.normalizer.separation.StainSeparation.num_stains">
+<span class="sig-name descname"><span class="pre">num_stains</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#torch_staintools.normalizer.separation.StainSeparation.num_stains" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torch_staintools.normalizer.separation.StainSeparation.regularizer">
+<span class="sig-name descname"><span class="pre">regularizer</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#torch_staintools.normalizer.separation.StainSeparation.regularizer" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="torch_staintools.normalizer.separation.StainSeparation.repeat_stain_mat">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">repeat_stain_mat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stain_mat</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#torch_staintools.normalizer.separation.StainSeparation.repeat_stain_mat" title="Link to this definition"></a></dt>
+<dd><p>Helper function for vectorization and broadcasting</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>stain_mat</strong> – a (usually source) stain matrix obtained from fitting</p></li>
+<li><p><strong>image</strong> – input batch image</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>repeated stain matrix</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torch_staintools.normalizer.separation.StainSeparation.rng">
+<span class="sig-name descname"><span class="pre">rng</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Generator</span></em><a class="headerlink" href="#torch_staintools.normalizer.separation.StainSeparation.rng" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torch_staintools.normalizer.separation.StainSeparation.stain_matrix_target">
+<span class="sig-name descname"><span class="pre">stain_matrix_target</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Tensor</span></em><a class="headerlink" href="#torch_staintools.normalizer.separation.StainSeparation.stain_matrix_target" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torch_staintools.normalizer.separation.StainSeparation.target_concentrations">
+<span class="sig-name descname"><span class="pre">target_concentrations</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Tensor</span></em><a class="headerlink" href="#torch_staintools.normalizer.separation.StainSeparation.target_concentrations" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="torch_staintools.normalizer.separation.StainSeparation.transform">
+<span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_keys</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Hashable</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">stain_mat_kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#torch_staintools.normalizer.separation.StainSeparation.transform" title="Link to this definition"></a></dt>
+<dd><p>Transformation operation.</p>
+<p>Stain matrix is extracted from source image use specified stain seperator (dict learning or svd)
+Target concentration is by default computed by dict learning for both macenko and vahadane, same as
+staintools.
+Normalize the concentration and reconstruct image to OD.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>image</strong> – Image input must be BxCxHxW cast to torch.float32 and rescaled to [0, 1]
+Check torchvision.transforms.convert_image_dtype.</p></li>
+<li><p><strong>cache_keys</strong> – unique keys point the input batch to the cached stain matrices. <cite>None</cite> means no cache.</p></li>
+<li><p><strong>**stain_mat_kwargs</strong> – Extra keyword argument of stain seperator besides the num_stains
+and luminosity_threshold that was already set in __init__.
+For instance, in Macenko, an angular percentile argument “perc” may be selected to separate
+the angles of OD vector projected on SVD and the x-positive axis.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>normalized output in BxCxHxW shape and float32 dtype. Note that some pixel value may exceed
+[0, 1] and therefore a clipping operation is applied.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>torch.Tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-torch_staintools.normalizer">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-torch_staintools.normalizer" title="Link to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="torch_staintools.augmentor.html" class="btn btn-neutral float-left" title="torch_staintools.augmentor package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="torch_staintools.functional.html" class="btn btn-neutral float-right" title="torch_staintools.functional package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, YZ.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

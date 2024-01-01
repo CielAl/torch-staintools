@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>torch_staintools.augmentor package &mdash; Torch-StainTools 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=8d563738"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="torch_staintools.normalizer package" href="torch_staintools.normalizer.html" />
+    <link rel="prev" title="Welcome to torch_staintools’s documentation!" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Torch-StainTools
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">torch_staintools.augmentor package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-torch_staintools.augmentor.base">torch_staintools.augmentor.base module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#torch_staintools.augmentor.base.Augmentor"><code class="docutils literal notranslate"><span class="pre">Augmentor</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.augmentor.base.Augmentor.__concentration_selected"><code class="docutils literal notranslate"><span class="pre">Augmentor.__concentration_selected()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.augmentor.base.Augmentor.__inplace_augment_helper"><code class="docutils literal notranslate"><span class="pre">Augmentor.__inplace_augment_helper()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.augmentor.base.Augmentor.__inplace_tensor"><code class="docutils literal notranslate"><span class="pre">Augmentor.__inplace_tensor()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.augmentor.base.Augmentor.augment"><code class="docutils literal notranslate"><span class="pre">Augmentor.augment()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.augmentor.base.Augmentor.build"><code class="docutils literal notranslate"><span class="pre">Augmentor.build()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.augmentor.base.Augmentor.channel_rand"><code class="docutils literal notranslate"><span class="pre">Augmentor.channel_rand()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.augmentor.base.Augmentor.device"><code class="docutils literal notranslate"><span class="pre">Augmentor.device</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.augmentor.base.Augmentor.forward"><code class="docutils literal notranslate"><span class="pre">Augmentor.forward()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.augmentor.base.Augmentor.get_stain_matrix"><code class="docutils literal notranslate"><span class="pre">Augmentor.get_stain_matrix</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.augmentor.base.Augmentor.luminosity_threshold"><code class="docutils literal notranslate"><span class="pre">Augmentor.luminosity_threshold</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.augmentor.base.Augmentor.num_stains"><code class="docutils literal notranslate"><span class="pre">Augmentor.num_stains</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.augmentor.base.Augmentor.randn_range"><code class="docutils literal notranslate"><span class="pre">Augmentor.randn_range()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.augmentor.base.Augmentor.reconst_method"><code class="docutils literal notranslate"><span class="pre">Augmentor.reconst_method</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.augmentor.base.Augmentor.regularizer"><code class="docutils literal notranslate"><span class="pre">Augmentor.regularizer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.augmentor.base.Augmentor.sigma_alpha"><code class="docutils literal notranslate"><span class="pre">Augmentor.sigma_alpha</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.augmentor.base.Augmentor.sigma_beta"><code class="docutils literal notranslate"><span class="pre">Augmentor.sigma_beta</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.augmentor.base.Augmentor.target_concentrations"><code class="docutils literal notranslate"><span class="pre">Augmentor.target_concentrations</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.augmentor.base.Augmentor.target_stain_idx"><code class="docutils literal notranslate"><span class="pre">Augmentor.target_stain_idx</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-torch_staintools.augmentor.factory">torch_staintools.augmentor.factory module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#torch_staintools.augmentor.factory.AugmentorBuilder"><code class="docutils literal notranslate"><span class="pre">AugmentorBuilder</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.augmentor.factory.AugmentorBuilder.build"><code class="docutils literal notranslate"><span class="pre">AugmentorBuilder.build()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-torch_staintools.augmentor">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="torch_staintools.normalizer.html">torch_staintools.normalizer package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="torch_staintools.functional.html">torch_staintools.functional package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="torch_staintools.cache.html">torch_staintools.cache package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="torch_staintools.base_module.html">torch_staintools.base_module package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Torch-StainTools</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">torch_staintools.augmentor package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/torch_staintools.augmentor.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="torch-staintools-augmentor-package">
+<h1>torch_staintools.augmentor package<a class="headerlink" href="#torch-staintools-augmentor-package" title="Link to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+<section id="module-torch_staintools.augmentor.base">
+<span id="torch-staintools-augmentor-base-module"></span><h2>torch_staintools.augmentor.base module<a class="headerlink" href="#module-torch_staintools.augmentor.base" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="torch_staintools.augmentor.base.Augmentor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torch_staintools.augmentor.base.</span></span><span class="sig-name descname"><span class="pre">Augmentor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">get_stain_matrix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="torch_staintools.functional.stain_extraction.html#torch_staintools.functional.stain_extraction.extractor.BaseExtractor" title="torch_staintools.functional.stain_extraction.extractor.BaseExtractor"><span class="pre">BaseExtractor</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">reconst_method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'ista'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Generator</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_stain_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">(0,</span> <span class="pre">1)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma_alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma_beta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_stains</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">luminosity_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regularizer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="torch_staintools.cache.html#torch_staintools.cache.tensor_cache.TensorCache" title="torch_staintools.cache.tensor_cache.TensorCache"><span class="pre">TensorCache</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">device</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torch_staintools.augmentor.base.Augmentor" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="torch_staintools.base_module.html#torch_staintools.base_module.base.CachedRNGModule" title="torch_staintools.base_module.base.CachedRNGModule"><code class="xref py py-class docutils literal notranslate"><span class="pre">CachedRNGModule</span></code></a></p>
+<p>Basic augmentation object as a nn.Module with stain matrices cache.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="torch_staintools.augmentor.base.Augmentor.__concentration_selected">
+<span class="sig-name descname"><span class="pre">__concentration_selected</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_stain_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#torch_staintools.augmentor.base.Augmentor.__concentration_selected" title="Link to this definition"></a></dt>
+<dd><p>Return concentration of selected stain channels</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target_concentration</strong> – B x num_stains x num_pixel_in_mask</p></li>
+<li><p><strong>target_stain_idx</strong> – Basic indices of the selected stains. If None then returns all stain.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The view of the selected stain (no copies)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="torch_staintools.augmentor.base.Augmentor.__inplace_augment_helper">
+<span class="sig-name descname"><span class="pre">__inplace_augment_helper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tissue_mask</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torch_staintools.augmentor.base.Augmentor.__inplace_augment_helper" title="Link to this definition"></a></dt>
+<dd><p>Helper function to augment a given row(s) of stain concentration: alpha * concentration + beta</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target_concentration</strong> – B x num_stains x num_pixel</p></li>
+<li><p><strong>tissue_mask</strong> – mask of tissue regions. only augment concentration within the mask</p></li>
+<li><p><strong>alpha</strong> – alpha value for augmentation</p></li>
+<li><p><strong>beta</strong> – beta value for augmentation</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>augmented concentration. The result is in-place (as for the target_concentration here). It might be
+cloned beforehand in prior.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="torch_staintools.augmentor.base.Augmentor.__inplace_tensor">
+<span class="sig-name descname"><span class="pre">__inplace_tensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#torch_staintools.augmentor.base.Augmentor.__inplace_tensor" title="Link to this definition"></a></dt>
+<dd><p>Helper function to get the clone or the original concentration.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target_concentration</strong> – concentration tensor</p></li>
+<li><p><strong>inplace</strong> – bool. If True then returns itself, otherwise returns a clone.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The original or cloned concentration tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="torch_staintools.augmentor.base.Augmentor.augment">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">augment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_concentration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tissue_mask</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_stain_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Generator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma_alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma_beta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torch_staintools.augmentor.base.Augmentor.augment" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target_concentration</strong> – concentration matrix of input image. B x num_stains x num_pixel</p></li>
+<li><p><strong>tissue_mask</strong> – region of the tissue</p></li>
+<li><p><strong>target_stain_idx</strong> – which stain channel to operate on.</p></li>
+<li><p><strong>inplace</strong> – whether augment the concentration matrix in-place</p></li>
+<li><p><strong>rng</strong> – rng for alpha and beta generation</p></li>
+<li><p><strong>sigma_alpha</strong> – sample values in range (-sigma, sigma)</p></li>
+<li><p><strong>sigma_beta</strong> – same semantic of sigma_alpha but applied to beta</p></li>
+</ul>
+</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="torch_staintools.augmentor.base.Augmentor.build">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reconst_method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'ista'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Generator</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_stain_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">(0,</span> <span class="pre">1)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma_alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma_beta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">luminosity_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regularizer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_cache</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_size_limit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">device</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torch_staintools.augmentor.base.Augmentor.build" title="Link to this definition"></a></dt>
+<dd><p>Factory builder of the augmentor which manipulate the stain concentration by alpha * concentration + beta.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>method</strong> – algorithm name to extract stain - support ‘vahadane’ or ‘macenko’</p></li>
+<li><p><strong>reconst_method</strong> – algorithm to compute concentration. default ista</p></li>
+<li><p><strong>rng</strong> – a optional seed (either an int or a torch.Generator) to determine the random number generation.</p></li>
+<li><p><strong>target_stain_idx</strong> – what stains to augment: e.g., for HE cases, it can be either or both from [0, 1]</p></li>
+<li><p><strong>sigma_alpha</strong> – alpha is uniformly randomly selected from (1-sigma_alpha, 1+sigma_alpha)</p></li>
+<li><p><strong>sigma_beta</strong> – beta is uniformly randomly selected from (-sigma_beta, sigma_beta)</p></li>
+<li><p><strong>luminosity_threshold</strong> – luminosity threshold to find tissue regions (smaller than but positive)
+a pixel is considered as being tissue if the intensity falls in the open interval of (0, threshold).</p></li>
+<li><p><strong>regularizer</strong> – regularization term in ISTA algorithm</p></li>
+<li><p><strong>use_cache</strong> – whether use cache to save the stain matrix to avoid recomputation</p></li>
+<li><p><strong>cache_size_limit</strong> – size limit of the cache. negative means no limits.</p></li>
+<li><p><strong>device</strong> – what device to hold the cache.</p></li>
+<li><p><strong>load_path</strong> – If specified, then stain matrix cache will be loaded from the file path. See the <cite>cache</cite>
+module for more details.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Augmentor.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="torch_staintools.augmentor.base.Augmentor.channel_rand">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">channel_rand</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_concentration_selected</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Generator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma_alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma_beta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Tensor</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Tensor</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#torch_staintools.augmentor.base.Augmentor.channel_rand" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target_concentration_selected</strong> – concentrations to work on (e.g., the entire or a subset of concentration
+matrix)</p></li>
+<li><p><strong>rng</strong> – torch.Generator object</p></li>
+<li><p><strong>sigma_alpha</strong> – sample alpha values in range (1-sigma, 1+ sigma)</p></li>
+<li><p><strong>sigma_beta</strong> – sample beta values in range (-sigma, sigma)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>sampled alpha and beta as a tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torch_staintools.augmentor.base.Augmentor.device">
+<span class="sig-name descname"><span class="pre">device</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">device</span></em><a class="headerlink" href="#torch_staintools.augmentor.base.Augmentor.device" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="torch_staintools.augmentor.base.Augmentor.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_keys</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Hashable</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">stain_mat_kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torch_staintools.augmentor.base.Augmentor.forward" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target</strong> – input tensor to augment. Shape B x C x H x W and intensity range is [0, 1].</p></li>
+<li><p><strong>cache_keys</strong> – unique keys point the input batch to the cached stain matrices. <cite>None</cite> means no cache.</p></li>
+<li><p><strong>**stain_mat_kwargs</strong> – all extra keyword arguments other than regularizer/num_stains/luminosity_threshold set
+in __init__.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Augmented output.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torch_staintools.augmentor.base.Augmentor.get_stain_matrix">
+<span class="sig-name descname"><span class="pre">get_stain_matrix</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="torch_staintools.functional.stain_extraction.html#torch_staintools.functional.stain_extraction.extractor.BaseExtractor" title="torch_staintools.functional.stain_extraction.extractor.BaseExtractor"><span class="pre">BaseExtractor</span></a></em><a class="headerlink" href="#torch_staintools.augmentor.base.Augmentor.get_stain_matrix" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torch_staintools.augmentor.base.Augmentor.luminosity_threshold">
+<span class="sig-name descname"><span class="pre">luminosity_threshold</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#torch_staintools.augmentor.base.Augmentor.luminosity_threshold" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torch_staintools.augmentor.base.Augmentor.num_stains">
+<span class="sig-name descname"><span class="pre">num_stains</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#torch_staintools.augmentor.base.Augmentor.num_stains" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="torch_staintools.augmentor.base.Augmentor.randn_range">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">randn_range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">low</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">high</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">device</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Generator</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torch_staintools.augmentor.base.Augmentor.randn_range" title="Link to this definition"></a></dt>
+<dd><p>Helper function to get the uniform random float within low/high given the torch.Generator</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>*size</strong> – size of the random number</p></li>
+<li><p><strong>low</strong> – lower bound (inclusive)</p></li>
+<li><p><strong>high</strong> – upper bound (inclusive)</p></li>
+<li><p><strong>device</strong> – device to create the random numbers</p></li>
+<li><p><strong>rng</strong> – random number generator</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>random sample given the size and the bounds using the specified rng.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torch_staintools.augmentor.base.Augmentor.reconst_method">
+<span class="sig-name descname"><span class="pre">reconst_method</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#torch_staintools.augmentor.base.Augmentor.reconst_method" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torch_staintools.augmentor.base.Augmentor.regularizer">
+<span class="sig-name descname"><span class="pre">regularizer</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#torch_staintools.augmentor.base.Augmentor.regularizer" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torch_staintools.augmentor.base.Augmentor.sigma_alpha">
+<span class="sig-name descname"><span class="pre">sigma_alpha</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#torch_staintools.augmentor.base.Augmentor.sigma_alpha" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torch_staintools.augmentor.base.Augmentor.sigma_beta">
+<span class="sig-name descname"><span class="pre">sigma_beta</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#torch_staintools.augmentor.base.Augmentor.sigma_beta" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torch_staintools.augmentor.base.Augmentor.target_concentrations">
+<span class="sig-name descname"><span class="pre">target_concentrations</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Tensor</span></em><a class="headerlink" href="#torch_staintools.augmentor.base.Augmentor.target_concentrations" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torch_staintools.augmentor.base.Augmentor.target_stain_idx">
+<span class="sig-name descname"><span class="pre">target_stain_idx</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#torch_staintools.augmentor.base.Augmentor.target_stain_idx" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-torch_staintools.augmentor.factory">
+<span id="torch-staintools-augmentor-factory-module"></span><h2>torch_staintools.augmentor.factory module<a class="headerlink" href="#module-torch_staintools.augmentor.factory" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="torch_staintools.augmentor.factory.AugmentorBuilder">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torch_staintools.augmentor.factory.</span></span><span class="sig-name descname"><span class="pre">AugmentorBuilder</span></span><a class="headerlink" href="#torch_staintools.augmentor.factory.AugmentorBuilder" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Factory Builder for all supported normalizers: macenko/vahadane</p>
+<p>For any non-stain separation-based augmentation, the factory builders can be integrated here for a unified
+interface.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="torch_staintools.augmentor.factory.AugmentorBuilder.build">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'vahadane'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'macenko'</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reconst_method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'ista'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Generator</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_stain_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">(0,</span> <span class="pre">1)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma_alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma_beta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">luminosity_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regularizer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_cache</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_size_limit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">device</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#torch_staintools.augmentor.base.Augmentor" title="torch_staintools.augmentor.base.Augmentor"><span class="pre">Augmentor</span></a></span></span><a class="headerlink" href="#torch_staintools.augmentor.factory.AugmentorBuilder.build" title="Link to this definition"></a></dt>
+<dd><p>build from specified algorithm name <cite>method</cite> and augment the stain by alpha * concentration + beta</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>method</strong> – Name of stain normalization algorithm. Support <cite>macenko</cite> and <cite>vahadane</cite></p></li>
+<li><p><strong>reconst_method</strong> – how to compute concentration from stain matrix. default ista</p></li>
+<li><p><strong>rng</strong> – random seed for augmentation and any random initialization may incur.</p></li>
+<li><p><strong>target_stain_idx</strong> – which stain to augment</p></li>
+<li><p><strong>sigma_alpha</strong> – alpha sampled from (1-sigma_alpha, 1+sigma_alpha)</p></li>
+<li><p><strong>sigma_beta</strong> – beta sampled from (-sigma_beta, sigma_beta)</p></li>
+<li><p><strong>luminosity_threshold</strong> – luminosity threshold (smaller than) to find tissue region.</p></li>
+<li><p><strong>regularizer</strong> – regularization term in ISTA for dictionary learning (e.g., concentration computation)</p></li>
+<li><p><strong>use_cache</strong> – whether to cache the stain matrix for each input image</p></li>
+<li><p><strong>cache_size_limit</strong> – limit size of cache (how many matrices to cache). -1 means no limits.</p></li>
+<li><p><strong>device</strong> – device of the cache</p></li>
+<li><p><strong>load_path</strong> – whether to load prefetched cache. None means nothing will be loaded.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>corresponding Augmentor object.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-torch_staintools.augmentor">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-torch_staintools.augmentor" title="Link to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to torch_staintools’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="torch_staintools.normalizer.html" class="btn btn-neutral float-right" title="torch_staintools.normalizer package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, YZ.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

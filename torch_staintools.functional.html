@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>torch_staintools.functional package &mdash; Torch-StainTools 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=8d563738"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="torch_staintools.functional.conversion package" href="torch_staintools.functional.conversion.html" />
+    <link rel="prev" title="torch_staintools.normalizer package" href="torch_staintools.normalizer.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Torch-StainTools
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="torch_staintools.augmentor.html">torch_staintools.augmentor package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="torch_staintools.normalizer.html">torch_staintools.normalizer package</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">torch_staintools.functional package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="torch_staintools.functional.conversion.html">torch_staintools.functional.conversion package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="torch_staintools.functional.optimization.html">torch_staintools.functional.optimization package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="torch_staintools.functional.stain_extraction.html">torch_staintools.functional.stain_extraction package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="torch_staintools.functional.tissue_mask.html">torch_staintools.functional.tissue_mask package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="torch_staintools.functional.utility.html">torch_staintools.functional.utility package</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-torch_staintools.functional.eps">torch_staintools.functional.eps module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#torch_staintools.functional.eps.get_eps"><code class="docutils literal notranslate"><span class="pre">get_eps()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-torch_staintools.functional">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="torch_staintools.cache.html">torch_staintools.cache package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="torch_staintools.base_module.html">torch_staintools.base_module package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Torch-StainTools</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">torch_staintools.functional package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/torch_staintools.functional.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="torch-staintools-functional-package">
+<h1>torch_staintools.functional package<a class="headerlink" href="#torch-staintools-functional-package" title="Link to this heading"></a></h1>
+<section id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Link to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="torch_staintools.functional.conversion.html">torch_staintools.functional.conversion package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="torch_staintools.functional.conversion.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_staintools.functional.conversion.html#module-torch_staintools.functional.conversion.lab">torch_staintools.functional.conversion.lab module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="torch_staintools.functional.conversion.html#torch_staintools.functional.conversion.lab.lab_to_rgb"><code class="docutils literal notranslate"><span class="pre">lab_to_rgb()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="torch_staintools.functional.conversion.html#torch_staintools.functional.conversion.lab.rgb_to_lab"><code class="docutils literal notranslate"><span class="pre">rgb_to_lab()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="torch_staintools.functional.conversion.html#module-torch_staintools.functional.conversion.od">torch_staintools.functional.conversion.od module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="torch_staintools.functional.conversion.html#torch_staintools.functional.conversion.od.od2rgb"><code class="docutils literal notranslate"><span class="pre">od2rgb()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="torch_staintools.functional.conversion.html#torch_staintools.functional.conversion.od.rgb2od"><code class="docutils literal notranslate"><span class="pre">rgb2od()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="torch_staintools.functional.conversion.html#module-torch_staintools.functional.conversion">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="torch_staintools.functional.optimization.html">torch_staintools.functional.optimization package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="torch_staintools.functional.optimization.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_staintools.functional.optimization.html#module-torch_staintools.functional.optimization.dict_learning">torch_staintools.functional.optimization.dict_learning module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="torch_staintools.functional.optimization.html#torch_staintools.functional.optimization.dict_learning.dict_evaluate"><code class="docutils literal notranslate"><span class="pre">dict_evaluate()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="torch_staintools.functional.optimization.html#torch_staintools.functional.optimization.dict_learning.dict_learning"><code class="docutils literal notranslate"><span class="pre">dict_learning()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="torch_staintools.functional.optimization.html#torch_staintools.functional.optimization.dict_learning.get_concentrations"><code class="docutils literal notranslate"><span class="pre">get_concentrations()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="torch_staintools.functional.optimization.html#torch_staintools.functional.optimization.dict_learning.get_concentrations_helper"><code class="docutils literal notranslate"><span class="pre">get_concentrations_helper()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="torch_staintools.functional.optimization.html#torch_staintools.functional.optimization.dict_learning.lasso_loss"><code class="docutils literal notranslate"><span class="pre">lasso_loss()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="torch_staintools.functional.optimization.html#torch_staintools.functional.optimization.dict_learning.sparse_encode"><code class="docutils literal notranslate"><span class="pre">sparse_encode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="torch_staintools.functional.optimization.html#torch_staintools.functional.optimization.dict_learning.update_dict"><code class="docutils literal notranslate"><span class="pre">update_dict()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="torch_staintools.functional.optimization.html#torch_staintools.functional.optimization.dict_learning.update_dict_ridge"><code class="docutils literal notranslate"><span class="pre">update_dict_ridge()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="torch_staintools.functional.optimization.html#module-torch_staintools.functional.optimization.solver">torch_staintools.functional.optimization.solver module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="torch_staintools.functional.optimization.html#torch_staintools.functional.optimization.solver._lipschitz_constant"><code class="docutils literal notranslate"><span class="pre">_lipschitz_constant()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="torch_staintools.functional.optimization.html#torch_staintools.functional.optimization.solver.coord_descent"><code class="docutils literal notranslate"><span class="pre">coord_descent()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="torch_staintools.functional.optimization.html#torch_staintools.functional.optimization.solver.ista"><code class="docutils literal notranslate"><span class="pre">ista()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="torch_staintools.functional.optimization.html#module-torch_staintools.functional.optimization.sparse_util">torch_staintools.functional.optimization.sparse_util module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="torch_staintools.functional.optimization.html#torch_staintools.functional.optimization.sparse_util.initialize_code"><code class="docutils literal notranslate"><span class="pre">initialize_code()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="torch_staintools.functional.optimization.html#torch_staintools.functional.optimization.sparse_util.ridge"><code class="docutils literal notranslate"><span class="pre">ridge()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="torch_staintools.functional.optimization.html#module-torch_staintools.functional.optimization">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="torch_staintools.functional.stain_extraction.html">torch_staintools.functional.stain_extraction package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="torch_staintools.functional.stain_extraction.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_staintools.functional.stain_extraction.html#module-torch_staintools.functional.stain_extraction.extractor">torch_staintools.functional.stain_extraction.extractor module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="torch_staintools.functional.stain_extraction.html#torch_staintools.functional.stain_extraction.extractor.BaseExtractor"><code class="docutils literal notranslate"><span class="pre">BaseExtractor</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="torch_staintools.functional.stain_extraction.html#torch_staintools.functional.stain_extraction.extractor.BaseExtractor._abc_impl"><code class="docutils literal notranslate"><span class="pre">BaseExtractor._abc_impl</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="torch_staintools.functional.stain_extraction.html#torch_staintools.functional.stain_extraction.extractor.BaseExtractor.get_partial"><code class="docutils literal notranslate"><span class="pre">BaseExtractor.get_partial()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="torch_staintools.functional.stain_extraction.html#torch_staintools.functional.stain_extraction.extractor.BaseExtractor.get_stain_matrix_from_od"><code class="docutils literal notranslate"><span class="pre">BaseExtractor.get_stain_matrix_from_od()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="torch_staintools.functional.stain_extraction.html#torch_staintools.functional.stain_extraction.extractor.BaseExtractor.normalize_matrix_rows"><code class="docutils literal notranslate"><span class="pre">BaseExtractor.normalize_matrix_rows()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="torch_staintools.functional.stain_extraction.html#module-torch_staintools.functional.stain_extraction.factory">torch_staintools.functional.stain_extraction.factory module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="torch_staintools.functional.stain_extraction.html#torch_staintools.functional.stain_extraction.factory.build_from_name"><code class="docutils literal notranslate"><span class="pre">build_from_name()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="torch_staintools.functional.stain_extraction.html#module-torch_staintools.functional.stain_extraction.macenko">torch_staintools.functional.stain_extraction.macenko module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="torch_staintools.functional.stain_extraction.html#torch_staintools.functional.stain_extraction.macenko.MacenkoExtractor"><code class="docutils literal notranslate"><span class="pre">MacenkoExtractor</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="torch_staintools.functional.stain_extraction.html#torch_staintools.functional.stain_extraction.macenko.MacenkoExtractor._abc_impl"><code class="docutils literal notranslate"><span class="pre">MacenkoExtractor._abc_impl</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="torch_staintools.functional.stain_extraction.html#torch_staintools.functional.stain_extraction.macenko.MacenkoExtractor.angular_helper"><code class="docutils literal notranslate"><span class="pre">MacenkoExtractor.angular_helper()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="torch_staintools.functional.stain_extraction.html#torch_staintools.functional.stain_extraction.macenko.MacenkoExtractor.cov"><code class="docutils literal notranslate"><span class="pre">MacenkoExtractor.cov()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="torch_staintools.functional.stain_extraction.html#torch_staintools.functional.stain_extraction.macenko.MacenkoExtractor.get_stain_matrix_from_od"><code class="docutils literal notranslate"><span class="pre">MacenkoExtractor.get_stain_matrix_from_od()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="torch_staintools.functional.stain_extraction.html#torch_staintools.functional.stain_extraction.macenko.MacenkoExtractor.stain_matrix_helper"><code class="docutils literal notranslate"><span class="pre">MacenkoExtractor.stain_matrix_helper()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="torch_staintools.functional.stain_extraction.html#module-torch_staintools.functional.stain_extraction.utils">torch_staintools.functional.stain_extraction.utils module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="torch_staintools.functional.stain_extraction.html#torch_staintools.functional.stain_extraction.utils.percentile"><code class="docutils literal notranslate"><span class="pre">percentile()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="torch_staintools.functional.stain_extraction.html#module-torch_staintools.functional.stain_extraction.vahadane">torch_staintools.functional.stain_extraction.vahadane module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="torch_staintools.functional.stain_extraction.html#torch_staintools.functional.stain_extraction.vahadane.VahadaneExtractor"><code class="docutils literal notranslate"><span class="pre">VahadaneExtractor</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="torch_staintools.functional.stain_extraction.html#torch_staintools.functional.stain_extraction.vahadane.VahadaneExtractor._abc_impl"><code class="docutils literal notranslate"><span class="pre">VahadaneExtractor._abc_impl</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="torch_staintools.functional.stain_extraction.html#torch_staintools.functional.stain_extraction.vahadane.VahadaneExtractor.get_stain_matrix_from_od"><code class="docutils literal notranslate"><span class="pre">VahadaneExtractor.get_stain_matrix_from_od()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="torch_staintools.functional.stain_extraction.html#module-torch_staintools.functional.stain_extraction">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="torch_staintools.functional.tissue_mask.html">torch_staintools.functional.tissue_mask package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="torch_staintools.functional.tissue_mask.html#module-torch_staintools.functional.tissue_mask">Module contents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="torch_staintools.functional.tissue_mask.html#torch_staintools.functional.tissue_mask.TissueMaskException"><code class="docutils literal notranslate"><span class="pre">TissueMaskException</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="torch_staintools.functional.tissue_mask.html#torch_staintools.functional.tissue_mask.get_tissue_mask"><code class="docutils literal notranslate"><span class="pre">get_tissue_mask()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="torch_staintools.functional.tissue_mask.html#torch_staintools.functional.tissue_mask.get_tissue_mask_np"><code class="docutils literal notranslate"><span class="pre">get_tissue_mask_np()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="torch_staintools.functional.utility.html">torch_staintools.functional.utility package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="torch_staintools.functional.utility.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_staintools.functional.utility.html#module-torch_staintools.functional.utility.implementation">torch_staintools.functional.utility.implementation module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="torch_staintools.functional.utility.html#torch_staintools.functional.utility.implementation.default_device"><code class="docutils literal notranslate"><span class="pre">default_device()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="torch_staintools.functional.utility.html#torch_staintools.functional.utility.implementation.default_rng"><code class="docutils literal notranslate"><span class="pre">default_rng()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="torch_staintools.functional.utility.html#torch_staintools.functional.utility.implementation.img_from_concentration"><code class="docutils literal notranslate"><span class="pre">img_from_concentration()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="torch_staintools.functional.utility.html#torch_staintools.functional.utility.implementation.transpose_trailing"><code class="docutils literal notranslate"><span class="pre">transpose_trailing()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="torch_staintools.functional.utility.html#module-torch_staintools.functional.utility">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+<section id="module-torch_staintools.functional.eps">
+<span id="torch-staintools-functional-eps-module"></span><h2>torch_staintools.functional.eps module<a class="headerlink" href="#module-torch_staintools.functional.eps" title="Link to this heading"></a></h2>
+<p>Add small eps terms to avoid NaN in certain arithmetics (e.g., division and exp)</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="torch_staintools.functional.eps.get_eps">
+<span class="sig-prename descclassname"><span class="pre">torch_staintools.functional.eps.</span></span><span class="sig-name descname"><span class="pre">get_eps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#torch_staintools.functional.eps.get_eps" title="Link to this definition"></a></dt>
+<dd><p>Get the eps based on the device input tensor.</p>
+<blockquote>
+<div><p>Precision is defined by the global variable <cite>_eps_val</cite>.</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>img</strong> – If specified, then the output will be moved to the same device of the img.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>output eps as a tensor. It will be moved to the device of img if img is specified.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-torch_staintools.functional">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-torch_staintools.functional" title="Link to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="torch_staintools.normalizer.html" class="btn btn-neutral float-left" title="torch_staintools.normalizer package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="torch_staintools.functional.conversion.html" class="btn btn-neutral float-right" title="torch_staintools.functional.conversion package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, YZ.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
