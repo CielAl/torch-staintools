@@ -43,9 +43,13 @@ jobs:
         
       - name: Install Sphinx
         run: python3 -m pip install sphinx sphinx_rtd_theme sphinx-autodoc-typehints
-        
-      - run: |
-            cd src/
+
+      - name: print pwd
+        run: pwd
+
+      - name: compile
+        run: |
+            cd doc/src
             make html
 
       - name: Deploy
