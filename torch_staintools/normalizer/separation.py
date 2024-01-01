@@ -105,12 +105,9 @@ class StainSeparation(Normalizer):
                   cache_keys: Optional[List[Hashable]] = None, **stain_mat_kwargs) -> torch.Tensor:
         """Transformation operation.
 
-
         Stain matrix is extracted from source image use specified stain seperator (dict learning or svd)
-
         Target concentration is by default computed by dict learning for both macenko and vahadane, same as
         staintools.
-
         Normalize the concentration and reconstruct image to OD.
 
         Args:
@@ -120,7 +117,7 @@ class StainSeparation(Normalizer):
             **stain_mat_kwargs: Extra keyword argument of stain seperator besides the num_stains
                 and luminosity_threshold that was already set in __init__.
                 For instance, in Macenko, an angular percentile argument "perc" may be selected to separate
-                 the angles of OD vector projected on SVD and the x-positive axis.
+                the angles of OD vector projected on SVD and the x-positive axis.
 
         Returns:
             torch.Tensor: normalized output in BxCxHxW shape and float32 dtype. Note that some pixel value may exceed

@@ -1,7 +1,6 @@
 opencv-python
 numpy~=1.23.5
 tqdm~=4.65.0
-staintools~=2.1.2
 kornia~=0.7.0
 scipy~=1.10.0
 pillow~=9.4.0

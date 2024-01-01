@@ -1,0 +1,4 @@
+
+sphinx-apidoc  -P -F -o docs/source torch_staintools tests/* setup.py demo.py version.py */loggers.py
+cd docs
+make html

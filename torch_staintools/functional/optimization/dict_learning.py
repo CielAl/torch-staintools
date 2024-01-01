@@ -85,12 +85,17 @@ def update_dict_ridge(x, code, lambd=1e-4):
 
     This is equivalent to a Newton step with the (L2-regularized) squared
     error objective:
-        f(V) = (1/2N) * ||Vz - x||_2^2 + (lambd/2) * ||V||_2^2
+    f(V) = (1/2N) * ||Vz - x||_2^2 + (lambd/2) * ||V||_2^2
 
-    x : a batch of observations with shape (n_samples, n_features)
-    code : (z) a batch of code vectors with shape (n_samples, n_components)
-    lambd : weight decay parameter
+    Args:
+        x:  a batch of observations with shape (n_samples, n_features)
+        code: (z) a batch of code vectors with shape (n_samples, n_components)
+        lambd:  weight decay parameter
+
+    Returns:
+
     """
+
     rhs = torch.mm(code.T, x)
     M = torch.mm(code.T, code)
     M.diagonal().add_(lambd * x.size(0))

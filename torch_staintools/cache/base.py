@@ -106,8 +106,8 @@ class Cache(ABC, Generic[C, V]):
     def get(self, key: Hashable, func: Optional[Callable], *func_args, **func_kwargs):
         """Get the data cached under key.
 
-        If the corresponding data of key is not yet cached, it will be computed by the func(*func_args, **func_kwargs)
-        and the results will be cached if the remaining size is sufficient.
+        If the corresponding data of key is not yet cached, it will be computed by the
+        func(`*func_args`, `**func_kwargs`) and the results will be cached if the remaining size is sufficient.
 
         Args:
             key: the address of the data in cache

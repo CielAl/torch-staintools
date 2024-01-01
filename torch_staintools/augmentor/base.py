@@ -11,6 +11,7 @@ from ..loggers import GlobalLoggers
 
 logger = GlobalLoggers.instance().get_logger(__name__)
 
+TYPE_RNG = Optional[int | torch.Generator]
 
 class Augmentor(CachedRNGModule):
     """Basic augmentation object as a nn.Module with stain matrices cache.
@@ -35,7 +36,7 @@ class Augmentor(CachedRNGModule):
     regularizer: float
 
     def __init__(self, get_stain_matrix: BaseExtractor, reconst_method: str = 'ista',
-                 rng: Optional[int | torch.Generator] = None,
+                 rng: TYPE_RNG = None,
                  target_stain_idx: Optional[Sequence[int]] = (0, 1),
                  sigma_alpha: float = 0.2,
                  sigma_beta: float = 0.2,
@@ -248,7 +249,7 @@ class Augmentor(CachedRNGModule):
     @classmethod
     def build(cls,
               method: str, *, reconst_method: str = 'ista',
-              rng: Optional[int | torch.Generator] = None,
+              rng: TYPE_RNG = None,
               target_stain_idx: Optional[Sequence[int]] = (0, 1),
               sigma_alpha: float = 0.2,
               sigma_beta: float = 0.2,
