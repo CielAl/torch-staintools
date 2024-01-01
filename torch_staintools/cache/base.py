@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Callable, Optional, List, TypeVar, Generic, Hashable
+import os
 from ..loggers import GlobalLoggers
 
 logger = GlobalLoggers.instance().get_logger(__name__)
@@ -75,7 +76,7 @@ class Cache(ABC, Generic[C, V]):
         return self.is_cached(key)
 
     @abstractmethod
-    def write_to_cache(self, key: Hashable, value: V):
+    def _write_to_cache_helper(self, key: Hashable, value: V):
         """Write the data (value) to the given address (key) in the cache
 
         Args:
@@ -86,6 +87,21 @@ class Cache(ABC, Generic[C, V]):
 
         """
         raise NotImplementedError
+
+    def write_to_cache(self, key: Hashable, value: V):
+        """Write the data (value) to the given address (key) in the cache
+
+        Args:
+            key: any hashable that points the data to the address in the cache
+            value: value of the data to cache
+
+        Returns:
+
+        """
+        if not Cache.size_in_bound(len(self), 1, self.size_limit):
+            return
+        # logger.debug(f"key to write - parent: {key}")
+        self._write_to_cache_helper(key, value)
 
     def get(self, key: Hashable, func: Optional[Callable], *func_args, **func_kwargs):
         """Get the data cached under key.
@@ -107,13 +123,26 @@ class Cache(ABC, Generic[C, V]):
         # if not cached
         assert func is not None
         value = func(*func_args, **func_kwargs)
-        if Cache.size_in_bound(len(self), 1, self.size_limit):
-            self.write_to_cache(key, value)
+        # if Cache.size_in_bound(len(self), 1, self.size_limit):
+        self.write_to_cache(key, value)
         return value
 
-    @abstractmethod
-    def dump(self, path: str):
+    def dump(self, path: str, force_overwrite: bool = False):
         """ Dump the cached data to the local file system.
+
+        Args:
+            path: output filename
+            force_overwrite: whether to force overwriting the existing file on path
+        Returns:
+
+        """
+        if os.path.exists(path) and not force_overwrite:
+            return
+        self._dump_helper(path)
+
+    @abstractmethod
+    def _dump_helper(self, path: str):
+        """ To implement: dump the cached data to the local file system.
 
         Args:
             path: output filename
@@ -145,6 +174,9 @@ class Cache(ABC, Generic[C, V]):
         Returns:
 
         """
+        # if not Cache.size_in_bound(len(self), len(keys), self.size_limit):
+        #     return
+        logger.debug(f'{len(self)} - add new cache to {keys[0:3]}...')
         for k, b in zip(keys, batch):
             self.write_to_cache(k, b)
 
@@ -162,7 +194,7 @@ class Cache(ABC, Generic[C, V]):
         """
         if limit_size < 0:
             return True
-
+        # logger.debug(f"check: {current_size} + {in_data_size} <= {limit_size}")
         return current_size + in_data_size <= limit_size
 
     def get_batch(self, keys: List[Hashable], func: Optional[Callable], *func_args, **func_kwargs) -> List[V]:
@@ -191,9 +223,8 @@ class Cache(ABC, Generic[C, V]):
         logger.debug('miss - evaluate function to get value')
         batch = func(*func_args, **func_kwargs)
         assert len(keys) == len(batch)
-        if Cache.size_in_bound(len(self), len(keys), self.size_limit):
-            logger.debug(f'{len(self)} - add new cache to {keys[0:3]}...')
-            self.write_batch(keys, batch)
+
+        self.write_batch(keys, batch)
         return batch
 
     @abstractmethod

@@ -45,8 +45,11 @@ def get_tissue_mask(image: torch.Tensor, luminosity_threshold=0.8,
     mask = (L < luminosity_threshold) & (
                 L > 0)  # fix bug in original stain tools code where black background is not ignored.
     # Check it's not empty
-    if throw_error and mask.sum() == 0:
+    sum_pixel = mask.sum()
+    if throw_error and sum_pixel == 0:
         raise TissueMaskException("Empty tissue mask computed")
+    if true_when_empty and sum_pixel == 0:
+        mask = torch.ones_like(L, dtype=torch.bool)
     return mask
 
 

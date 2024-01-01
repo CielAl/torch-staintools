@@ -1,8 +1,11 @@
 from .base import Cache
 from typing import Dict, Hashable, Optional
 import torch
+import os
 import numpy as np
 from ..functional.utility.implementation import default_device
+from ..loggers import GlobalLoggers
+logger = GlobalLoggers.instance().get_logger(__name__)
 
 
 class TensorCache(Cache[Dict[Hashable, torch.Tensor], torch.Tensor]):
@@ -66,10 +69,10 @@ class TensorCache(Cache[Dict[Hashable, torch.Tensor], torch.Tensor]):
         if isinstance(value, np.ndarray):
             value = torch.from_numpy(value)
 
-        assert isinstance(value, torch.Tensor)
+        assert isinstance(value, torch.Tensor), f"Expect tensor, got: {type(value)}"
         return value
 
-    def write_to_cache(self, key, value: torch.Tensor):
+    def _write_to_cache_helper(self, key, value: torch.Tensor):
         """Write the value into the key in cache. Will be moved to the specified device (GPU/CPU) during the procedure.
 
         Args:
@@ -80,6 +83,7 @@ class TensorCache(Cache[Dict[Hashable, torch.Tensor], torch.Tensor]):
 
         """
         value = TensorCache.validate_value_type(value)
+        # logger.debug(f"key={key} - write")
         self.data_cache[key] = value.to(self.device)
 
     @staticmethod
@@ -101,7 +105,7 @@ class TensorCache(Cache[Dict[Hashable, torch.Tensor], torch.Tensor]):
             data_cache[k] = data_cache[k].to(device)
         return data_cache
 
-    def dump(self, path: str):
+    def _dump_helper(self, path: str):
         """Dump the dict to the local file system.
 
         Note: A copy of the dict will be created, with all stored tensors copied to CPU. Dumped tensors are all
@@ -109,11 +113,9 @@ class TensorCache(Cache[Dict[Hashable, torch.Tensor], torch.Tensor]):
 
         Args:
             path: file path to dump.
-
         Returns:
 
         """
-
         cpu_cache = TensorCache._to_device(self.data_cache, torch.device('cpu'), dict_inplace=False)
         torch.save(cpu_cache, path)
 
