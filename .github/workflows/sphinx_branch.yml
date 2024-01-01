@@ -59,6 +59,17 @@ jobs:
         run: |
           touch ./docs/_build/html/.nojekyll
 
+      - name: GH-branch
+        run: |
+          # Create .nojekyll in the gh-pages branch
+          git checkout --orphan gh-pages
+          git rm -rf .
+          touch .nojekyll
+          git add .nojekyll
+          git commit -m "Create .nojekyll for GitHub Pages"
+          git push -f origin gh-pages
+        working-directory: ./docs/
+    
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         if: github.ref == 'refs/heads/main'
