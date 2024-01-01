@@ -44,7 +44,9 @@ jobs:
       - name: Install Sphinx
         run: python3 -m pip install sphinx sphinx_rtd_theme sphinx-autodoc-typehints
         
-      - run: mkdocs build
+      - run: |
+            cd src/
+            make html
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
