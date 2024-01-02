@@ -4,42 +4,34 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'docs/**'        # Trigger on changes in the docs directory
+      - '.github/workflows/sphinx_branch.yml'
   pull_request:
 
 jobs:
   deploy:
     runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        python-version: ['3.10']  # List of Python versions to test against
     permissions:
       contents: write
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
     steps:
-      - uses: actions/checkout@v3
-        with:
-          ref: gh-pages # Check out the gh-pages branch
-
-      - name: Clear gh-pages branch
-        run: |
-          git rm -rf * || true
-          git clean -fdx
-          touch .nojekyll
-          git add .nojekyll
-          git commit -m "Clear gh-pages branch" || true
-          git push origin gh-pages
 
       - uses: actions/checkout@v3
         with:
-          ref: main # Check out the main branch again
+          ref: main # Check out the main branch
 
       - name: Setup Python
         uses: actions/setup-python@v3
         with:
-          python-version: '3.10'
+          python-version: ${{ matrix.python-version }}
 
       - name: Upgrade pip
-        run: |
-          # install pip=>20.1 to use "pip cache dir"
-          python3 -m pip install --upgrade pip
+        run: python -m pip install --upgrade pip
 
       - name: Get pip cache dir
         id: pip-cache
@@ -54,30 +46,27 @@ jobs:
             ${{ runner.os }}-pip-
 
       - name: Install dependencies
-        run: python3 -m pip install -r ./requirements.txt
-        
-      - name: Install Sphinx
-        run: python3 -m pip install sphinx sphinx_rtd_theme sphinx-autodoc-typehints
+        run: python -m pip install -r ./requirements.txt
 
-      - name: print pwd
+      - name: Install Sphinx and extensions
+        run: python -m pip install sphinx sphinx_rtd_theme sphinx-autodoc-typehints
+
+      - name: Print working directory
         run: pwd
-        
-      - name: list files
+
+      - name: List files in the current directory
         run: ls -al
-        
-      - name: compile
-        run: |
-            cd ./docs
-            sphinx-build -b html ./source _build/html
-            
+
+      - name: Build Sphinx Documentation
+        run: sphinx-build -b html ./docs/source ./docs/_build/html
+
       - name: Create .nojekyll file
         run: |
-          pwd
           touch ./.nojekyll
           touch ./docs/_build/html/.nojekyll
           touch ./docs/.nojekyll
-    
-      - name: Deploy
+
+      - name: Deploy to gh-pages
         uses: peaceiris/actions-gh-pages@v3
         if: github.ref == 'refs/heads/main'
         with:
