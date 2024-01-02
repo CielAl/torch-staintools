@@ -1,5 +1,15 @@
 # Torch StainTools for Stain Normalization and Augmentation of Histopathological Images
 
+## Installation
+
+* From Repository:
+
+`pip install git+https://github.com/CielAl/torch-staintools.git`
+
+* From PyPI:
+
+`pip install torch-staintools`
+
 ## Documentation
 Detail documentation regarding the code base can be found in the [GitPages](https://cielal.github.io/torch-staintools/).
 
@@ -119,16 +129,6 @@ augmentor(input_batch, cache_keys=list_of_keys_corresponding_to_input_batch)
 ```
 The next time `Normalizer` or `Augmentor` process the images, the corresponding stain matrices will be queried and fetched from cache if they are stored already, rather than recomputing from scratch.
 
-
-## Installation
-
-* From Repository:
-
-`pip install git+https://github.com/CielAl/torch-staintools.git`
-
-* From PyPI:
-
-`pip install torch-staintools`
 
 ## Benchmark
 * Use the sample images under ./test_images (size `2500x2500x3`). Mean was computed from 7 runs (1 loop per run) using
