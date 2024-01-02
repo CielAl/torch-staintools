@@ -1,5 +1,7 @@
 # Torch StainTools for Stain Normalization and Augmentation of Histopathological Images
 
+[![Unit Testing](https://github.com/CielAl/torch-staintools/actions/workflows/unittest.yml/badge.svg?branch=main)](https://github.com/CielAl/torch-staintools/actions/workflows/unittest.yml)
+
 ## Installation
 
 * From Repository:
