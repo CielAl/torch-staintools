@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.10]  # Currently testing only with 3.10, but easy to add more
+        python-version: ['3.10']  # Currently testing only with 3.10, but easy to add more
 
     steps:
     - name: Check out the repository
