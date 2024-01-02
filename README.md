@@ -121,7 +121,14 @@ The next time `Normalizer` or `Augmentor` process the images, the corresponding 
 
 
 ## Installation
+
+* From Repository:
+
 `pip install git+https://github.com/CielAl/torch-staintools.git`
+
+* From PyPI:
+
+`pip install torch-staintools`
 
 ## Benchmark
 * Use the sample images under ./test_images (size `2500x2500x3`). Mean was computed from 7 runs (1 loop per run) using
