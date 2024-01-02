@@ -14,7 +14,7 @@ with open('README.md', encoding='utf-8') as f:
 setup(
     name='torch-staintools',
     version=version,
-    packages=find_packages(),
+    packages=find_packages(exclude=["tests*", "tests.*"]),
     url='https://github.com/CielAl/torch-staintools',
     license='MIT',
     author='Y Z',
@@ -22,7 +22,6 @@ setup(
     description='GPU-accelerated stain normalization and augmentation',
     install_requires=requirements,
     python_requires='>=3.10',
-
     long_description=long_description,
     long_description_content_type='text/markdown',
 )

@@ -13,10 +13,10 @@ Detail documentation regarding the code base can be found in the [GitPages](http
 <br />
 
 #### Sample Output of Torch StainTools
-![Screenshot](showcases/sample_out.png)
+![Screenshot](https://raw.githubusercontent.com/CielAl/torch-staintools/main/showcases/sample_out.png)
 
 #### Sample Output of StainTools
-![Screenshot](showcases/sample_out_staintools.png)
+![Screenshot](https://raw.githubusercontent.com/CielAl/torch-staintools/main/showcases/sample_out_staintools.png)
 
 ## Usecase
 * For details, follow the example in demo.py
