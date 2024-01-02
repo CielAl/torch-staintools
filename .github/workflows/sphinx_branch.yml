@@ -15,6 +15,21 @@ jobs:
       group: ${{ github.workflow }}-${{ github.ref }}
     steps:
       - uses: actions/checkout@v3
+        with:
+          ref: gh-pages # Check out the gh-pages branch
+
+      - name: Clear gh-pages branch
+        run: |
+          git rm -rf * || true
+          git clean -fdx
+          touch .nojekyll
+          git add .nojekyll
+          git commit -m "Clear gh-pages branch" || true
+          git push origin gh-pages
+
+      - uses: actions/checkout@v3
+        with:
+          ref: main # Check out the main branch again
 
       - name: Setup Python
         uses: actions/setup-python@v3
