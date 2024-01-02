@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'docs/**'        # Trigger on changes in the docs directory
+      - '.github/workflows/sphinx_branch.yml'
   pull_request:
 
 jobs:
