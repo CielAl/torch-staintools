@@ -8,6 +8,11 @@ on:
       - 'docs/**'        # Trigger on changes in the docs directory
       - '.github/workflows/sphinx_branch.yml'
   pull_request:
+    branches:
+      - main
+    paths:
+      - 'docs/**'        # Trigger on changes in the docs directory
+      - '.github/workflows/sphinx_branch.yml'
 
 jobs:
   deploy:
