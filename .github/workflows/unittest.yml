@@ -2,23 +2,33 @@ name: Python Unittest on Push and PR
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, dev]
+    paths: 
+      - "torch_staintools/**"
+      - 'tests/**'
+      - "requirements.txt"
+      - "setup.py"
   pull_request:
     branches: [ main ]
+    paths: 
+      - "torch_staintools/**"
+      - 'tests/**'
+      - "requirements.txt"
+      - "setup.py"
 
 jobs:
   build-and-test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         python-version: ['3.10']  # Currently testing only with 3.10, but easy to add more
 
     steps:
     - name: Check out the repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v3
       with:
         python-version: ${{ matrix.python-version }}
 
