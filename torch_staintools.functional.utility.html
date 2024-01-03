@@ -154,6 +154,29 @@ the seed if an int seed is given.</p></li>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="torch_staintools.functional.utility.implementation.nanstd">
+<span class="sig-prename descclassname"><span class="pre">torch_staintools.functional.utility.implementation.</span></span><span class="sig-name descname"><span class="pre">nanstd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">correction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#torch_staintools.functional.utility.implementation.nanstd" title="Link to this definition"></a></dt>
+<dd><p>Compute the standard deviation while ignoring NaNs.</p>
+<p>Always keep the dim.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> – Input tensor.</p></li>
+<li><p><strong>dim</strong> – The dimension or dimensions to reduce. If None (default), reduces all dimensions.</p></li>
+<li><p><strong>correction</strong> – Difference between the sample size and sample degrees of freedom. Defaults 1 (Bessel’s).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Standard deviation with NaNs ignored. If <cite>dim</cite> is provided,
+it reduces along that dimension(s), otherwise reduces all dimensions.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>torch.Tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="torch_staintools.functional.utility.implementation.transpose_trailing">
 <span class="sig-prename descclassname"><span class="pre">torch_staintools.functional.utility.implementation.</span></span><span class="sig-name descname"><span class="pre">transpose_trailing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mat</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torch_staintools.functional.utility.implementation.transpose_trailing" title="Link to this definition"></a></dt>
 <dd><p>Helper function to transpose the trailing dimension, since data is batchified.</p>
