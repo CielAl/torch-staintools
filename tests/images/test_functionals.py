@@ -1,17 +1,14 @@
 """borrow Staintool's test cases
 """
 import unittest
-import numpy as np
 from tests.util import fix_seed, dummy_from_numpy, psnr
-from torch_staintools.functional.conversion.lab import rgb_to_lab
 from torch_staintools.functional.stain_extraction.macenko import MacenkoExtractor
 from torch_staintools.functional.stain_extraction.vahadane import VahadaneExtractor
 from torch_staintools.functional.optimization.dict_learning import get_concentrations
 from torch_staintools.functional.tissue_mask import get_tissue_mask, TissueMaskException
 from torch_staintools.functional.utility.implementation import transpose_trailing, img_from_concentration
-from functools import partial
 from torchvision.transforms.functional import convert_image_dtype
-from skimage.util import img_as_float32
+from torch_staintools.normalizer.reinhard import ReinhardNormalizer
 import torch
 import cv2
 import os
@@ -114,3 +111,38 @@ class TestFunctional(unittest.TestCase):
 
         with self.assertRaises(TissueMaskException):
             get_tissue_mask(torch.zeros_like(dummy_scaled), luminosity_threshold=0.8, throw_error=True)
+
+    @staticmethod
+    def mean_std_compare_squeezed(x, mask):
+        masked = x * mask
+        mean_list = []
+        std_list = []
+        for c in range(masked.shape[1]):
+            nonzero = masked[:, c: c + 1, :, :][mask != 0]
+            mean_list.append(nonzero.mean())
+            std_list.append(nonzero.std())
+        return torch.stack(mean_list).squeeze(), torch.stack(std_list).squeeze()
+
+    def test_reinhard(self):
+        device = TestFunctional.device
+        dummy_scaled = convert_image_dtype(TestFunctional.new_dummy_img_tensor_ubyte(), torch.float32).to(device)
+        # not None mask
+        mask = get_tissue_mask(dummy_scaled, luminosity_threshold=0.8)
+        # 1 x 3 x 1 x 1
+
+        means_input, stds_input = ReinhardNormalizer._mean_std_helper(dummy_scaled, mask=mask)
+
+        manual_mean, manual_std = TestFunctional.mean_std_compare_squeezed(dummy_scaled, mask)
+        self.assertTrue(torch.isclose(manual_mean, means_input.squeeze()).all())
+        self.assertTrue(torch.isclose(manual_std, stds_input.squeeze()).all())
+
+        # no mask
+        rand_dummy = torch.randn(dummy_scaled.shape, device=dummy_scaled.device)
+        rand_mean, rand_std = ReinhardNormalizer._mean_std_helper(rand_dummy, mask=None)
+
+        rand_mean_truth = rand_dummy.mean(dim=(2, 3), keepdim=True)
+        rand_std_truth = rand_dummy.std(dim=(2, 3), keepdim=True)
+
+        self.assertTrue(torch.isclose(rand_mean, rand_mean_truth).all())
+        self.assertTrue(torch.isclose(rand_std, rand_std_truth).all())
+

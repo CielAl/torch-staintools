@@ -57,7 +57,7 @@ class NormalizerBuilder:
         norm_method: Callable
         match method:
             case 'reinhard':
-               return ReinhardNormalizer.build()
+               return ReinhardNormalizer.build(luminosity_threshold=luminosity_threshold)
             case 'macenko' | 'vahadane':
                 return StainSeparation.build(method=method, reconst_method=reconst_method,
                                              num_stains=num_stains,
