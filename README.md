@@ -1,6 +1,7 @@
 # Torch StainTools for Stain Normalization and Augmentation of Histopathological Images
 
 [![Unit Testing](https://github.com/CielAl/torch-staintools/actions/workflows/unittest.yml/badge.svg?branch=main)](https://github.com/CielAl/torch-staintools/actions/workflows/unittest.yml)
+[![DOI](https://zenodo.org/badge/679661478.svg)](https://zenodo.org/doi/10.5281/zenodo.10453806)
 
 ## Installation
 
@@ -151,6 +152,20 @@ timeit. Comparison between torch_stain_tools in CPU/GPU mode, as well as that of
 | Macenko  | 6.99   | 0.064  | 20.0         |
 | Reinhard | 0.422  | 0.011  | 0.076        |  
 
+## Citation
+If this toolkit helps you in your publication, please feel free to cite with the following bibtex entry:
+```bibtex
+@software{zhou_2024_10453807,
+  author       = {Zhou, Yufei},
+  title        = {CielAl/torch-staintools: V1.0.3 Release},
+  month        = jan,
+  year         = 2024,
+  publisher    = {Zenodo},
+  version      = {v1.0.3},
+  doi          = {10.5281/zenodo.10453807},
+  url          = {https://doi.org/10.5281/zenodo.10453807}
+}
+```
 
 ## Acknowledgments
 * Some codes are derived from [torchvahadane](https://github.com/cwlkr/torchvahadane), [torchstain](https://github.com/EIDOSLAB/torchstain), and [StainTools](https://github.com/Peter554/StainTools)
