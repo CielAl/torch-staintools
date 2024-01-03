@@ -63,3 +63,31 @@ def default_rng(rng: Optional[torch.Generator | int], device: Optional[torch.dev
         return torch.Generator(device=device).manual_seed(rng)
     assert isinstance(rng, torch.Generator)
     return rng
+
+
+def nanstd(data: torch.Tensor, dim: Optional[int | tuple] = None,
+           correction: float = 1) -> torch.Tensor:
+    """Compute the standard deviation while ignoring NaNs.
+
+    Always keep the dim.
+
+    Args:
+        data: Input tensor.
+        dim: The dimension or dimensions to reduce. If None (default), reduces all dimensions.
+        correction: Difference between the sample size and sample degrees of freedom. Defaults 1 (Bessel's).
+
+    Returns:
+        torch.Tensor: Standard deviation with NaNs ignored. If `dim` is provided,
+        it reduces along that dimension(s), otherwise reduces all dimensions.
+    """
+
+    non_nan_mask = ~torch.isnan(data)
+    # find not-nan element
+    non_nan_count = non_nan_mask.sum(dim=dim, keepdim=True)
+    # compute mean of not-nan elements
+    mean = torch.nanmean(data, dim=dim, keepdim=True)
+
+    # \Sigma (x - mean)^2 --> any x that is nan will be filtered by using nansum
+    sum_dev2 = ((data - mean) ** 2).nansum(dim=dim,  keepdim=True)
+    # sqrt and normalize by corrected degrees of freedom
+    return torch.sqrt(sum_dev2 / (non_nan_count - correction))
