@@ -206,14 +206,14 @@ cloned beforehand in prior.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>method</strong> – algorithm name to extract stain - support ‘vahadane’ or ‘macenko’</p></li>
 <li><p><strong>reconst_method</strong> – algorithm to compute concentration. default ista</p></li>
-<li><p><strong>rng</strong> – a optional seed (either an int or a torch.Generator) to determine the random number generation.</p></li>
+<li><p><strong>rng</strong> – an optional seed (either an int or a torch.Generator) to determine the random number generation.</p></li>
 <li><p><strong>target_stain_idx</strong> – what stains to augment: e.g., for HE cases, it can be either or both from [0, 1]</p></li>
 <li><p><strong>sigma_alpha</strong> – alpha is uniformly randomly selected from (1-sigma_alpha, 1+sigma_alpha)</p></li>
 <li><p><strong>sigma_beta</strong> – beta is uniformly randomly selected from (-sigma_beta, sigma_beta)</p></li>
 <li><p><strong>luminosity_threshold</strong> – luminosity threshold to find tissue regions (smaller than but positive)
 a pixel is considered as being tissue if the intensity falls in the open interval of (0, threshold).</p></li>
 <li><p><strong>regularizer</strong> – regularization term in ISTA algorithm</p></li>
-<li><p><strong>use_cache</strong> – whether use cache to save the stain matrix to avoid recomputation</p></li>
+<li><p><strong>use_cache</strong> – whether to use cache to save the stain matrix to avoid re-computation</p></li>
 <li><p><strong>cache_size_limit</strong> – size limit of the cache. negative means no limits.</p></li>
 <li><p><strong>device</strong> – what device to hold the cache.</p></li>
 <li><p><strong>load_path</strong> – If specified, then stain matrix cache will be loaded from the file path. See the <cite>cache</cite>

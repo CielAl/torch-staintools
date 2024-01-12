@@ -251,8 +251,8 @@ in dimension of num_stains is H and the second is E (only num_stains=2 supported
 <dl class="py function">
 <dt class="sig sig-object py" id="torch_staintools.functional.stain_extraction.utils.percentile">
 <span class="sig-prename descclassname"><span class="pre">torch_staintools.functional.stain_extraction.utils.</span></span><span class="sig-name descname"><span class="pre">percentile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">q</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#torch_staintools.functional.stain_extraction.utils.percentile" title="Link to this definition"></a></dt>
-<dd><p>Author: adapted from <a class="reference external" href="https://gist.github.com/spezold/42a451682422beb42bc43ad0c0967a30">https://gist.github.com/spezold/42a451682422beb42bc43ad0c0967a30</a>
-Return the <code class="docutils literal notranslate"><span class="pre">q</span></code>-th percentile of the flattenepip d input tensor’s data.</p>
+<dd><p>Author: adapted from <a class="reference external" href="https://gist.github.com/spezold/42a451682422beb42bc43ad0c0967a30">https://gist.github.com/spezold/42a451682422beb42bc43ad0c0967a30</a></p>
+<p>Return the <code class="docutils literal notranslate"><span class="pre">q</span></code>-th percentile of the flattenepip d input tensor’s data.</p>
 <div class="admonition caution">
 <p class="admonition-title">Caution</p>
 <ul class="simple">
@@ -266,6 +266,7 @@ Return the <code class="docutils literal notranslate"><span class="pre">q</span>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>t</strong> – Input tensor.</p></li>
 <li><p><strong>q</strong> – Percentile to compute, which must be between 0 and 100 inclusive.</p></li>
+<li><p><strong>dim</strong> – which dim to operate for function <cite>tensor.kthvalue</cite>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -305,8 +306,8 @@ coordinate descent <cite>cd</cite>.</p></li>
 <li><p><strong>steps</strong> – max number of steps if still not converged</p></li>
 <li><p><strong>constrained</strong> – whether to force dictionary to be positive</p></li>
 <li><p><strong>persist</strong> – whether retain the previous z value for its update or initialize every time in the iteration.</p></li>
-<li><p><strong>init</strong> – init method of the codes a in X = D x a. Selected from <cite>ridge</cite>, <cite>zero</cite>, <cite>unif</cite> (uniformly random), or
-<cite>transpose</cite>. Details see torch_staintools.functional.optimization.sparse_util.initialize_code</p></li>
+<li><p><strong>init</strong> – init method of the codes <cite>a</cite> in <cite>X = D x a</cite>. Selected from <cite>ridge</cite>, <cite>zero</cite>, <cite>unif</cite> (uniformly random),
+or <cite>transpose</cite>. Details see torch_staintools.functional.optimization.sparse_util.initialize_code</p></li>
 <li><p><strong>verbose</strong> – whether to print progress messages.</p></li>
 <li><p><strong>rng</strong> – torch.Generator for any random initializations incurred (e.g., if <cite>init</cite> is set to be unif)</p></li>
 </ul>
