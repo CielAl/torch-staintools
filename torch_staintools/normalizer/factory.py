@@ -2,7 +2,6 @@ from typing import Literal, Callable, Optional
 from .base import Normalizer
 from .reinhard import ReinhardNormalizer
 from .separation import StainSeparation
-from functools import partial
 import torch
 TYPE_REINHARD = Literal['reinhard']
 TYPE_VAHADANE = Literal['vahadane']
@@ -37,7 +36,7 @@ class NormalizerBuilder:
             num_stains: number of stains to separate. Currently, Macenko only supports 2. Only applies to `macenko` and
                 'vahadane' methods.
             luminosity_threshold: luminosity threshold to ignore the background. None means all regions are considered
-                as tissue. Scale of luminiosty threshold is within [0, 1].  Only applies to `macenko` and
+                as tissue. Scale of luminosity threshold is within [0, 1].  Only applies to `macenko` and
                 'vahadane' methods.
             regularizer: regularizer term in ISTA for stain separation and concentration computation. Only applies
                 to `macenko` and 'vahadane' methods if 'ista' is used.
@@ -57,7 +56,7 @@ class NormalizerBuilder:
         norm_method: Callable
         match method:
             case 'reinhard':
-               return ReinhardNormalizer.build(luminosity_threshold=luminosity_threshold)
+                return ReinhardNormalizer.build(luminosity_threshold=luminosity_threshold)
             case 'macenko' | 'vahadane':
                 return StainSeparation.build(method=method, reconst_method=reconst_method,
                                              num_stains=num_stains,

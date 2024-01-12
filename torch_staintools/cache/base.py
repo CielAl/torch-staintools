@@ -168,7 +168,7 @@ class Cache(ABC, Generic[C, V]):
         """Write a batch of data to the cache.
 
         Args:
-            keys: list of keys corresponding to individual data points in the batch
+            keys: list of keys corresponding to individual data points in the batch.
             batch: batch data to cache.
 
         Returns:

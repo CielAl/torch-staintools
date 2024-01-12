@@ -30,8 +30,8 @@ class VahadaneExtractor(BaseExtractor):
             steps: max number of steps if still not converged
             constrained: whether to force dictionary to be positive
             persist: whether retain the previous z value for its update or initialize every time in the iteration.
-            init: init method of the codes a in X = D x a. Selected from `ridge`, `zero`, `unif` (uniformly random), or
-                `transpose`. Details see torch_staintools.functional.optimization.sparse_util.initialize_code
+            init: init method of the codes `a` in `X = D x a`. Selected from `ridge`, `zero`, `unif` (uniformly random),
+                or `transpose`. Details see torch_staintools.functional.optimization.sparse_util.initialize_code
             verbose: whether to print progress messages.
             rng: torch.Generator for any random initializations incurred (e.g., if `init` is set to be unif)
 
