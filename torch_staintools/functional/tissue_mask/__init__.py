@@ -60,7 +60,7 @@ def get_tissue_mask_np(I: np.ndarray, luminosity_threshold: float = 0.8,  throw_
     A numpy version for preprocessing purposes. Note that both Macenko and Vahadane may fail due to mathematical
     instability to process image that is mostly bright background and no tissue at all.
 
-    Typically we use to identify tissue in the image and exclude the bright white background.
+    Typically, we use to identify tissue in the image and exclude the bright white background.
 
     Args:
         I: numpy image. H x W x C. Input will be automatically converted to uint8 format and range [0, 255]

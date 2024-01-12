@@ -28,7 +28,7 @@ logger = GlobalLoggers.instance().get_logger(__name__)
 class CachedRNGModule(torch.nn.Module):
     """Optionally cache the stain matrices and manage the rng
 
-    Note that using .to to move the module across GPU/cpu device will reset the states.
+    Note that using nn.Module.to(device) to move the module across GPU/cpu device will reset the states.
 
 
     """
@@ -121,7 +121,7 @@ class CachedRNGModule(torch.nn.Module):
         if not self.cache_initialized() or cache_keys is None:
             logger.debug(f'{self.cache_initialized()} + {cache_keys is None} - no cache')
             return func_partial(target)
-        # if use cache
+        # if using cache
         assert self.cache_initialized(), f"Attempt to fetch data from cache but cache is not initialized"
         assert cache_keys is not None, f"Attempt to fetch data from cache but key is not given"
         # move fetched stain matrix to the same device of the target

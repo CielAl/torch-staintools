@@ -137,7 +137,7 @@ def ista(x, z0, weight, alpha=1.0, fast=True, lr='auto', maxiter=50,
         except RuntimeError as e:
             print(e)
             print('lr error ', lr, 'did not update z')
-            z_next = z_prev  # if there a failure just reset state.
+            z_next = z_prev  # if there is a failure just reset state.
 
         # check convergence
         if (z - z_next).abs().sum() <= tol:

@@ -3,8 +3,8 @@ from typing import Optional, Sequence, Tuple, Hashable, List
 from ..functional.stain_extraction.factory import build_from_name
 from ..functional.optimization.dict_learning import get_concentrations
 from ..functional.stain_extraction.extractor import BaseExtractor
-from ..functional.utility.implementation import transpose_trailing, img_from_concentration, default_rng
-from ..functional.tissue_mask import get_tissue_mask
+from ..functional.utility.implementation import transpose_trailing, img_from_concentration
+from ..functional.tissue_mask import get_tissue_mask, TissueMaskException
 from ..cache.tensor_cache import TensorCache
 from ..base_module.base import CachedRNGModule
 from ..loggers import GlobalLoggers
@@ -12,6 +12,7 @@ from ..loggers import GlobalLoggers
 logger = GlobalLoggers.instance().get_logger(__name__)
 
 TYPE_RNG = Optional[int | torch.Generator]
+
 
 class Augmentor(CachedRNGModule):
     """Basic augmentation object as a nn.Module with stain matrices cache.
@@ -234,17 +235,22 @@ class Augmentor(CachedRNGModule):
         #  B x num_stains x num_pixel_in_mask
         concentration = get_concentrations(target, target_stain_matrix, regularizer=self.regularizer,
                                            algorithm=self.reconst_method, rng=self.rng)
-        tissue_mask = get_tissue_mask(target, luminosity_threshold=self.luminosity_threshold, throw_error=False,
-                                      true_when_empty=False)
-        concentration_aug = Augmentor.augment(target_concentration=concentration,
-                                              tissue_mask=tissue_mask,
-                                              target_stain_idx=self.target_stain_idx,
-                                              inplace=False, rng=self.rng, sigma_alpha=self.sigma_alpha,
-                                              sigma_beta=self.sigma_beta)
-        # transpose to B x num_pixel x num_stains
+        try:
+            tissue_mask = get_tissue_mask(target, luminosity_threshold=self.luminosity_threshold, throw_error=True,
+                                          true_when_empty=False)
+            concentration_aug = Augmentor.augment(target_concentration=concentration,
+                                                  tissue_mask=tissue_mask,
+                                                  target_stain_idx=self.target_stain_idx,
+                                                  inplace=False, rng=self.rng, sigma_alpha=self.sigma_alpha,
+                                                  sigma_beta=self.sigma_beta)
+            # transpose to B x num_pixel x num_stains
 
-        concentration_aug = transpose_trailing(concentration_aug)
-        return img_from_concentration(concentration_aug, target_stain_matrix, img_shape=target.shape, out_range=(0, 1))
+            concentration_aug = transpose_trailing(concentration_aug)
+            return img_from_concentration(concentration_aug, target_stain_matrix,
+                                          img_shape=target.shape, out_range=(0, 1))
+        except TissueMaskException:
+            logger.error(f"Empty mask encountered. Dismiss and return the clone of input. Cache Key: {cache_keys}")
+            return target.clone()
 
     @classmethod
     def build(cls,
@@ -265,14 +271,14 @@ class Augmentor(CachedRNGModule):
         Args:
             method: algorithm name to extract stain - support 'vahadane' or 'macenko'
             reconst_method: algorithm to compute concentration. default ista
-            rng: a optional seed (either an int or a torch.Generator) to determine the random number generation.
+            rng: an optional seed (either an int or a torch.Generator) to determine the random number generation.
             target_stain_idx: what stains to augment: e.g., for HE cases, it can be either or both from [0, 1]
             sigma_alpha: alpha is uniformly randomly selected from (1-sigma_alpha, 1+sigma_alpha)
             sigma_beta: beta is uniformly randomly selected from (-sigma_beta, sigma_beta)
             luminosity_threshold: luminosity threshold to find tissue regions (smaller than but positive)
                 a pixel is considered as being tissue if the intensity falls in the open interval of (0, threshold).
             regularizer: regularization term in ISTA algorithm
-            use_cache: whether use cache to save the stain matrix to avoid recomputation
+            use_cache: whether to use cache to save the stain matrix to avoid re-computation
             cache_size_limit: size limit of the cache. negative means no limits.
             device: what device to hold the cache.
             load_path: If specified, then stain matrix cache will be loaded from the file path. See the `cache`

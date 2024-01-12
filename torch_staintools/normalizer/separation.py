@@ -16,7 +16,7 @@ from typing import Optional, List, Hashable
 class StainSeparation(Normalizer):
     """Stain Separation-based normalizer's interface: Macenko and Vahadane
 
-    The stain matrix of the reference image (i.e., target image) will be dumped to the state_dict should torch.save
+    The stain matrix of the reference image (i.e., target image) will be dumped to the state_dict should torch.save().
     is used to export the normalizer's state dict.
 
     """
@@ -189,7 +189,7 @@ class StainSeparation(Normalizer):
             luminosity_threshold: luminosity threshold to ignore the background. None means all regions are considered
                 as tissue.
             regularizer: regularizer term in ista for stain separation and concentration computation.
-            rng: seed or torch.Generator for any random initialization might incurred.
+            rng: seed or torch.Generator for any random initialization might incur.
             use_cache: whether to use cache to save the stain matrix of input image to normalize
             cache_size_limit: size limit of the cache. negative means no limits.
             device: what device to hold the cache and the normalizer. If none the device is set to cpu.

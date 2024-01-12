@@ -31,10 +31,10 @@ Detail documentation regarding the code base can be found in the [GitPages](http
 #### Sample Output of StainTools
 ![Screenshot](https://raw.githubusercontent.com/CielAl/torch-staintools/main/showcases/sample_out_staintools.png)
 
-## Usecase
+## Use case
 * For details, follow the example in demo.py
 * Normalizers are wrapped as `torch.nn.Module`, working similarly to a standalone neural network. This means that for a workflow involving dataloader with multiprocessing, the normalizer
-  (Note that CUDA has poor support in multiprocessing and therefore it may not be the best practice to perform GPU-accelerated on-the-fly stain transformation in pytorch's dataset/dataloader)
+  (Note that CUDA has poor support in multiprocessing, and therefore it may not be the best practice to perform GPU-accelerated on-the-fly stain transformation in pytorch's dataset/dataloader)
 
 
 ```python
@@ -143,7 +143,7 @@ timeit. Comparison between torch_stain_tools in CPU/GPU mode, as well as that of
 |:---------|:-------|:-------|:-------------| 
 | Vahadane | 119    | 7.5    | 20.9         |  
 | Macenko  | 5.57   | 0.479  | 20.7         |
-| Reinhard | 0.840  |0.024   | 0.414        |  
+| Reinhard | 0.840  | 0.024  | 0.414        |  
 
 ### Fitting
 | Method   | CPU[s] | GPU[s] | StainTool[s] |

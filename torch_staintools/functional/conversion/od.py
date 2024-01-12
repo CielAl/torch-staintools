@@ -15,7 +15,7 @@ def rgb2od(image: torch.Tensor):
         image: Image RGB. Input scale does not matter.
 
     Returns:
-        Optical denisty RGB image.
+        Optical density RGB image.
     """
     # to [0, 255]
     image = convert_image_dtype(image, torch.uint8)
