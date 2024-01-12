@@ -19,15 +19,15 @@ Detail documentation regarding the code base can be found in the [GitPages](http
 ## Citation
 If this toolkit helps you in your publication, please feel free to cite with the following bibtex entry:
 ```bibtex
-@software{zhou_2024_10453807,
-  author       = {Zhou, Yufei},
-  title        = {CielAl/torch-staintools: V1.0.3 Release},
+@software{yz_2024_10496083,
+  author       = {CielAl},
+  title        = {CielAl/torch-staintools: V1.0.4 Release},
   month        = jan,
   year         = 2024,
   publisher    = {Zenodo},
-  version      = {v1.0.3},
-  doi          = {10.5281/zenodo.10453807},
-  url          = {https://doi.org/10.5281/zenodo.10453807}
+  version      = {v1.0.4},
+  doi          = {10.5281/zenodo.10496083},
+  url          = {https://doi.org/10.5281/zenodo.10496083}
 }
 ```
 
