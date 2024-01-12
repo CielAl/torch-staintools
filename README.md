@@ -16,34 +16,89 @@
 ## Documentation
 Detail documentation regarding the code base can be found in the [GitPages](https://cielal.github.io/torch-staintools/).
 
+## Citation
+If this toolkit helps you in your publication, please feel free to cite with the following bibtex entry:
+```bibtex
+@software{zhou_2024_10453807,
+  author       = {Zhou, Yufei},
+  title        = {CielAl/torch-staintools: V1.0.3 Release},
+  month        = jan,
+  year         = 2024,
+  publisher    = {Zenodo},
+  version      = {v1.0.3},
+  doi          = {10.5281/zenodo.10453807},
+  url          = {https://doi.org/10.5281/zenodo.10453807}
+}
+```
+
 ## Description
 * Stain Normalization (Reinhard, Macenko, and Vahadane) for pytorch. Input tensors (fit and transform) must be in shape of `NxCxHxW`, with value scaled to [0, 1] in format of torch.float32.
 * Stain Augmentation using Macenko and Vahadane as stain extraction.
 * Fast normalization/augmentation on GPU with stain matrices caching.
-* Simulate the workflow in [StainTools library](https://github.com/Peter554/StainTools) but use the Iterative Shrinkage Thresholding Algorithm (ISTA), or optionally, the coordinate descent (CD) to solve the dictionary learning for stain matrix/concentration computation in Vahadane or Macenko (stain concentration only) algorithm. The implementation of ISTA and CD are derived from Cédric Walker's [torchvahadane](https://github.com/cwlkr/torchvahadane)
+* Simulate the workflow in [StainTools library](https://github.com/Peter554/StainTools) but use the Iterative Shrinkage Thresholding Algorithm (ISTA), or optionally, the coordinate descent (CD) to solve the dictionary learning for stain matrix computation in Vahadane or Macenko (stain concentration only) algorithm. The implementation of ISTA and CD are derived from Cédric Walker's [torchvahadane](https://github.com/cwlkr/torchvahadane)
+* Stain Concentration is solved via factorization of `Stain_Matrix x Concentration = Optical_Density`. For efficient sparse solution and more robust outcomes, ISTA can be applied. Alternatively, Least Square solver (LS) from `torch.linalg.lstsq` might be applied for faster non-sparse solution.
 * No SPAMS requirement (which is a dependency in StainTools).
 
 <br />
 
-#### Sample Output of Torch StainTools
+#### Sample Output of Torch-StainTools Normalization
 ![Screenshot](https://raw.githubusercontent.com/CielAl/torch-staintools/main/showcases/sample_out.png)
 
 #### Sample Output of StainTools
 ![Screenshot](https://raw.githubusercontent.com/CielAl/torch-staintools/main/showcases/sample_out_staintools.png)
 
-## Use case
+#### Sample Output of Torch-StainTools Augmentation (Repeat 3 times)
+![Screenshot](https://raw.githubusercontent.com/CielAl/torch-staintools/main/showcases/sample_out_augmentation.png)
+
+#### Sample Output of StainTools Augmentation (Repeat 3 times)
+![Screenshot](https://raw.githubusercontent.com/CielAl/torch-staintools/main/showcases/sample_out_augmentation_staintools.png)
+
+## Benchmark (No Stain Matrices Caching)
+* Use the sample images under ./test_images (size `2500x2500x3`). Mean was computed from 7 runs (1 loop per run) using
+timeit. Comparison between torch_stain_tools in CPU/GPU mode, as well as that of the StainTools Implementation.
+* For consistency, use ISTA to compute the concentration.
+
+### Transformation
+
+| Method   | CPU[s] | GPU[s] | StainTool[s] |
+|:---------|:-------|:-------|:-------------| 
+| Vahadane | 119    | 7.5    | 20.9         |  
+| Macenko  | 5.57   | 0.479  | 20.7         |
+| Reinhard | 0.840  | 0.024  | 0.414        |  
+
+### Fitting
+| Method   | CPU[s] | GPU[s] | StainTool[s] |
+|:---------|:-------|:-------|:-------------| 
+| Vahadane | 132    | 8.40   | 19.1         |  
+| Macenko  | 6.99   | 0.064  | 20.0         |
+| Reinhard | 0.422  | 0.011  | 0.076        |  
+
+### Batchified Concentration Computation
+* Split the sample images under ./test_images (size `2500x2500x3`) into 81 non-overlapping `256x256x3` tiles as a batch.
+* For the StainTools baseline, a for-loop is implemented to get the individual concentration of each of the numpy array of the 81 tiles.
+* 
+| Method                               | CPU[s] | GPU[s]    | 
+|:-------------------------------------|:-------|:----------| 
+| ISTA (`concentration_method='ista'`) | 3.12   | 1.24      |  
+| CD   (`concentration_method='cd'`)   | 29.3s  | 4.87      | 
+| LS   (`concentration_method='ls'`)   | 0.221  | **0.097** |
+| StainTools (SPAMS)                   | 16.6   | N/A       |
+
+
+## Use Cases and Tips
 * For details, follow the example in demo.py
 * Normalizers are wrapped as `torch.nn.Module`, working similarly to a standalone neural network. This means that for a workflow involving dataloader with multiprocessing, the normalizer
   (Note that CUDA has poor support in multiprocessing, and therefore it may not be the best practice to perform GPU-accelerated on-the-fly stain transformation in pytorch's dataset/dataloader)
 
+* `concentration_method='ls'` (i.e., `torch.linalg.lstsq`) can be efficient for batches of many smaller input (e.g., `256x256`) in terms of width and height. However, it may fail on GPU for a single larger input image (width and height). This happens even if the 
+the total number of pixels of the image is fewer than the aforementioned batch of multiple smaller input. Therefore, `concentration_method='ls'` could be suitable to deal with huge amount of small images in batches on the fly.
 
 ```python
 import cv2
 import torch
 from torchvision.transforms import ToTensor
-from torchvision.transforms.functional import convert_image_dtype
-from torch_staintools.normalizer.factory import NormalizerBuilder
-from torch_staintools.augmentor.factory import AugmentorBuilder
+from torch_staintools.normalizer import NormalizerBuilder
+from torch_staintools.augmentor import AugmentorBuilder
 import os
 seed = 0
 torch.manual_seed(seed)
@@ -71,7 +126,15 @@ norm_tensor = ToTensor()(norm).unsqueeze(0).to(device)
 
 # ######## Normalization
 # create the normalizer - using vahadane. Alternatively can use 'macenko' or 'reinhard'.
-normalizer_vahadane = NormalizerBuilder.build('vahadane')
+# note this is equivalent to:
+# from torch_staintools.normalizer.separation import StainSeparation
+# normalizer_vahadane = StainSeparation.build('vahadane', **arguments)
+
+# we use the 'ista' (ISTA algorithm) to get the sparse solution of the factorization: STAIN_MATRIX * Concentration = OD
+# alternatively, 'cd' (coordinate descent) and 'ls' (least square from torch.linalg) is available.
+# Note that 'ls' does not can be much faster on batches of smaller input, but may fail on GPU for individual large input 
+# in terms of width and height, regardless of the batch size
+normalizer_vahadane = NormalizerBuilder.build('vahadane', concentration_method='ista')
 # move the normalizer to the device (CPU or GPU)
 normalizer_vahadane = normalizer_vahadane.to(device)
 # fit. For macenko and vahadane this step will compute the stain matrix and concentration
@@ -89,7 +152,8 @@ augmentor = AugmentorBuilder.build('vahadane',
                                    # the luminosity threshold to find the tissue region to augment
                                    # if set to None means all pixels are treated as tissue
                                    luminosity_threshold=0.8,
-                                   
+                                   # herein we use 'ista' to compute the concentration
+                                   concentration_method='ista',
                                    sigma_alpha=0.2,
                                    sigma_beta=0.2, target_stain_idx=(0, 1),
                                    # this allows to cache the stain matrix if it's too time-consuming to recompute.
@@ -117,6 +181,21 @@ for _ in range(num_augment):
     
 # dump the cache of stain matrices for future usage
 augmentor.dump_cache('./cache.pickle')
+
+# fast batch operation
+tile_size = 512
+tiles: torch.Tensor = norm_tensor.unfold(2, tile_size, tile_size)\
+    .unfold(3, tile_size, tile_size).reshape(1, 3, -1, tile_size, tile_size).squeeze(0).permute(1, 0, 2, 3).contiguous()
+print(tiles.shape)
+# use macenko normalization as example
+normalizer_macenko = NormalizerBuilder.build('macenko', use_cache=True,
+                                             # use least square solver, along with cache, to perform
+                                             # normalization on-the-fly
+                                             concentration_method='ls')
+normalizer_macenko = normalizer_macenko.to(device)
+normalizer_macenko.fit(target_tensor)
+normalizer_macenko(tiles)
+
 ```
 ## Stain Matrix Caching
 As elaborated in the below in the running time benchmark of fitting, computation of stain matrix could be time-consuming.
@@ -132,40 +211,6 @@ augmentor(input_batch, cache_keys=list_of_keys_corresponding_to_input_batch)
 ```
 The next time `Normalizer` or `Augmentor` process the images, the corresponding stain matrices will be queried and fetched from cache if they are stored already, rather than recomputing from scratch.
 
-
-## Benchmark
-* Use the sample images under ./test_images (size `2500x2500x3`). Mean was computed from 7 runs (1 loop per run) using
-timeit. Comparison between torch_stain_tools in CPU/GPU mode, as well as that of the StainTools Implementation.
-
-### Transformation
-
-| Method   | CPU[s] | GPU[s] | StainTool[s] |
-|:---------|:-------|:-------|:-------------| 
-| Vahadane | 119    | 7.5    | 20.9         |  
-| Macenko  | 5.57   | 0.479  | 20.7         |
-| Reinhard | 0.840  | 0.024  | 0.414        |  
-
-### Fitting
-| Method   | CPU[s] | GPU[s] | StainTool[s] |
-|:---------|:-------|:-------|:-------------| 
-| Vahadane | 132    | 8.40   | 19.1         |  
-| Macenko  | 6.99   | 0.064  | 20.0         |
-| Reinhard | 0.422  | 0.011  | 0.076        |  
-
-## Citation
-If this toolkit helps you in your publication, please feel free to cite with the following bibtex entry:
-```bibtex
-@software{zhou_2024_10453807,
-  author       = {Zhou, Yufei},
-  title        = {CielAl/torch-staintools: V1.0.3 Release},
-  month        = jan,
-  year         = 2024,
-  publisher    = {Zenodo},
-  version      = {v1.0.3},
-  doi          = {10.5281/zenodo.10453807},
-  url          = {https://doi.org/10.5281/zenodo.10453807}
-}
-```
 
 ## Acknowledgments
 * Some codes are derived from [torchvahadane](https://github.com/cwlkr/torchvahadane), [torchstain](https://github.com/EIDOSLAB/torchstain), and [StainTools](https://github.com/Peter554/StainTools)
