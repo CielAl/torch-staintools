@@ -138,6 +138,8 @@
 </li>
       <li><a href="torch_staintools.functional.optimization.html#torch_staintools.functional.optimization.solver._lipschitz_constant">_lipschitz_constant() (in module torch_staintools.functional.optimization.solver)</a>
 </li>
+      <li><a href="torch_staintools.functional.optimization.html#torch_staintools.functional.optimization.dict_learning._ls_batch">_ls_batch() (in module torch_staintools.functional.optimization.dict_learning)</a>
+</li>
       <li><a href="torch_staintools.normalizer.html#torch_staintools.normalizer.reinhard.ReinhardNormalizer._mean_std_helper">_mean_std_helper() (torch_staintools.normalizer.reinhard.ReinhardNormalizer static method)</a>
 </li>
       <li><a href="torch_staintools.cache.html#torch_staintools.cache.base.Cache._new_cache">_new_cache() (torch_staintools.cache.base.Cache method)</a>
@@ -222,12 +224,18 @@
 </li>
       <li><a href="torch_staintools.base_module.html#torch_staintools.base_module.base.CachedRNGModule.cache_size_limit">cache_size_limit (torch_staintools.base_module.base.CachedRNGModule property)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="torch_staintools.base_module.html#torch_staintools.base_module.base.CachedRNGModule">CachedRNGModule (class in torch_staintools.base_module.base)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="torch_staintools.augmentor.html#torch_staintools.augmentor.base.Augmentor.channel_rand">channel_rand() (torch_staintools.augmentor.base.Augmentor static method)</a>
 </li>
+      <li><a href="torch_staintools.augmentor.html#torch_staintools.augmentor.base.Augmentor.concentration_method">concentration_method (torch_staintools.augmentor.base.Augmentor attribute)</a>
+
+      <ul>
+        <li><a href="torch_staintools.normalizer.html#torch_staintools.normalizer.separation.StainSeparation.concentration_method">(torch_staintools.normalizer.separation.StainSeparation attribute)</a>
+</li>
+      </ul></li>
       <li><a href="torch_staintools.functional.optimization.html#torch_staintools.functional.optimization.solver.coord_descent">coord_descent() (in module torch_staintools.functional.optimization.solver)</a>
 </li>
       <li><a href="torch_staintools.functional.stain_extraction.html#torch_staintools.functional.stain_extraction.macenko.MacenkoExtractor.cov">cov() (torch_staintools.functional.stain_extraction.macenko.MacenkoExtractor static method)</a>
@@ -304,16 +312,20 @@
 </li>
       <li><a href="torch_staintools.cache.html#torch_staintools.cache.base.Cache.get_batch">get_batch() (torch_staintools.cache.base.Cache method)</a>
 </li>
+      <li><a href="torch_staintools.functional.optimization.html#torch_staintools.functional.optimization.dict_learning.get_concentration_batch">get_concentration_batch() (in module torch_staintools.functional.optimization.dict_learning)</a>
+</li>
+      <li><a href="torch_staintools.functional.optimization.html#torch_staintools.functional.optimization.dict_learning.get_concentration_one_by_one">get_concentration_one_by_one() (in module torch_staintools.functional.optimization.dict_learning)</a>
+</li>
       <li><a href="torch_staintools.functional.optimization.html#torch_staintools.functional.optimization.dict_learning.get_concentrations">get_concentrations() (in module torch_staintools.functional.optimization.dict_learning)</a>
 </li>
-      <li><a href="torch_staintools.functional.optimization.html#torch_staintools.functional.optimization.dict_learning.get_concentrations_helper">get_concentrations_helper() (in module torch_staintools.functional.optimization.dict_learning)</a>
+      <li><a href="torch_staintools.functional.optimization.html#torch_staintools.functional.optimization.dict_learning.get_concentrations_single">get_concentrations_single() (in module torch_staintools.functional.optimization.dict_learning)</a>
 </li>
       <li><a href="torch_staintools.functional.html#torch_staintools.functional.eps.get_eps">get_eps() (in module torch_staintools.functional.eps)</a>
 </li>
-      <li><a href="torch_staintools.functional.stain_extraction.html#torch_staintools.functional.stain_extraction.extractor.BaseExtractor.get_partial">get_partial() (torch_staintools.functional.stain_extraction.extractor.BaseExtractor method)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="torch_staintools.functional.stain_extraction.html#torch_staintools.functional.stain_extraction.extractor.BaseExtractor.get_partial">get_partial() (torch_staintools.functional.stain_extraction.extractor.BaseExtractor method)</a>
+</li>
       <li><a href="torch_staintools.augmentor.html#torch_staintools.augmentor.base.Augmentor.get_stain_matrix">get_stain_matrix (torch_staintools.augmentor.base.Augmentor attribute)</a>
 
       <ul>
@@ -515,8 +527,6 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="torch_staintools.augmentor.html#torch_staintools.augmentor.base.Augmentor.randn_range">randn_range() (torch_staintools.augmentor.base.Augmentor static method)</a>
 </li>
-      <li><a href="torch_staintools.augmentor.html#torch_staintools.augmentor.base.Augmentor.reconst_method">reconst_method (torch_staintools.augmentor.base.Augmentor attribute)</a>
-</li>
       <li><a href="torch_staintools.augmentor.html#torch_staintools.augmentor.base.Augmentor.regularizer">regularizer (torch_staintools.augmentor.base.Augmentor attribute)</a>
 
       <ul>
@@ -525,10 +535,10 @@
       </ul></li>
       <li><a href="torch_staintools.normalizer.html#torch_staintools.normalizer.reinhard.ReinhardNormalizer">ReinhardNormalizer (class in torch_staintools.normalizer.reinhard)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="torch_staintools.normalizer.html#torch_staintools.normalizer.separation.StainSeparation.repeat_stain_mat">repeat_stain_mat() (torch_staintools.normalizer.separation.StainSeparation static method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="torch_staintools.functional.conversion.html#torch_staintools.functional.conversion.od.rgb2od">rgb2od() (in module torch_staintools.functional.conversion.od)</a>
 </li>
       <li><a href="torch_staintools.functional.conversion.html#torch_staintools.functional.conversion.lab.rgb_to_lab">rgb_to_lab() (in module torch_staintools.functional.conversion.lab)</a>
