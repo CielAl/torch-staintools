@@ -11,6 +11,7 @@ def transpose_trailing(mat: torch.Tensor):
     Returns:
         output with flipped dimension from ixjxk --> ixkxj
     """
+    assert mat.ndimension() == 3
     return torch.einsum("ijk -> ikj", mat)
 
 

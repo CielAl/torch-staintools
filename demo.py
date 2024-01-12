@@ -2,11 +2,12 @@ import cv2
 import torch
 from torchvision.transforms import ToTensor
 from torchvision.transforms.functional import convert_image_dtype
-from torch_staintools.normalizer.factory import NormalizerBuilder
-from torch_staintools.augmentor.factory import AugmentorBuilder
+from torch_staintools.normalizer import NormalizerBuilder
+from torch_staintools.augmentor import AugmentorBuilder
 import matplotlib.pyplot as plt
 import numpy as np
 from tqdm import tqdm
+import random
 import os
 seed = 0
 torch.manual_seed(seed)
@@ -52,7 +53,7 @@ def postprocess(image_tensor): return convert_image_dtype(image_tensor, torch.ui
 
 
 # ######### Vahadane
-normalizer_vahadane = NormalizerBuilder.build('vahadane', reconst_method='ista', use_cache=True,
+normalizer_vahadane = NormalizerBuilder.build('vahadane', concentration_method='ista', use_cache=True,
                                               rng=1,
                                               )
 normalizer_vahadane = normalizer_vahadane.to(device)
@@ -75,7 +76,7 @@ with torch.no_grad():
 #   #################### Macenko
 
 
-normalizer_macenko = NormalizerBuilder.build('macenko')
+normalizer_macenko = NormalizerBuilder.build('macenko', use_cache=True, concentration_method='ls')
 normalizer_macenko = normalizer_macenko.to(device)
 normalizer_macenko.fit(target_tensor)
 
@@ -202,3 +203,52 @@ for i, ax in enumerate(axs):
     ax.axis('off')
 plt.savefig(os.path.join('.', 'showcases', 'sample_out_staintools.png'), bbox_inches='tight')
 plt.show()
+
+algorithms = ['Vahadane', 'Macenko']
+num_repeat = 3
+
+# # sample aug output
+fig, axs = plt.subplots(2, num_repeat + 1, figsize=(15, 8), dpi=300)
+for i, ax_alg in enumerate(axs):
+    alg = algorithms[i].lower()
+    augmentor = AugmentorBuilder.build(alg, concentration_method='ista',
+                                       sigma_alpha=0.5,
+                                       sigma_beta=0.5,
+                                       luminosity_threshold=0.8,
+                                       rng=314159, use_cache=True).to(device)
+    ax_alg[0].imshow(norm)
+    ax_alg[0].set_title("Augmentation Original")
+    ax_alg[0].axis('off')
+    for j in range(1, len(ax_alg)):
+        aug_out = augmentor(norm_tensor, cache_keys=[0])
+        ax_alg[j].imshow(postprocess(aug_out))
+        ax_alg[j].set_title(f"{alg} :{j}")
+        ax_alg[j].axis('off')
+plt.savefig(os.path.join('.', 'showcases', 'sample_out_augmentation.png'), bbox_inches='tight')
+plt.show()
+
+
+# #### sample aug output
+np.random.seed(314159)
+random.seed(314159)
+from staintools import StainAugmentor
+from staintools.preprocessing.luminosity_standardizer import LuminosityStandardizer
+algorithms = ['Vahadane', 'Macenko']
+fig, axs = plt.subplots(2, num_repeat + 1, figsize=(15, 8), dpi=300)
+for i, ax_alg in enumerate(axs):
+    alg = algorithms[i].lower()
+    augmentor = StainAugmentor(method=alg, sigma1=0.5, sigma2=0.5, augment_background=False)
+    standardized_norm = LuminosityStandardizer.standardize(norm)
+    augmentor.fit(standardized_norm)
+    ax_alg[0].imshow(standardized_norm)
+    ax_alg[0].set_title("Augmentation Original")
+    ax_alg[0].axis('off')
+    for j in range(1, len(ax_alg)):
+        aug_out = augmentor.pop().astype(np.uint8)
+        ax_alg[j].imshow(aug_out)
+        ax_alg[j].set_title(f"{alg} - StainTools: {j}")
+        ax_alg[j].axis('off')
+plt.savefig(os.path.join('.', 'showcases', 'sample_out_augmentation_staintools.png'), bbox_inches='tight')
+plt.show()
+
+

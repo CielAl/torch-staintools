@@ -83,7 +83,7 @@ class TestFunctional(unittest.TestCase):
     def eval_wrapper(self, extractor):
 
         # all pixel
-        algorithms = ['ista', 'cd']
+        algorithms = ['ista', 'cd', 'ls']
         for alg in algorithms:
             TestFunctional.extract_eval_helper(self, extractor, luminosity_threshold=None,
                                                num_stains=2, regularizer=0.1, dict_algorithm=alg)

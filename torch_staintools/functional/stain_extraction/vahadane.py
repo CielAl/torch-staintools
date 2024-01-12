@@ -71,8 +71,9 @@ class VahadaneExtractor(BaseExtractor):
                  regularizer: float = 0.1, num_stains: int = 2, perc: int = 1,
                  rng: torch.Generator = None,
                  **kwargs) -> torch.Tensor:
-        """Vahadane Stain matrix estimation.
+        """Use ISTA to solve Vahadane Stain matrix estimation.
 
+        By default, the `fast` flag in ISTA implementation is set to True, so it's technically FISTA.
         From A. Vahadane et al. 'Structure-Preserving Color Normalization
         and Sparse Stain Separation for Histological Images'
 
@@ -97,5 +98,5 @@ class VahadaneExtractor(BaseExtractor):
         #  B x (HxWx1)
 
         od = rgb2od(image)
-        return VahadaneExtractor.get_stain_matrix_from_od(od, tissue_mask, regularizer=regularizer,
+        return VahadaneExtractor.get_stain_matrix_from_od(od, tissue_mask, regularizer=regularizer, algorithm='ista',
                                                           num_stains=num_stains, rng=rng, **kwargs)
