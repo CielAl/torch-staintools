@@ -90,8 +90,7 @@ timeit. Comparison between torch_stain_tools in CPU/GPU mode, as well as that of
 * Normalizers are wrapped as `torch.nn.Module`, working similarly to a standalone neural network. This means that for a workflow involving dataloader with multiprocessing, the normalizer
   (Note that CUDA has poor support in multiprocessing, and therefore it may not be the best practice to perform GPU-accelerated on-the-fly stain transformation in pytorch's dataset/dataloader)
 
-* `concentration_method='ls'` (i.e., `torch.linalg.lstsq`) can be efficient for batches of many smaller input (e.g., `256x256`) in terms of width and height. However, it may fail on GPU for a single larger input image (width and height). This happens even if the 
-the total number of pixels of the image is fewer than the aforementioned batch of multiple smaller input. Therefore, `concentration_method='ls'` could be suitable to deal with huge amount of small images in batches on the fly.
+* `concentration_method='ls'` (i.e., `torch.linalg.lstsq`) can be efficient for batches of many smaller input (e.g., `256x256`) in terms of width and height. However, it may fail on GPU for a single larger input image (width and height) due to a cuda-related bug reported [here](https://github.com/pytorch/pytorch/issues/79191). 
 
 ```python
 import cv2
@@ -133,7 +132,7 @@ norm_tensor = ToTensor()(norm).unsqueeze(0).to(device)
 # we use the 'ista' (ISTA algorithm) to get the sparse solution of the factorization: STAIN_MATRIX * Concentration = OD
 # alternatively, 'cd' (coordinate descent) and 'ls' (least square from torch.linalg) is available.
 # Note that 'ls' does not can be much faster on batches of smaller input, but may fail on GPU for individual large input 
-# in terms of width and height, regardless of the batch size
+# in terms of width and height, regardless of the batch size due to the issue reported here: https://github.com/pytorch/pytorch/issues/79191 
 normalizer_vahadane = NormalizerBuilder.build('vahadane', concentration_method='ista')
 # move the normalizer to the device (CPU or GPU)
 normalizer_vahadane = normalizer_vahadane.to(device)
