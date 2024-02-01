@@ -19,8 +19,8 @@ Detail documentation regarding the code base can be found in the [GitPages](http
 ## Citation
 If this toolkit helps you in your publication, please feel free to cite with the following bibtex entry:
 ```bibtex
-@software{yz_2024_10496083,
-  author       = {CielAl},
+@software{zhou_2024_10496083,
+  author       = {Zhou, Yufei},
   title        = {CielAl/torch-staintools: V1.0.4 Release},
   month        = jan,
   year         = 2024,
