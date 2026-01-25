@@ -73,40 +73,39 @@ def _lipschitz_constant(W):
     # W has nan
     WtW = torch.matmul(W.t(), W)
     WtW += torch.eye(WtW.size(0)).to(W.device) * get_eps(WtW)
-    # L = torch.linalg.eigvalsh(WtW)[-1]
+    L = torch.linalg.eigvalsh(WtW)[-1].item()
     # scipy.sparse.linalg._eigen.arpack.arpack.ArpackError: ARPACK error 3: No shifts could be applied during
     # a cycle of the Implicitly restarted Arnoldi iteration.
     # One possibility is to increase the size of NCV relative to NEV.
-
-    L = eigsh(WtW.detach().cpu().numpy(), k=1, which='LM', return_eigenvectors=False).item()
+    # breakpoint()
+    # L = eigsh(WtW.detach().cpu().numpy(), k=1, which='LM', return_eigenvectors=False).item()
     if not np.isfinite(L):  # sometimes L is not finite because of potential cublas error.
         L = torch.linalg.norm(W, ord=2) ** 2
     return L
 
 
-def ista(x, z0, weight, alpha=1.0, fast=True, lr='auto', maxiter=50,
-         tol=1e-5, lambda1=0.01, verbose=False, rng: torch.Generator = None):
+def ista(x, z0, weight, alpha=0.01, fast=True, lr='auto', maxiter=50,
+         tol=1e-5, verbose=False, rng: torch.Generator = None):
     """ISTA solver
 
     Args:
         x: data
         z0: code, or the initialization mode of the code.
         weight: dict
-        alpha: eps term for code initialization
+        alpha: penalty term for code
         fast: whether to use FISTA (fast-ista) instead of ISTA
         lr: learning rate/step size. If `auto` then it will be specified by
             the Lipschitz constant of f(z) = ||Wz - x||^2
         maxiter: max number of iteration if not converge.
         tol: tolerance term of convergence test.
-        lambda1: lambda of the sparse terms.
         verbose: whether to print the progress
         rng: torch.Generator for random initialization
 
     Returns:
 
     """
-    if type(z0) is str:
-        z0 = initialize_code(x, weight, alpha, z0, rng=rng)
+    # if type(z0) is str:
+    #     z0 = initialize_code(x, weight, alpha, z0, rng=rng)
 
     if lr == 'auto':
         # set lr based on the maximum eigenvalue of W^T @ W; i.e. the
@@ -117,7 +116,7 @@ def ista(x, z0, weight, alpha=1.0, fast=True, lr='auto', maxiter=50,
 
     def loss_fn(z_k):
         x_hat = torch.matmul(weight, z_k.T)
-        loss = 0.5 * (x.T - x_hat).norm(p=2).pow(2) + z_k.norm(p=1) * lambda1
+        loss = 0.5 * (x.T - x_hat).norm(p=2).pow(2) + z_k.norm(p=1) * alpha
         return loss
 
     def rss_grad(z_k):
@@ -132,7 +131,7 @@ def ista(x, z0, weight, alpha=1.0, fast=True, lr='auto', maxiter=50,
             print('loss: %0.4f' % loss_fn(z), "weight:", weight, "lr:", lr, "z:", z)
         # ista update
         z_prev = y if fast else z
-        try:
+        try:                                                      # alpha
             z_next = F.softshrink(z_prev - lr * rss_grad(z_prev), alpha * lr)
         except RuntimeError as e:
             print(e)

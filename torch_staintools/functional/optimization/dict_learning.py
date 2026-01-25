@@ -143,8 +143,11 @@ def dict_evaluate(x: torch.Tensor, weight: torch.Tensor, alpha: float, rng: torc
     return loss
 
 
-def sparse_encode(x: torch.Tensor, weight: torch.Tensor, alpha: float = 0.1,
-                  z0=None, algorithm: METHOD_SPARSE = 'ista', init=None, rng: torch.Generator = None,
+def sparse_encode(x: torch.Tensor,
+                  weight: torch.Tensor, alpha: float = 0.1,
+                  z0=None,
+                  algorithm: METHOD_SPARSE = 'ista',
+                  init=None, rng: torch.Generator = None,
                   **kwargs):
     n_samples = x.size(0)
     n_components = weight.size(1)
@@ -157,6 +160,7 @@ def sparse_encode(x: torch.Tensor, weight: torch.Tensor, alpha: float = 0.1,
             init = _init_defaults.get(algorithm, 'zero')
         elif init == 'zero' and algorithm == 'iter-ridge':
             warnings.warn("Iterative Ridge should not be zero-initialized.")
+        # note so far, the function call of sparse_encode in this lib only gives zero init.
         z0 = initialize_code(x, weight, alpha, mode=init, rng=rng)
 
     # perform inference
@@ -164,14 +168,16 @@ def sparse_encode(x: torch.Tensor, weight: torch.Tensor, alpha: float = 0.1,
         case 'cd':
             z = coord_descent(x, weight, z0, alpha, **kwargs)
         case 'ista':
-            z = ista(x, z0, weight, alpha, rng=rng, **kwargs)
+            z = ista(x, z0, weight, alpha, **kwargs)
         case _:
             raise ValueError("invalid algorithm parameter '{}'.".format(algorithm))
     return z
 
 
-def dict_learning(x, n_components, *, alpha=1.0, constrained=True, persist=False,
-                  lambd=1e-2, steps=60, device='cpu', progbar=True, rng: torch.Generator = None,
+def dict_learning(x, n_components, *, alpha: float = 1e-1,
+                  constrained: bool = True, persist: bool = False,
+                  lambd_ridge: float = 1e-2,
+                  steps: int = 60, device='cpu', rng: torch.Generator = None,
                   **solver_kwargs):
     n_samples, n_features = x.shape
     x = x.to(device)
@@ -184,25 +190,21 @@ def dict_learning(x, n_components, *, alpha=1.0, constrained=True, persist=False
     Z0 = None
 
     losses = torch.zeros(steps, device=device)
-    with tqdm(total=steps, disable=not progbar) as progress_bar:
-        for i in range(steps):
-            # infer sparse coefficients and compute loss
+    for i in range(steps):
+        # infer sparse coefficients and compute loss
 
-            Z = sparse_encode(x, weight, alpha, Z0, rng=rng, **solver_kwargs)
-            losses[i] = lasso_loss(x, Z, weight, alpha)
-            if persist:
-                Z0 = Z
+        Z = sparse_encode(x, weight, alpha, Z0, rng=rng, **solver_kwargs)
+        losses[i] = lasso_loss(x, Z, weight, alpha)
+        if persist:
+            Z0 = Z
 
-            # update dictionary
-            if constrained:
-                weight = update_dict(weight, x, Z, positive=True, rng=rng)
-            else:
-                weight = update_dict_ridge(x, Z, lambd=lambd)
+        # update dictionary
+        if constrained:
+            weight = update_dict(weight, x, Z, positive=True, rng=rng)
+        else:
+            weight = update_dict_ridge(x, Z, lambd=lambd_ridge)
 
-            # update progress bar
-            progress_bar.set_postfix(loss=losses[i].item())
-            progress_bar.update(1)
-
+        # update progress bar
     return weight, losses
 
 
@@ -226,7 +228,8 @@ def get_concentrations_single(od_flatten, stain_matrix, regularizer=0.01, method
         case 'cd':
             return coord_descent(od_flatten, stain_matrix.T, alpha=regularizer).T  # figure out pylasso equivalent
         case 'ista':
-            return ista(od_flatten, 'ridge', stain_matrix.T, alpha=regularizer, rng=rng).T
+            z0 = initialize_code(od_flatten, stain_matrix.T, regularizer, 'zero', rng=rng)
+            return ista(od_flatten, z0, stain_matrix.T, alpha=regularizer).T
         case 'frobenium':
             return torch.linalg.lstsq(stain_matrix.T, od_flatten.T)[0].T
 
@@ -245,8 +248,9 @@ def _ls_batch(od_flatten, stain_matrix):
     """Use least square to solve the factorization for concentration.
 
     Warnings:
-        May fail on GPU for individual large input (e.g., 1000 x 1000), regardless of batch size.
+        May fail on GPU for individual large input in cuSolver backend (e.g., 1000 x 1000), regardless of batch size.
         Better for multiple small inputs in terms of H and W.
+        Magma backend may work: torch.backends.cuda.preferred_linalg_library('magma')
 
     Args:
         od_flatten: B * (HW) x num_input_channel

@@ -1,13 +1,13 @@
+from __future__ import annotations
 from typing import TypedDict, Union, Optional
 from abc import abstractmethod
 import torch
 import numpy as np
-from PIL import Image
 from ..base_module.base import CachedRNGModule
 from ..cache.tensor_cache import TensorCache
 
 
-TYPE_IMAGE = Union[np.ndarray, torch.Tensor, Image.Image]
+TYPE_IMAGE = Union[np.ndarray, torch.Tensor, "Image.Image"]
 
 
 class DataInput(TypedDict):

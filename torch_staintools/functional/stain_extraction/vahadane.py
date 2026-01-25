@@ -9,10 +9,13 @@ class VahadaneExtractor(BaseExtractor):
 
     @staticmethod
     def get_stain_matrix_from_od(od: torch.Tensor, tissue_mask: torch.Tensor, *,
-                                 regularizer: float = 0.1, lambd=0.01,
+                                 regularizer: float = 1e-1, lambd_ridge: float = 1e-2,
                                  num_stains: int = 2,
-                                 algorithm='ista', steps=30,
-                                 constrained=True, persist=True, init='ridge', verbose: bool = False,
+                                 algorithm: str = 'ista',
+                                 steps: int = 30,
+                                 constrained: bool = True,
+                                 persist: bool = True, init='zero', # ridge
+                                 verbose: bool = False,
                                  rng: torch.Generator = None) -> torch.Tensor:
         """
         Stain matrix estimation via method of:
@@ -23,7 +26,7 @@ class VahadaneExtractor(BaseExtractor):
             od: optical density image in batch (BxCxHxW)
             tissue_mask: tissue mask so that only pixels in tissue regions will be evaluated
             regularizer: regularization term in ista for dictionary learning
-            lambd: lambda term for the sparse penalty in objective of dictionary learning
+            lambd_ridge: lambda term for the sparse penalty in objective of dictionary learning
             num_stains: # of stains to separate
             algorithm: which algorithm to use, iterative-shrinkage soft thresholding algorithm `ista` or
                 coordinate descent `cd`.
@@ -52,9 +55,10 @@ class VahadaneExtractor(BaseExtractor):
         for od_single, mask_single in zip(od_flatten, tissue_mask_flatten):
             x = od_single[mask_single]
             # todo add num_stains here
-            dictionary, losses = dict_learning(x, n_components=num_stains, alpha=regularizer, lambd=lambd,
+            dictionary, losses = dict_learning(x, n_components=num_stains,
+                                               alpha=regularizer, lambd_ridge=lambd_ridge,
                                                algorithm=algorithm, device=device, steps=steps,
-                                               constrained=constrained, progbar=False, persist=True, init=init,
+                                               constrained=constrained, persist=True, init=init,
                                                verbose=verbose, rng=rng)
         # H on first row.
             dictionary = dictionary.T

@@ -1,3 +1,7 @@
+"""Demo prerequisite:
+    tqdm
+    staintools (for comparison)
+"""
 import cv2
 import torch
 from torchvision.transforms import ToTensor
@@ -9,6 +13,7 @@ import numpy as np
 from tqdm import tqdm
 import random
 import os
+
 seed = 0
 torch.manual_seed(seed)
 torch.cuda.manual_seed(seed)
@@ -53,7 +58,8 @@ def postprocess(image_tensor): return convert_image_dtype(image_tensor, torch.ui
 
 
 # ######### Vahadane
-normalizer_vahadane = NormalizerBuilder.build('vahadane', concentration_method='ista', use_cache=True,
+normalizer_vahadane = NormalizerBuilder.build('vahadane',
+                                              concentration_method='ista', use_cache=True,
                                               rng=1,
                                               )
 normalizer_vahadane = normalizer_vahadane.to(device)
@@ -71,7 +77,7 @@ with torch.no_grad():
         plt.title(f"Vahadane: {idx}")
         plt.show()
 
-# %timeit normalizer_vahadane(norm_tensor, algorithm='ista', constrained=True, verbose=False)
+# %timeit normalizer_vahadane(norm_tensor, constrained=True, verbose=False)
 
 #   #################### Macenko
 
