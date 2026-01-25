@@ -84,8 +84,9 @@ def _lipschitz_constant(W):
     return L
 
 
-def ista(x, z0, weight, alpha=0.01, fast=True, lr='auto', maxiter=50,
-         tol=1e-5, verbose=False, rng: torch.Generator = None):
+def ista(x, z0, weight, alpha=0.01, fast=True, lr: str | float = 'auto',
+         maxiter: int = 50,
+         tol=1e-5, verbose=False):
     """ISTA solver
 
     Args:
@@ -99,8 +100,6 @@ def ista(x, z0, weight, alpha=0.01, fast=True, lr='auto', maxiter=50,
         maxiter: max number of iteration if not converge.
         tol: tolerance term of convergence test.
         verbose: whether to print the progress
-        rng: torch.Generator for random initialization
-
     Returns:
 
     """

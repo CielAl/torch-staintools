@@ -6,7 +6,6 @@ from .solver import coord_descent, ista
 from .sparse_util import initialize_code
 from ..conversion.od import rgb2od
 from ..utility.implementation import transpose_trailing
-from tqdm import tqdm
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -153,16 +152,14 @@ def sparse_encode(x: torch.Tensor,
     n_components = weight.size(1)
 
     # initialize code variable
-    if z0 is not None:
-        assert z0.shape == (n_samples, n_components)
-    else:
-        if init is None:
-            init = _init_defaults.get(algorithm, 'zero')
-        elif init == 'zero' and algorithm == 'iter-ridge':
-            warnings.warn("Iterative Ridge should not be zero-initialized.")
+    init = _init_defaults.get(algorithm, 'zero') if init is None else init
+    if init == 'zero' and algorithm == 'iter-ridge':
+        warnings.warn("Iterative Ridge should not be zero-initialized.")
+    if z0 is None:
         # note so far, the function call of sparse_encode in this lib only gives zero init.
         z0 = initialize_code(x, weight, alpha, mode=init, rng=rng)
 
+    assert z0.shape == (n_samples, n_components)
     # perform inference
     match algorithm:
         case 'cd':
