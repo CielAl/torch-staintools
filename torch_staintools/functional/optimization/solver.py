@@ -73,16 +73,24 @@ def _lipschitz_constant(W):
     # W has nan
     WtW = torch.matmul(W.t(), W)
     WtW += torch.eye(WtW.size(0)).to(W.device) * get_eps(WtW)
-    L = torch.linalg.eigvalsh(WtW)[-1].item()
+    L = torch.linalg.eigvalsh(WtW)[-1].squeeze()
     # scipy.sparse.linalg._eigen.arpack.arpack.ArpackError: ARPACK error 3: No shifts could be applied during
     # a cycle of the Implicitly restarted Arnoldi iteration.
     # One possibility is to increase the size of NCV relative to NEV.
     # breakpoint()
     # L = eigsh(WtW.detach().cpu().numpy(), k=1, which='LM', return_eigenvectors=False).item()
-    if not np.isfinite(L):  # sometimes L is not finite because of potential cublas error.
+    if not torch.isfinite(L).all():  # sometimes L is not finite because of potential cublas error.
         L = torch.linalg.norm(W, ord=2) ** 2
     return L
 
+def rss_grad(z_k: torch.Tensor, x: torch.Tensor, weight: torch.Tensor):
+    resid = torch.matmul(z_k, weight.T) - x
+    return torch.matmul(resid, weight)
+
+def loss_fn(z_k: torch.Tensor, x: torch.Tensor, weight: torch.Tensor, alpha: torch.Tensor):
+    x_hat = torch.matmul(weight, z_k.T)
+    loss = 0.5 * (x.T - x_hat).norm(p=2).pow(2) + z_k.norm(p=1) * alpha
+    return loss
 
 def ista(x, z0, weight, alpha=0.01, fast=True, lr: str | float = 'auto',
          maxiter: int = 50,
@@ -112,26 +120,18 @@ def ista(x, z0, weight, alpha=0.01, fast=True, lr: str | float = 'auto',
         L = _lipschitz_constant(weight)
         lr = 1 / L
     tol = z0.numel() * tol
-
-    def loss_fn(z_k):
-        x_hat = torch.matmul(weight, z_k.T)
-        loss = 0.5 * (x.T - x_hat).norm(p=2).pow(2) + z_k.norm(p=1) * alpha
-        return loss
-
-    def rss_grad(z_k):
-        resid = torch.matmul(z_k, weight.T) - x
-        return torch.matmul(resid, weight)
+    alpha = torch.Tensor(alpha).to(x.device)
     # optimize
     z = z0
     if fast:
         y, t = z0, torch.tensor(1, dtype=torch.float32).to(z0.device)
     for _ in range(maxiter):
-        if verbose:
-            print('loss: %0.4f' % loss_fn(z), "weight:", weight, "lr:", lr, "z:", z)
+        # if verbose:
+        #    print('loss: %0.4f' % loss_fn(z, x, weight, alpha), "weight:", weight, "lr:", lr, "z:", z)
         # ista update
         z_prev = y if fast else z
         try:                                                      # alpha
-            z_next = F.softshrink(z_prev - lr * rss_grad(z_prev), alpha * lr)
+            z_next = F.softshrink(z_prev - lr * rss_grad(z_prev, x, weight), alpha * lr)
         except RuntimeError as e:
             print(e)
             print('lr error ', lr, 'did not update z')

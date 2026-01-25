@@ -10,7 +10,6 @@ from torch_staintools.functional.utility.implementation import transpose_trailin
 from torchvision.transforms.functional import convert_image_dtype
 from torch_staintools.normalizer.reinhard import ReinhardNormalizer
 import torch
-import cv2
 import os
 
 fix_seed(314159)
