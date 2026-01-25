@@ -95,6 +95,19 @@ def loss_fn(z_k: torch.Tensor,
     loss = 0.5 * (x.T - x_hat).norm(p=2).pow(2) + z_k.norm(p=1) * alpha
     return loss
 
+
+def ista_step(
+    z_k: torch.Tensor,
+    x: torch.Tensor,
+    weight: torch.Tensor,
+    alpha: torch.Tensor | float,
+    lr: torch.Tensor | float,
+) -> torch.Tensor:
+    g = rss_grad(z_k, x, weight)
+    return F.softshrink(z_k - lr * g, alpha * lr)
+
+
+
 def ista(x, z0, weight, alpha=0.01, fast=True, lr: str | float = 'auto',
          maxiter: int = 50,
          tol=1e-5, verbose=False):
