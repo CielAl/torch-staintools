@@ -1,7 +1,7 @@
 import numpy as np
 import random
 import torch
-import cv2
+# import cv2
 
 
 def fix_seed(seed: int):
@@ -20,13 +20,13 @@ def dummy_to_numpy(bchw: torch.Tensor):
     return bchw.permute(0, 2, 3, 1).squeeze(0).cpu().numpy()
 
 
-def get_lab_np(img_ubyte: np.ndarray):
-    lab_result = cv2.cvtColor(img_ubyte, cv2.COLOR_BGR2LAB)
-    lab_result = lab_result.astype(np.float64)
-    lab_result[:, :, 0] *= 100.
-    lab_result[:, :, 0] /= 255.
-    lab_result[:, :, 1: 3] += 128
-    return lab_result
+# def get_lab_np(img_ubyte: np.ndarray):
+#     lab_result = cv2.cvtColor(img_ubyte, cv2.COLOR_BGR2LAB)
+#     lab_result = lab_result.astype(np.float64)
+#     lab_result[:, :, 0] *= 100.
+#     lab_result[:, :, 0] /= 255.
+#     lab_result[:, :, 1: 3] += 128
+#     return lab_result
 
 
 def psnr(true_img: torch.Tensor, pred_img: torch.Tensor, max_pixel: float = 1.0):
