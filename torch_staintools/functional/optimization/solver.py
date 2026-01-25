@@ -106,6 +106,11 @@ def ista_step(
     g = rss_grad(z_k, x, weight)
     return F.softshrink(z_k - lr * g, alpha * lr)
 
+def _as_scalar(v: float | torch.Tensor, like: torch.Tensor) -> torch.Tensor:
+    if isinstance(v, torch.Tensor):
+        # will except on non-scalar
+        return v.to(device=like.device, dtype=like.dtype).reshape(())
+    return torch.tensor(v, device=like.device, dtype=like.dtype)
 
 
 def ista(x, z0, weight, alpha=0.01, fast=True, lr: str | float = 'auto',
@@ -136,7 +141,8 @@ def ista(x, z0, weight, alpha=0.01, fast=True, lr: str | float = 'auto',
         L = _lipschitz_constant(weight)
         lr = 1 / L
     tol = z0.numel() * tol
-    alpha = torch.Tensor(alpha).to(x.device)
+    alpha = _as_scalar(alpha, x)
+    lr = _as_scalar(lr, x)
     # optimize
     z = z0
     if fast:
