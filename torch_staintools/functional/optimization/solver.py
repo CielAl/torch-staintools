@@ -87,7 +87,10 @@ def rss_grad(z_k: torch.Tensor, x: torch.Tensor, weight: torch.Tensor):
     resid = torch.matmul(z_k, weight.T) - x
     return torch.matmul(resid, weight)
 
-def loss_fn(z_k: torch.Tensor, x: torch.Tensor, weight: torch.Tensor, alpha: torch.Tensor):
+def loss_fn(z_k: torch.Tensor,
+            x: torch.Tensor,
+            weight: torch.Tensor,
+            alpha: torch.Tensor):
     x_hat = torch.matmul(weight, z_k.T)
     loss = 0.5 * (x.T - x_hat).norm(p=2).pow(2) + z_k.norm(p=1) * alpha
     return loss
