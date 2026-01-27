@@ -7,7 +7,7 @@ import torch
 from ..eps import get_eps
 import torch.nn.functional as F
 
-from ..utility import as_scalar
+from .sparse_util import as_scalar
 
 
 def coord_descent(x: torch.Tensor, z0: torch.Tensor, weight: torch.Tensor,
@@ -56,25 +56,6 @@ def coord_descent(x: torch.Tensor, z0: torch.Tensor, weight: torch.Tensor,
 
     z = F.softshrink(b, alpha)
     return z
-
-def _lipschitz_constant(w: torch.Tensor):
-    """find the Lipscitz constant to compute the learning rate in ISTA
-
-    Args:
-        w: weights w in f(z) = ||Wz - x||^2
-
-    Returns:
-
-    """
-    # L = torch.linalg.norm(W, ord=2) ** 2
-    # W has nan
-    WtW = torch.matmul(w.t(), w)
-    WtW += torch.eye(WtW.size(0)).to(w.device) * get_eps(WtW)
-    L = torch.linalg.eigvalsh(WtW)[-1].squeeze()
-    L_is_finite = torch.isfinite(L).all()
-    L = torch.where(L_is_finite, L, torch.linalg.norm(w, ord=2) ** 2)
-    L = L.abs()
-    return L + torch.finfo(L.dtype).eps
 
 def rss_grad(z_k: torch.Tensor, x: torch.Tensor, weight: torch.Tensor):
     resid = torch.matmul(z_k, weight.T) - x
@@ -208,19 +189,6 @@ def fista_loop(
 
     return z
 
-def __collate_params(z0: torch.Tensor,
-                     x: torch.Tensor,
-                     lr: str| float,
-                     weight: torch.Tensor,
-                     alpha: float | torch.Tensor,
-                     tol: float) -> Tuple[torch.Tensor, torch.Tensor, float]:
-    if lr == 'auto':
-        L = _lipschitz_constant(weight)
-        lr = 1 / L
-    tol = z0.numel() * tol
-    alpha = as_scalar(alpha, x)
-    lr = as_scalar(lr, x)
-    return lr, alpha, tol
 
 def ista(x, z0, weight, alpha=0.01, lr: str | float = 'auto',
          maxiter: int = 50,
@@ -240,7 +208,7 @@ def ista(x, z0, weight, alpha=0.01, lr: str | float = 'auto',
     Returns:
 
     """
-    lr, alpha, tol = __collate_params(z0, x, lr, weight, alpha, tol)
+    # lr, alpha, tol = collate_params(z0, x, lr, weight, alpha, tol)
     z0 = z0.contiguous()
     x = x.contiguous()
     weight = weight.contiguous()
@@ -248,7 +216,9 @@ def ista(x, z0, weight, alpha=0.01, lr: str | float = 'auto',
     return ista_loop(z0, x, weight, alpha, lr, tol, maxiter, positive_code)
 
 
-def fista(x, z0, weight, alpha=0.01, lr: str | float = 'auto',
+def fista(x: torch.Tensor, z0: torch.Tensor,
+          weight: torch.Tensor,
+          alpha: torch.Tensor, lr: str | float = 'auto',
           maxiter: int = 50,
           tol: float = 1e-5, positive_code: bool = False):
     """Fast ISTA solver
@@ -266,7 +236,7 @@ def fista(x, z0, weight, alpha=0.01, lr: str | float = 'auto',
     Returns:
 
     """
-    lr, alpha, tol = __collate_params(z0, x, lr, weight, alpha, tol)
+   #  lr, alpha, tol = collate_params(z0, x, lr, weight, alpha, tol)
     z0 = z0.contiguous()
     x = x.contiguous()
     weight = weight.contiguous()

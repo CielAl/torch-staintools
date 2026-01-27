@@ -1,8 +1,8 @@
-from typing import Optional, Literal, get_args
+from typing import Optional, Literal, get_args, Tuple
 import torch
 from torch.nn import functional as F
 from torch_staintools.constants import CONST
-
+from torch_staintools.functional.eps import get_eps
 
 METHOD_ISTA = Literal['ista']
 METHOD_FISTA = Literal['fista']
@@ -94,3 +94,46 @@ def validate_code(algorithm: METHOD_SPARSE,
         z0 = initialize_code(x, weight, mode=init, rng=rng)
     assert z0.shape == (n_samples, n_components)
     return z0
+
+
+def lipschitz_constant(w: torch.Tensor):
+    """find the Lipschitz constant to compute the learning rate in ISTA
+
+    Args:
+        w: weights w in f(z) = ||Wz - x||^2
+
+    Returns:
+
+    """
+    # L = torch.linalg.norm(W, ord=2) ** 2
+    # W has nan
+    # WtW = torch.matmul(w.t(), w)
+    # WtW += torch.eye(WtW.size(0)).to(w.device) * get_eps(WtW)
+    # L = torch.linalg.eigvalsh(WtW)[-1].squeeze()
+    # L_is_finite = torch.isfinite(L).all()
+    # L = torch.where(L_is_finite, L, torch.linalg.norm(w, ord=2) ** 2)
+    # L = L.abs()
+    L = torch.linalg.norm(w, ord=2) ** 2
+    return L + torch.finfo(L.dtype).eps
+
+
+def collate_params(z0: torch.Tensor,
+                   x: torch.Tensor,
+                   lr: str| float,
+                   weight: torch.Tensor,
+                   alpha: float | torch.Tensor,
+                   tol: float) -> Tuple[torch.Tensor, torch.Tensor, float]:
+    if lr == 'auto':
+        L = lipschitz_constant(weight)
+        lr = 1 / L
+    tol = z0.numel() * tol
+    alpha = as_scalar(alpha, x)
+    lr = as_scalar(lr, x)
+    return lr, alpha, tol
+
+
+def as_scalar(v: float | torch.Tensor, like: torch.Tensor) -> torch.Tensor:
+    if isinstance(v, torch.Tensor):
+        # will except on non-scalar
+        return v.to(device=like.device, dtype=like.dtype).reshape(())
+    return torch.tensor(v, device=like.device, dtype=like.dtype)

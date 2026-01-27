@@ -92,10 +92,3 @@ def nanstd(data: torch.Tensor, dim: Optional[int | tuple] = None,
     sum_dev2 = ((data - mean) ** 2).nansum(dim=dim,  keepdim=True)
     # sqrt and normalize by corrected degrees of freedom
     return torch.sqrt(sum_dev2 / (non_nan_count - correction))
-
-
-def as_scalar(v: float | torch.Tensor, like: torch.Tensor) -> torch.Tensor:
-    if isinstance(v, torch.Tensor):
-        # will except on non-scalar
-        return v.to(device=like.device, dtype=like.dtype).reshape(())
-    return torch.tensor(v, device=like.device, dtype=like.dtype)
