@@ -1,1 +1,2 @@
-from .config import CONST
+from .config import CONFIG
+from .param import PARAM

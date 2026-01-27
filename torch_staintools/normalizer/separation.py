@@ -3,7 +3,7 @@
 """
 
 import torch
-from torch_staintools.functional.stain_extraction.extractor import BaseExtractor
+from torch_staintools.functional.stain_extraction.extractor import StainExtraction
 from ..functional.optimization.sparse_util import METHOD_FACTORIZE
 from ..functional.optimization.concentration import get_concentrations
 from torch_staintools.functional.stain_extraction.factory import build_from_name
@@ -24,7 +24,7 @@ class StainSeparation(Normalizer):
         concentration_algorithm = 'ls' May fail on GPU for individual large input (e.g., 1000 x 1000),
         regardless of batch size. Therefore, 'ls' is better for multiple small inputs in terms of H and W.
     """
-    get_stain_matrix: BaseExtractor
+    get_stain_matrix: StainExtraction
     stain_matrix_target: torch.Tensor
     target_concentrations: torch.Tensor
 
@@ -33,7 +33,8 @@ class StainSeparation(Normalizer):
     rng: torch.Generator
     concentration_method: METHOD_FACTORIZE
 
-    def __init__(self, get_stain_matrix: BaseExtractor, concentration_method: METHOD_FACTORIZE = 'fista',
+    def __init__(self, get_stain_matrix: StainExtraction,
+                 concentration_method: METHOD_FACTORIZE = 'fista',
                  num_stains: int = 2,
                  luminosity_threshold: float = 0.8,
                  regularizer: float = 0.1,

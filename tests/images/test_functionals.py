@@ -2,7 +2,7 @@
 """
 import unittest
 from tests.util import fix_seed, dummy_from_numpy, psnr
-from torch_staintools.functional.stain_extraction.macenko import MacenkoExtractor
+from torch_staintools.functional.stain_extraction.macenko import MacenkoAlg
 from torch_staintools.functional.stain_extraction.vahadane import VahadaneExtractor
 from torch_staintools.functional.optimization.concentration import get_concentrations
 from torch_staintools.functional.tissue_mask import get_tissue_mask, TissueMaskException
@@ -89,7 +89,7 @@ class TestFunctional(unittest.TestCase):
                                                num_stains=2, regularizer=0.1, dict_algorithm=alg)
 
     def test_stains(self):
-        macenko = MacenkoExtractor()
+        macenko = MacenkoAlg()
         vahadane = VahadaneExtractor()
         # not support num_stains other than 2
         with self.assertRaises(NotImplementedError):

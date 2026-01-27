@@ -1,9 +1,9 @@
 from .vahadane import VahadaneExtractor
-from .macenko import MacenkoExtractor
-from .extractor import BaseExtractor
+from .macenko import MacenkoAlg
+from .extractor import StainExtraction
 
 
-def build_from_name(algo: str) -> BaseExtractor:
+def build_from_name(algo: str) -> StainExtraction:
     """A factory builder to create stain extractor from name.
 
     Args:
@@ -15,7 +15,7 @@ def build_from_name(algo: str) -> BaseExtractor:
     algo = algo.lower()
     match algo:
         case 'macenko':
-            return MacenkoExtractor()
+            return MacenkoAlg()
         case 'vahadane':
             return VahadaneExtractor()
     raise ValueError(f"{algo} not defined")

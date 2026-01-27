@@ -3,7 +3,7 @@ from typing import Optional, Sequence, Tuple, Hashable, List
 from ..functional.stain_extraction.factory import build_from_name
 from ..functional.optimization.sparse_util import METHOD_FACTORIZE
 from ..functional.optimization.concentration import get_concentrations
-from ..functional.stain_extraction.extractor import BaseExtractor
+from ..functional.stain_extraction.extractor import StainExtraction
 from ..functional.utility.implementation import transpose_trailing, img_from_concentration
 from ..functional.tissue_mask import get_tissue_mask, TissueMaskException
 from ..cache.tensor_cache import TensorCache
@@ -27,7 +27,7 @@ class Augmentor(CachedRNGModule):
     target_stain_idx: Optional[Sequence[int]]
 
     concentration_method: METHOD_FACTORIZE
-    get_stain_matrix: BaseExtractor  # can be any callable following the signature of BaseExtractor's __call__
+    get_stain_matrix: StainExtraction  # can be any callable following the signature of BaseExtractor's __call__
     target_concentrations: torch.Tensor
 
     sigma_alpha: float
@@ -37,7 +37,7 @@ class Augmentor(CachedRNGModule):
     luminosity_threshold: float
     regularizer: float
 
-    def __init__(self, get_stain_matrix: BaseExtractor, concentration_method: METHOD_FACTORIZE = 'ista',
+    def __init__(self, get_stain_matrix: StainExtraction, concentration_method: METHOD_FACTORIZE = 'ista',
                  rng: TYPE_RNG = None,
                  target_stain_idx: Optional[Sequence[int]] = (0, 1),
                  sigma_alpha: float = 0.2,

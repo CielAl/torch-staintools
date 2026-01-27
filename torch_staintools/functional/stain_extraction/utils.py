@@ -1,6 +1,25 @@
 import torch
 
 
+def normalize_matrix_rows(a: torch.Tensor) -> torch.Tensor:
+    """Normalize the rows of an array.
+    Args:
+        a: An array to normalize
+
+    Returns:
+        Array with rows normalized.
+    """
+    return a / torch.linalg.norm(a, dim=1)[:, None]
+
+
+def cov(x):
+    """Covariance matrix for eigen decomposition.
+    https://en.wikipedia.org/wiki/Covariance_matrix
+    """
+    E_x = x.mean(dim=1)
+    x = x - E_x[:, None]
+    return torch.mm(x, x.T) / (x.size(1) - 1)
+
 def percentile(t: torch.Tensor, q: float, dim: int) -> torch.Tensor:
     """Author: adapted from https://gist.github.com/spezold/42a451682422beb42bc43ad0c0967a30
 

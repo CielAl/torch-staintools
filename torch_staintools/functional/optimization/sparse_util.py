@@ -1,7 +1,7 @@
 from typing import Optional, Literal, get_args, Tuple
 import torch
 from torch.nn import functional as F
-from torch_staintools.constants import CONST
+from torch_staintools.constants import CONFIG, PARAM
 from torch_staintools.functional.eps import get_eps
 
 METHOD_ISTA = Literal['ista']
@@ -29,7 +29,7 @@ _batch_supported = {
 def ridge(b: torch.Tensor, a: torch.Tensor, alpha: Optional[float] = None):
     # right-hand side
     if alpha is None:
-        alpha = CONST.INIT_RIDGE_L2
+        alpha = PARAM.INIT_RIDGE_L2
     rhs = torch.matmul(a.T, b)
     # regularized gram matrix
     M = torch.matmul(a.T, a)
@@ -119,14 +119,21 @@ def lipschitz_constant(w: torch.Tensor):
 
 def collate_params(z0: torch.Tensor,
                    x: torch.Tensor,
-                   lr: str| float,
+                   lr: Optional[float | torch.Tensor],
                    weight: torch.Tensor,
                    alpha: float | torch.Tensor,
                    tol: float) -> Tuple[torch.Tensor, torch.Tensor, float]:
-    if lr == 'auto':
+    if lr is None:
         L = lipschitz_constant(weight)
         lr = 1 / L
+
+    # if tol is None:
+    #     tol = PARAM.OPTIM_DEFAULT_TOL
     tol = z0.numel() * tol
+
+    # if alpha is None:
+    #     alpha = PARAM.OPTIM_DEFAULT_SPARSE_ISTA_LAMBDA
+
     alpha = as_scalar(alpha, x)
     lr = as_scalar(lr, x)
     return lr, alpha, tol

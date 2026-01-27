@@ -2,12 +2,12 @@
 code directly adapted from https://github.com/rfeinman/pytorch-lasso
 """
 from .solver import coord_descent, ista, fista
-from .sparse_util import METHOD_SPARSE, validate_code, initialize_dict
+from .sparse_util import METHOD_SPARSE, validate_code, initialize_dict, collate_params
 import torch
 import torch.nn.functional as F
 from typing import Optional, cast
 from ..eps import get_eps
-from torch_staintools.constants import CONST
+from torch_staintools.constants import CONFIG
 
 def update_dict_cd(dictionary: torch.Tensor, x: torch.Tensor, code: torch.Tensor,
                    positive: bool = True,
@@ -95,13 +95,13 @@ def update_dict_ridge(x, code, lambd=1e-4):
 
 def sparse_code(x: torch.Tensor,
                 weight: torch.Tensor,
-                alpha,
-                z0: Optional[torch.Tensor],
-                algorithm: METHOD_SPARSE = 'fista',
-                lr: str | float = 'auto',
-                maxiter: int = 50,
-                tol: float = 1e-5,
-                positive_code: bool = False):
+                alpha: torch.Tensor,
+                z0: torch.Tensor,
+                algorithm: METHOD_SPARSE,
+                lr: torch.Tensor,
+                maxiter: int,
+                tol: float,
+                positive_code: bool):
     n_samples = x.size(0)
     n_components = weight.size(1)
 
@@ -119,6 +119,43 @@ def sparse_code(x: torch.Tensor,
     return z
 
 
+def dict_learning_loop(x: torch.Tensor,
+                       z0: torch.Tensor,
+                       weight: torch.Tensor,
+                       alpha: torch.Tensor,
+                       algorithm: METHOD_SPARSE,
+                       *,
+                       lambd_ridge: float,
+                       steps: int,
+                       rng: torch.Generator,
+                       init: Optional[str],
+                       lr: torch.Tensor,
+                       maxiter: int,
+                       tol: float, ):
+
+    for _ in range(steps):
+        # infer sparse coefficients and compute loss
+
+        z = sparse_code(x, weight, alpha, z0, algorithm=cast(METHOD_SPARSE, algorithm),
+                        lr=lr, maxiter=maxiter, tol=tol,
+                        positive_code=CONFIG.DICT_POSITIVE_CODE).contiguous()
+        weight = weight.contiguous()
+
+        # use the code from previous steps if persist
+        if CONFIG.DICT_PERSIST_CODE:
+            z0 = z
+        else:
+            z0 = validate_code(algorithm, init, None, weight, x, rng)
+
+        # update dictionary
+        if CONFIG.DICT_POSITIVE_DICTIONARY:
+            weight = update_dict_cd(weight, x, z, positive=True, rng=rng)
+        else:
+            weight = update_dict_ridge(x, z, lambd=lambd_ridge)
+
+    return weight
+
+
 def dict_learning(x: torch.Tensor,
                   n_components: int,
                   algorithm: METHOD_SPARSE,
@@ -127,37 +164,19 @@ def dict_learning(x: torch.Tensor,
                   steps: int = 60,
                   rng: torch.Generator = None,
                   init: Optional[str] = 'zero',
-                  lr: str | float = 'auto',
+                  lr: Optional[float] = None,
                   maxiter: int = 50,
                   tol: float = 1e-5, ):
     n_samples, n_features = x.shape
     x = x.contiguous()
 
     weight = initialize_dict(n_features=n_features, n_components=n_components, device=x.device,
-                             rng=rng, positive_dict=CONST.DICT_POSITIVE_DICTIONARY)
+                             rng=rng, positive_dict=CONFIG.DICT_POSITIVE_DICTIONARY)
 
     # initialize
     z0 = validate_code(algorithm, init, None, weight, x, rng)
     assert z0 is not None
-    for _ in range(steps):
-        # infer sparse coefficients and compute loss
-
-        z = sparse_code(x, weight, alpha, z0, algorithm=cast(METHOD_SPARSE, algorithm),
-                        lr=lr, maxiter=maxiter, tol=tol,
-                        positive_code=CONST.DICT_POSITIVE_CODE).contiguous()
-        weight = weight.contiguous()
-
-        # use the code from previous steps if persist
-        if CONST.DICT_PERSIST_CODE:
-            z0 = z
-        else:
-            z0 = validate_code(algorithm, init, None, weight, x, rng)
-
-        # update dictionary
-        if CONST.DICT_POSITIVE_DICTIONARY:
-            weight = update_dict_cd(weight, x, z, positive=True, rng=rng)
-        else:
-            weight = update_dict_ridge(x, z, lambd=lambd_ridge)
-
-    return weight
+    lr, alpha, tol = collate_params(z0, x, lr, weight, alpha, tol)
+    return dict_learning_loop(x, z0, weight, alpha, algorithm, lambd_ridge=lambd_ridge,
+                              steps=steps, rng=rng, init=init, lr=lr, maxiter=maxiter, tol=tol)
 

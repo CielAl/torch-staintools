@@ -1,20 +1,18 @@
 """
 code directly adapted from https://github.com/rfeinman/pytorch-lasso
 """
-from typing import Tuple
-
 import torch
-from ..eps import get_eps
 import torch.nn.functional as F
-
-from .sparse_util import as_scalar
 
 
 def coord_descent(x: torch.Tensor, z0: torch.Tensor, weight: torch.Tensor,
-                  alpha: float = 1.0,
-                  maxiter: int = 50, tol: float = 1e-6,
-                  positive_code: bool = False):
+                  alpha: torch.Tensor,
+                  maxiter: int, tol: float,
+                  positive_code: bool):
     """ modified coord_descent"""
+    if isinstance(alpha, torch.Tensor):
+        assert alpha.numel() == 1
+        alpha = alpha.item()
     input_dim, code_dim = weight.shape  # [D,K]
     batch_size, input_dim1 = x.shape  # [N,D]
     assert input_dim1 == input_dim
@@ -190,9 +188,11 @@ def fista_loop(
     return z
 
 
-def ista(x, z0, weight, alpha=0.01, lr: str | float = 'auto',
-         maxiter: int = 50,
-         tol: float = 1e-5, positive_code: bool = False):
+def ista(x: torch.Tensor, z0: torch.Tensor,
+         weight: torch.Tensor, alpha: torch.Tensor,
+         lr: torch.Tensor,
+         maxiter: int,
+         tol: float, positive_code: bool):
     """ISTA solver
 
     Args:
@@ -218,9 +218,9 @@ def ista(x, z0, weight, alpha=0.01, lr: str | float = 'auto',
 
 def fista(x: torch.Tensor, z0: torch.Tensor,
           weight: torch.Tensor,
-          alpha: torch.Tensor, lr: str | float = 'auto',
-          maxiter: int = 50,
-          tol: float = 1e-5, positive_code: bool = False):
+          alpha: torch.Tensor, lr: torch.Tensor,
+          maxiter: int,
+          tol: float, positive_code):
     """Fast ISTA solver
 
     Args:
