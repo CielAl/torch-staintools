@@ -77,7 +77,7 @@ with torch.no_grad():
         plt.title(f"Vahadane: {idx}")
         plt.show()
 
-# %timeit normalizer_vahadane(norm_tensor, constrained=True, verbose=False)
+# %timeit normalizer_vahadane(norm_tensor, positive_dict=True)
 
 #   #################### Macenko
 
@@ -95,7 +95,7 @@ with torch.no_grad():
         plt.imshow(test_out)
         plt.title(f"Macenko: {idx}")
         plt.show()
-# # %timeit normalizer_macenko(norm_tensor, algorithm='ista', constrained=True, verbose=False)
+# # %timeit normalizer_macenko(norm_tensor, algorithm='ista', positive_dict=True,)
 
 # ###################### Reinhard
 

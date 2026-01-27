@@ -1,7 +1,8 @@
 from typing import Literal, Callable, Optional, Sequence
 import torch
 from .base import Augmentor
-from ..functional.optimization.dict_learning import METHOD_FACTORIZE
+from ..functional.optimization.sparse_util import METHOD_FACTORIZE
+
 AUG_TYPE_VAHADANE = Literal['vahadane']
 AUG_TYPE_MACENKO = Literal['macenko']
 

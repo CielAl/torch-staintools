@@ -11,11 +11,14 @@ class VahadaneExtractor(BaseExtractor):
     def get_stain_matrix_from_od(od: torch.Tensor, tissue_mask: torch.Tensor, *,
                                  regularizer: float = 1e-1, lambd_ridge: float = 1e-2,
                                  num_stains: int = 2,
-                                 algorithm: str = 'ista',
+                                 algorithm: str = 'fista',
                                  steps: int = 30,
-                                 constrained: bool = True,
-                                 persist: bool = True, init='zero', # ridge
-                                 verbose: bool = False,
+                                 positive_dict: bool = True,
+                                 positive_code: bool = False,
+                                 persist: bool = True, init='zero',  # ridge
+                                 maxiter: int = 50,
+                                 lr: str | float = 'auto',
+                                 tol: float = 1e-5,
                                  rng: torch.Generator = None) -> torch.Tensor:
         """
         Stain matrix estimation via method of:
@@ -31,15 +34,17 @@ class VahadaneExtractor(BaseExtractor):
             algorithm: which algorithm to use, iterative-shrinkage soft thresholding algorithm `ista` or
                 coordinate descent `cd`.
             steps: max number of steps if still not converged
-            constrained: whether to force dictionary to be positive
+            positive_dict: whether to force dictionary to be positive
             persist: whether retain the previous z value for its update or initialize every time in the iteration.
             init: init method of the codes `a` in `X = D x a`. Selected from `ridge`, `zero`, `unif` (uniformly random),
                 or `transpose`. Details see torch_staintools.functional.optimization.sparse_util.initialize_code
-            verbose: whether to print progress messages.
+            maxiter: maximum number of iterations in ista loops and cd for code update
+            tol: tolerance for convergence of code update
+            lr: step size for ista loops only. not applied to cd.
             rng: torch.Generator for any random initializations incurred (e.g., if `init` is set to be unif)
 
         Returns:
-            List of HE matrix (B*2x3 - H on the 1st row in the 2nd dimension)
+            List of stain (e.g., HE) matrices ( B x num_stain x num_channel - H on the 1st row in the 2nd dimension)
         """
         # convert to od and ignore background
         # h*w, c
@@ -55,11 +60,14 @@ class VahadaneExtractor(BaseExtractor):
         for od_single, mask_single in zip(od_flatten, tissue_mask_flatten):
             x = od_single[mask_single]
             # todo add num_stains here
-            dictionary, losses = dict_learning(x, n_components=num_stains,
-                                               alpha=regularizer, lambd_ridge=lambd_ridge,
-                                               algorithm=algorithm, device=device, steps=steps,
-                                               constrained=constrained, persist=True, init=init,
-                                               verbose=verbose, rng=rng)
+            dictionary  = dict_learning(x, n_components=num_stains, algorithm=algorithm,
+                                           alpha=regularizer, lambd_ridge=lambd_ridge,
+                                           device=device, steps=steps,
+                                           positive_dict=positive_dict, persist=True,
+                                           init=init,
+                                           positive_code=positive_code,
+                                           rng=rng, maxiter=maxiter, lr=lr,
+                                           tol=tol)
         # H on first row.
             dictionary = dictionary.T
             # todo add num_stains here - sort?
@@ -102,5 +110,8 @@ class VahadaneExtractor(BaseExtractor):
         #  B x (HxWx1)
 
         od = rgb2od(image)
-        return VahadaneExtractor.get_stain_matrix_from_od(od, tissue_mask, regularizer=regularizer, algorithm='ista',
+        return VahadaneExtractor.get_stain_matrix_from_od(od,
+                                                          tissue_mask,
+                                                          regularizer=regularizer,
+                                                          algorithm='fista',
                                                           num_stains=num_stains, rng=rng, **kwargs)

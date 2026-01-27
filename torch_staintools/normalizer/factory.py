@@ -2,7 +2,7 @@ from typing import Literal, Callable, Optional
 from .base import Normalizer
 from .reinhard import ReinhardNormalizer
 from .separation import StainSeparation
-from ..functional.optimization.dict_learning import METHOD_FACTORIZE
+from ..functional.optimization.sparse_util import METHOD_FACTORIZE
 import torch
 TYPE_REINHARD = Literal['reinhard']
 TYPE_VAHADANE = Literal['vahadane']
@@ -18,7 +18,7 @@ class NormalizerBuilder:
 
     @staticmethod
     def build(method: TYPE_SUPPORTED,
-              concentration_method: METHOD_FACTORIZE = 'ista',
+              concentration_method: METHOD_FACTORIZE = 'fista',
               num_stains: int = 2,
               luminosity_threshold: float = 0.8,
               regularizer: float = 0.1,

@@ -4,7 +4,8 @@
 
 import torch
 from torch_staintools.functional.stain_extraction.extractor import BaseExtractor
-from torch_staintools.functional.optimization.dict_learning import get_concentrations, METHOD_FACTORIZE
+from ..functional.optimization.sparse_util import METHOD_FACTORIZE
+from ..functional.optimization.concentration import get_concentrations
 from torch_staintools.functional.stain_extraction.factory import build_from_name
 from torch_staintools.functional.stain_extraction.utils import percentile
 from torch_staintools.functional.utility.implementation import transpose_trailing, img_from_concentration
@@ -32,7 +33,7 @@ class StainSeparation(Normalizer):
     rng: torch.Generator
     concentration_method: METHOD_FACTORIZE
 
-    def __init__(self, get_stain_matrix: BaseExtractor, concentration_method: METHOD_FACTORIZE = 'ista',
+    def __init__(self, get_stain_matrix: BaseExtractor, concentration_method: METHOD_FACTORIZE = 'fista',
                  num_stains: int = 2,
                  luminosity_threshold: float = 0.8,
                  regularizer: float = 0.1,
@@ -91,7 +92,7 @@ class StainSeparation(Normalizer):
 
         self.register_buffer('stain_matrix_target', stain_matrix_target)
         target_conc = get_concentrations(target, self.stain_matrix_target, regularizer=self.regularizer,
-                                         algorithm='ista', rng=self.rng)
+                                         algorithm='fista', rng=self.rng)
         self.register_buffer('target_concentrations', target_conc)
         # B x (HW) x 2
         conc_transpose = transpose_trailing(self.target_concentrations)
@@ -116,7 +117,8 @@ class StainSeparation(Normalizer):
         return stain_mat.repeat(*repeat_dim)
 
     def transform(self, image: torch.Tensor,
-                  cache_keys: Optional[List[Hashable]] = None, **stain_mat_kwargs) -> torch.Tensor:
+                  cache_keys: Optional[List[Hashable]] = None,
+                  **stain_mat_kwargs) -> torch.Tensor:
         """Transformation operation.
 
         Stain matrix is extracted from source image use specified stain seperator (dict learning or svd)
@@ -154,7 +156,8 @@ class StainSeparation(Normalizer):
         if stain_matrix_source.shape[0] != image.shape[0] and stain_matrix_source.shape[0] == 1:
             stain_matrix_source = StainSeparation.repeat_stain_mat(stain_matrix_source, image)
         # B * 2 * (HW)
-        source_concentration = get_concentrations(image, stain_matrix_source, algorithm=self.concentration_method,
+        source_concentration = get_concentrations(image, stain_matrix_source,
+                                                  algorithm=self.concentration_method,
                                                   regularizer=self.regularizer, rng=self.rng)
         # individual shape (2,) (HE)
         # note that c_transposed_src is just a view of source_concentration and therefore any inplace operation on
@@ -186,7 +189,7 @@ class StainSeparation(Normalizer):
 
     @classmethod
     def build(cls, method: str,
-              concentration_method: METHOD_FACTORIZE = 'ista',
+              concentration_method: METHOD_FACTORIZE = 'fista',
               num_stains: int = 2,
               luminosity_threshold: float = 0.8,
               regularizer: float = 0.1,

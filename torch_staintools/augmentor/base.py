@@ -1,7 +1,8 @@
 import torch
 from typing import Optional, Sequence, Tuple, Hashable, List
 from ..functional.stain_extraction.factory import build_from_name
-from ..functional.optimization.dict_learning import get_concentrations, METHOD_FACTORIZE
+from ..functional.optimization.sparse_util import METHOD_FACTORIZE
+from ..functional.optimization.concentration import get_concentrations
 from ..functional.stain_extraction.extractor import BaseExtractor
 from ..functional.utility.implementation import transpose_trailing, img_from_concentration
 from ..functional.tissue_mask import get_tissue_mask, TissueMaskException

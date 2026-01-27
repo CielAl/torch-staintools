@@ -1,68 +1,20 @@
 """
 code directly adapted from https://github.com/rfeinman/pytorch-lasso
 """
-import warnings
-from .solver import coord_descent, ista
-from .sparse_util import initialize_code
-from ..conversion.od import rgb2od
-from ..utility.implementation import transpose_trailing
+from .solver import coord_descent, ista, fista
+from .sparse_util import METHOD_SPARSE, validate_code, initialize_dict
 import torch
-import torch.nn as nn
 import torch.nn.functional as F
-from typing import Literal, get_args
+from typing import Optional, cast
 from ..eps import get_eps
-# min_{D in C} = (1/n) sum_{i=1}^n (1/2)||x_i-Dalpha_i||_2^2 + lambda1||alpha_i||_1 + lambda1_2||alpha_i||_2^2
-METHOD_ISTA = Literal['ista']
-METHOD_CD = Literal['cd']
-METHOD_LS = Literal['ls']
+from torch_staintools.constants import CONST
 
-METHOD_SPARSE = Literal[METHOD_ISTA, METHOD_CD]
-METHOD_NON_SPARSE = Literal[METHOD_LS]
+def update_dict_cd(dictionary: torch.Tensor, x: torch.Tensor, code: torch.Tensor,
+                   positive: bool = True,
+                   dead_thresh=1e-7, rng: torch.Generator = None):
+    """Update the dictionary (stain matrix) using Block Coordinate Descent algorithm.
 
-METHOD_FACTORIZE = Literal[METHOD_SPARSE, METHOD_NON_SPARSE]
-
-_init_defaults = {
-    get_args(METHOD_ISTA)[0]: 'zero',
-    get_args(METHOD_CD)[0]: 'zero',
-}
-
-_batch_supported = {
-    get_args(METHOD_ISTA)[0]: False,
-    get_args(METHOD_CD)[0]: False,
-    get_args(METHOD_LS)[0]: True,
-}
-
-
-def lasso_loss(X: torch.Tensor, Z: torch.Tensor, weight: torch.Tensor, alpha: float = 1.0) -> torch.Tensor:
-    """Lasso loss definition.
-
-    sum(X-Z)^2 + lambda1 |weight| + (1-alpha) * |weight|2
-
-    Args:
-        X:
-        Z:
-        weight:
-        alpha: for compatibility purpose. Not used.
-
-    Returns:
-        lasso loss
-    """
-    X_hat = torch.matmul(Z, weight.T)
-    lambda2 = 10e-10
-    lambda1 = 0.1
-    loss = 0.5 * (X - X_hat).norm(p=2).pow(2)\
-        + weight.norm(p=1) * lambda1 \
-        + lambda2 * weight.norm(p=2).pow(2)
-    return loss.mean()
-
-
-def update_dict(dictionary: torch.Tensor, x: torch.Tensor, code: torch.Tensor,
-                positive=True,
-                eps=1e-7, rng: torch.Generator = None):
-    """
-    Update the dense dictionary factor in place.
-
-    Modified from `_update_dict` in sklearn.decomposition._dict_learning
+    Can satisfy the positive constraint of dictionaries if specified.
 
 
     Args:
@@ -72,7 +24,7 @@ def update_dict(dictionary: torch.Tensor, x: torch.Tensor, code: torch.Tensor,
         code:  Tensor of shape (n_samples, n_components)
             Sparse coding of the data against which to optimize the dictionary.
         positive: Whether to enforce positivity when finding the dictionary.
-        eps: Minimum vector norm before considering "degenerate"
+        dead_thresh: Minimum vector norm before considering "degenerate"
         rng: torch.Generator for initialization of dictionary and code.
 
     Returns:
@@ -80,33 +32,38 @@ def update_dict(dictionary: torch.Tensor, x: torch.Tensor, code: torch.Tensor,
     """
     n_components = dictionary.size(1)
 
+    x_hat = torch.matmul(code, dictionary.T)  # (n_samples, n_features)
     # Residuals
-    R = x - torch.matmul(code, dictionary.T)  # (n_samples, n_features)
+    R = x - x_hat
     for k in range(n_components):
+        d_k = dictionary[:, k]
+        z_k = code[:, k]
+        update_term = torch.outer(z_k, d_k)
         # Update k'th atom
-        R += torch.outer(code[:, k], dictionary[:, k])
-        dictionary[:, k] = torch.matmul(code[:, k], R)
+        R += update_term
+        new_d_k = torch.mv(R.T, z_k)
         if positive:
-            dictionary[:, k].clamp_(0, None)
+            new_d_k = torch.clamp(new_d_k, min=0)
 
-        # Re-scale k'th atom
-        atom_norm = dictionary[:, k].norm()
-        if atom_norm < eps:
-            dictionary[:, k].normal_(generator=rng)
+        d_norm = torch.norm(new_d_k)
+        is_dead = (d_norm < dead_thresh)
 
-            if positive:
-                # if all negative then the clamped output will be zero vector.
-                # the division of zero vector to zero-norm --> nan
-                dictionary[:, k].clamp_(0, None)
-                dictionary[:, k] = dictionary[:, k].abs()
-            # another layer of protection
-            column_norm = dictionary[:, k].norm() + get_eps(dictionary)
-            dictionary[:, k] /= column_norm  # dictionary[:, k].norm()
-            # Set corresponding coefs to 0
-            code[:, k].zero_()  # TODO: is this necessary?
-        else:
-            dictionary[:, k] /= atom_norm
-            R -= torch.outer(code[:, k], dictionary[:, k])
+        # random reset for dead atoms
+        d_k_random = torch.randn(new_d_k.shape,
+                                 device=new_d_k.device,
+                                 dtype=new_d_k.dtype,
+                                 generator=rng)
+        if positive:
+            d_k_random = torch.abs(d_k_random)
+        d_k_random = F.normalize(d_k_random, dim=0, eps=1e-12)
+
+        d_k_standard = new_d_k / (d_norm + get_eps(dictionary))
+        d_k_final = torch.where(is_dead, d_k_random, d_k_standard)
+        z_k_final = torch.where(is_dead, torch.zeros_like(z_k), z_k)
+        dictionary[:, k] = d_k_final
+        code[:, k] = z_k_final
+        R -= torch.outer(z_k_final, d_k_final)
+
     return dictionary
 
 
@@ -132,168 +89,75 @@ def update_dict_ridge(x, code, lambd=1e-4):
     L = torch.linalg.cholesky(M)
     V = torch.cholesky_solve(rhs, L).T
 
+    V = F.normalize(V, dim=0, eps=1e-12)
     return V
 
 
-def dict_evaluate(x: torch.Tensor, weight: torch.Tensor, alpha: float, rng: torch.Generator, **kwargs):
-    x = x.to(weight.device)
-    Z = sparse_encode(x, weight, alpha, rng=rng, **kwargs)
-    loss = lasso_loss(x, Z, weight, alpha)
-    return loss
-
-
-def sparse_encode(x: torch.Tensor,
-                  weight: torch.Tensor, alpha: float = 0.1,
-                  z0=None,
-                  algorithm: METHOD_SPARSE = 'ista',
-                  init=None, rng: torch.Generator = None,
-                  **kwargs):
+def sparse_code(x: torch.Tensor,
+                weight: torch.Tensor,
+                alpha,
+                z0: Optional[torch.Tensor],
+                algorithm: METHOD_SPARSE = 'fista',
+                lr: str | float = 'auto',
+                maxiter: int = 50,
+                tol: float = 1e-5,
+                positive_code: bool = False):
     n_samples = x.size(0)
     n_components = weight.size(1)
-
-    # initialize code variable
-    init = _init_defaults.get(algorithm, 'zero') if init is None else init
-    if init == 'zero' and algorithm == 'iter-ridge':
-        warnings.warn("Iterative Ridge should not be zero-initialized.")
-    if z0 is None:
-        # note so far, the function call of sparse_encode in this lib only gives zero init.
-        z0 = initialize_code(x, weight, alpha, mode=init, rng=rng)
 
     assert z0.shape == (n_samples, n_components)
     # perform inference
     match algorithm:
         case 'cd':
-            z = coord_descent(x, weight, z0, alpha, **kwargs)
+            z = coord_descent(x, z0, weight, alpha, maxiter=maxiter, tol=tol, positive_code=positive_code)
         case 'ista':
-            z = ista(x, z0, weight, alpha, **kwargs)
+            z = ista(x, z0, weight, alpha, lr=lr, maxiter=maxiter, tol=tol, positive_code=positive_code)
+        case 'fista':
+            z = fista(x, z0, weight, alpha, lr=lr, maxiter=maxiter, tol=tol, positive_code=positive_code)
         case _:
             raise ValueError("invalid algorithm parameter '{}'.".format(algorithm))
     return z
 
 
-def dict_learning(x, n_components, *, alpha: float = 1e-1,
-                  constrained: bool = True, persist: bool = False,
+def dict_learning(x: torch.Tensor,
+                  n_components: int,
+                  algorithm: METHOD_SPARSE,
+                  *, alpha: float = 1e-1,
                   lambd_ridge: float = 1e-2,
-                  steps: int = 60, device='cpu', rng: torch.Generator = None,
-                  **solver_kwargs):
+                  steps: int = 60,
+                  rng: torch.Generator = None,
+                  init: Optional[str] = 'zero',
+                  lr: str | float = 'auto',
+                  maxiter: int = 50,
+                  tol: float = 1e-5, ):
     n_samples, n_features = x.shape
-    x = x.to(device)
+    x = x.contiguous()
 
-    weight = torch.randn(n_features, n_components, device=device, generator=rng)
-    nn.init.orthogonal_(weight)
-    # l2(w)
-    if constrained:
-        weight = F.normalize(weight, dim=0)
-    Z0 = None
+    weight = initialize_dict(n_features=n_features, n_components=n_components, device=x.device,
+                             rng=rng, positive_dict=CONST.DICT_POSITIVE_DICTIONARY)
 
-    losses = torch.zeros(steps, device=device)
-    for i in range(steps):
+    # initialize
+    z0 = validate_code(algorithm, init, None, weight, x, rng)
+    assert z0 is not None
+    for _ in range(steps):
         # infer sparse coefficients and compute loss
 
-        Z = sparse_encode(x, weight, alpha, Z0, rng=rng, **solver_kwargs)
-        losses[i] = lasso_loss(x, Z, weight, alpha)
-        if persist:
-            Z0 = Z
+        z = sparse_code(x, weight, alpha, z0, algorithm=cast(METHOD_SPARSE, algorithm),
+                        lr=lr, maxiter=maxiter, tol=tol,
+                        positive_code=CONST.DICT_POSITIVE_CODE).contiguous()
+        weight = weight.contiguous()
+
+        # use the code from previous steps if persist
+        if CONST.DICT_PERSIST_CODE:
+            z0 = z
+        else:
+            z0 = validate_code(algorithm, init, None, weight, x, rng)
 
         # update dictionary
-        if constrained:
-            weight = update_dict(weight, x, Z, positive=True, rng=rng)
+        if CONST.DICT_POSITIVE_DICTIONARY:
+            weight = update_dict_cd(weight, x, z, positive=True, rng=rng)
         else:
-            weight = update_dict_ridge(x, Z, lambd=lambd_ridge)
+            weight = update_dict_ridge(x, z, lambd=lambd_ridge)
 
-        # update progress bar
-    return weight, losses
+    return weight
 
-
-def get_concentrations_single(od_flatten, stain_matrix, regularizer=0.01, method: METHOD_FACTORIZE = 'ista',
-                              rng: torch.Generator = None):
-    """Helper function to estimate concentration matrix given an image and stain matrix with shape: 2 x (H*W)
-
-    For solvers without batch support. Inputs are individual data points from a batch
-
-    Args:
-        od_flatten: Flattened optical density vectors in shape of (H*W) x C (H and W dimensions flattened).
-        stain_matrix: the computed stain matrices in shape of num_stain x input channel
-        regularizer: regularization term if ISTA algorithm is used
-        method: which method to compute the concentration: coordinate descent ('cd') or iterative-shrinkage soft
-            thresholding algorithm ('ista')
-        rng: torch.Generator for random initializations
-    Returns:
-        computed concentration: num_stains x num_pixel_in_tissue_mask
-    """
-    match method:
-        case 'cd':
-            return coord_descent(od_flatten, stain_matrix.T, alpha=regularizer).T  # figure out pylasso equivalent
-        case 'ista':
-            z0 = initialize_code(od_flatten, stain_matrix.T, regularizer, 'zero', rng=rng)
-            return ista(od_flatten, z0, stain_matrix.T, alpha=regularizer).T
-        case 'frobenium':
-            return torch.linalg.lstsq(stain_matrix.T, od_flatten.T)[0].T
-
-    raise NotImplementedError(f"{method} is not a valid optimizer")
-
-
-def get_concentration_one_by_one(od_flatten, stain_matrix, regularizer, algorithm, rng):
-    result = list()
-    for od_single, stain_mat_single in zip(od_flatten, stain_matrix):
-        result.append(get_concentrations_single(od_single, stain_mat_single, regularizer, algorithm, rng=rng))
-    # get_concentrations_helper(od_flatten, stain_matrix, regularizer, method)
-    return torch.stack(result)
-
-
-def _ls_batch(od_flatten, stain_matrix):
-    """Use least square to solve the factorization for concentration.
-
-    Warnings:
-        May fail on GPU for individual large input in cuSolver backend (e.g., 1000 x 1000), regardless of batch size.
-        Better for multiple small inputs in terms of H and W.
-        Magma backend may work: torch.backends.cuda.preferred_linalg_library('magma')
-
-    Args:
-        od_flatten: B * (HW) x num_input_channel
-        stain_matrix: B x num_stains x num_input_channel
-
-    Returns:
-        concentration B x num_stains x (HW)
-    """
-    return torch.linalg.lstsq(transpose_trailing(stain_matrix), transpose_trailing(od_flatten))[0]
-
-
-def get_concentration_batch(od_flatten, stain_matrix, regularizer, algorithm, rng):
-    assert algorithm in _batch_supported
-    if not _batch_supported[algorithm]:
-        return get_concentration_one_by_one(od_flatten, stain_matrix, regularizer, algorithm, rng)
-    match algorithm:
-        case 'ls':
-            return _ls_batch(od_flatten, stain_matrix)
-        case _:
-            ...
-
-    raise NotImplementedError('Currently only least-square (ls) is implemented as batch concentration solver')
-
-
-def get_concentrations(image, stain_matrix, regularizer=0.01, algorithm: METHOD_FACTORIZE = 'ista',
-                       rng: torch.Generator = None):
-    """Estimate concentration matrix given an image and stain matrix.
-
-    Warnings:
-        algorithm = 'ls' May fail on GPU for individual large input (e.g., 1000 x 1000), regardless of batch size.
-        Better for multiple small inputs in terms of H and W.
-    Args:
-        image: batched image(s) in shape of BxCxHxW
-        stain_matrix: B x num_stain x input channel
-        regularizer: regularization term if ISTA algorithm is used
-        algorithm: which method to compute the concentration: Solve min||HExC - OD||p
-            support 'ista', 'cd', and 'ls'. 'ls' simply solves the least square problem for factorization of
-            min||HExC - OD||F (Frobenius norm) but is faster. 'ista'/cd enforce the sparse penalty (L1 norm) but slower.
-        rng: torch.Generator for random initializations
-    Returns:
-        concentration matrix: B x num_stains x num_pixel_in_tissue_mask
-    """
-    device = image.device
-    stain_matrix = stain_matrix.to(device)
-    # BCHW
-    od = rgb2od(image).to(device)
-    # B (H*W) C
-    od_flatten = od.flatten(start_dim=2, end_dim=-1).permute(0, 2, 1)
-    return get_concentration_batch(od_flatten, stain_matrix, regularizer, algorithm, rng)

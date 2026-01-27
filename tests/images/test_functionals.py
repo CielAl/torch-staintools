@@ -4,7 +4,7 @@ import unittest
 from tests.util import fix_seed, dummy_from_numpy, psnr
 from torch_staintools.functional.stain_extraction.macenko import MacenkoExtractor
 from torch_staintools.functional.stain_extraction.vahadane import VahadaneExtractor
-from torch_staintools.functional.optimization.dict_learning import get_concentrations
+from torch_staintools.functional.optimization.concentration import get_concentrations
 from torch_staintools.functional.tissue_mask import get_tissue_mask, TissueMaskException
 from torch_staintools.functional.utility.implementation import transpose_trailing, img_from_concentration
 from torchvision.transforms.functional import convert_image_dtype
