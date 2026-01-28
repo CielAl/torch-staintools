@@ -1,8 +1,7 @@
 from typing import Optional, Literal, get_args, Tuple
 import torch
 from torch.nn import functional as F
-from torch_staintools.constants import CONFIG, PARAM
-from torch_staintools.functional.eps import get_eps
+from torch_staintools.constants import PARAM
 
 METHOD_ISTA = Literal['ista']
 METHOD_FISTA = Literal['fista']
@@ -18,13 +17,11 @@ _init_defaults = {
     get_args(METHOD_CD)[0]: 'zero',
 }
 
-_batch_supported = {
-    get_args(METHOD_ISTA)[0]: False,
-    get_args(METHOD_FISTA)[0]: False,
-    get_args(METHOD_CD)[0]: False,
-    get_args(METHOD_LS)[0]: True,
-}
-
+INIT_ZERO = Literal['zero']
+INIT_TRANSPOSE = Literal['transpose']
+INIT_UNIF = Literal['unif']
+INIT_RIDGE = Literal['ridge']
+MODE_INIT = Literal[INIT_ZERO, INIT_TRANSPOSE, INIT_UNIF, INIT_RIDGE]
 
 def ridge(b: torch.Tensor, a: torch.Tensor, alpha: Optional[float] = None):
     # right-hand side
@@ -42,7 +39,7 @@ def ridge(b: torch.Tensor, a: torch.Tensor, alpha: Optional[float] = None):
     return x
 
 
-def initialize_code(x, weight, mode, rng: torch.Generator):
+def initialize_code(x: torch.Tensor, weight: torch.Tensor, mode: MODE_INIT, rng: torch.Generator):
     """ code initialization in dictionary learning.
 
     The dictionary learning is to find the sparse decomposition of data X = D * A,

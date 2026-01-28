@@ -59,7 +59,7 @@ def postprocess(image_tensor): return convert_image_dtype(image_tensor, torch.ui
 
 # ######### Vahadane
 normalizer_vahadane = NormalizerBuilder.build('vahadane',
-                                              concentration_method='ista', use_cache=True,
+                                              concentration_solver='ista', use_cache=True,
                                               rng=1,
                                               )
 normalizer_vahadane = normalizer_vahadane.to(device)
@@ -82,7 +82,7 @@ with torch.no_grad():
 #   #################### Macenko
 
 
-normalizer_macenko = NormalizerBuilder.build('macenko', use_cache=True, concentration_method='ls')
+normalizer_macenko = NormalizerBuilder.build('macenko', use_cache=True, concentration_solver='ls')
 normalizer_macenko = normalizer_macenko.to(device)
 normalizer_macenko.fit(target_tensor)
 

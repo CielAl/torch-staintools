@@ -2,8 +2,8 @@ import torch
 from typing import Optional, Sequence, Tuple, Hashable, List
 from ..functional.stain_extraction.factory import build_from_name
 from ..functional.optimization.sparse_util import METHOD_FACTORIZE
-from ..functional.optimization.concentration import get_concentrations
-from ..functional.stain_extraction.extractor import StainExtraction
+from torch_staintools.functional.concentration import get_concentrations
+from ..functional.stain_extraction.extractor import StainExtraction, StainAlg
 from ..functional.utility.implementation import transpose_trailing, img_from_concentration
 from ..functional.tissue_mask import get_tissue_mask, TissueMaskException
 from ..cache.tensor_cache import TensorCache
@@ -37,14 +37,14 @@ class Augmentor(CachedRNGModule):
     luminosity_threshold: float
     regularizer: float
 
-    def __init__(self, get_stain_matrix: StainExtraction, concentration_method: METHOD_FACTORIZE = 'ista',
+    def __init__(self, stain_alg: StainAlg,
+                 concentration_method: METHOD_FACTORIZE = 'ista',
                  rng: TYPE_RNG = None,
                  target_stain_idx: Optional[Sequence[int]] = (0, 1),
                  sigma_alpha: float = 0.2,
                  sigma_beta: float = 0.2,
                  num_stains: int = 2,
                  luminosity_threshold: Optional[float] = 0.8,
-                 regularizer: float = 0.1,
                  cache: Optional[TensorCache] = None,
                  device: Optional[torch.device] = None):
         """Augment the stain concentration by alpha * concentration + beta
@@ -54,7 +54,7 @@ class Augmentor(CachedRNGModule):
             regardless of batch size. Therefore, 'ls' is better for multiple small inputs in terms of H and W.
 
         Args:
-            get_stain_matrix: the Callable to obtain stain matrix - e.g., Vahadane's dict learning or
+            stain_alg: the Callable to obtain stain matrix - e.g., Vahadane's dict learning or
                 Macenko's SVD
             concentration_method:  How to get stain concentration from stain matrix
             rng: the specified torch.Generator or int (as seed) for reproducing the results
@@ -63,13 +63,12 @@ class Augmentor(CachedRNGModule):
             num_stains: number of stains to separate. 2 Recommended.
             luminosity_threshold: luminosity threshold to obtain tissue region and ignore brighter backgrounds.
                 If None, all image pixels will be considered as tissue for stain matrix/concentration computation.
-            regularizer: the regularizer to compute concentration used in ISTA or CD algorithm.
             cache: the external cache object
 
         """
         super().__init__(cache, device, rng)
         self.concentration_method = concentration_method
-        self.get_stain_matrix = get_stain_matrix
+        self.get_stain_matrix = StainExtraction(stain_alg)
 
         self.target_stain_idx = target_stain_idx
         self.sigma_alpha = sigma_alpha
@@ -77,7 +76,6 @@ class Augmentor(CachedRNGModule):
 
         self.num_stains = num_stains
         self.luminosity_threshold = luminosity_threshold
-        self.regularizer = regularizer
 
     @staticmethod
     def __concentration_selected(target_concentration: torch.Tensor,

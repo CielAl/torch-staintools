@@ -11,11 +11,10 @@ class MckCfg:
     Attributes:
         perc: Percentile number to find the minimum angular term. min angular as 1 percentile
             max angular as 100 - perc percentile.
-        rng: torch.Generator for any random initializations incurred (e.g., if `init` is set to be unif)
-
     """
     perc: int
-    rng: Optional[torch.Generator]
+
+DEFAULT_MACENKO_CONFIG = MckCfg(perc=int(1))
 
 class MacenkoAlg(Callable):
     cfg: MckCfg
@@ -68,7 +67,10 @@ class MacenkoAlg(Callable):
                                 torch.cat((v_min, v_max), dim=1), torch.cat((v_max, v_min), dim=1))
         return stain_mat
 
-    def __call__(self, od: torch.Tensor, tissue_mask: torch.Tensor, num_stains: int = 2):
+    def __call__(self, od: torch.Tensor,
+                 tissue_mask: torch.Tensor,
+                 num_stains: int,
+                 rng: Optional[torch.Generator]):
         """Macenko stain estimation. Adapted from StainTools.
 
         From M Macenko et al. 'A method for normalizing histology slides for quantitative analysis'.

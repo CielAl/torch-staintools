@@ -1,13 +1,14 @@
 """Note that some of the codes are derived from torchvahadane and staintools
 
 """
+from functools import partial
 
 import torch
 from torch_staintools.functional.stain_extraction.extractor import StainExtraction, StainAlg
 from ..functional.optimization.sparse_util import METHOD_FACTORIZE
-from ..functional.optimization.concentration import get_concentrations
+from torch_staintools.functional.concentration import ConcentrateSolver
 from torch_staintools.functional.stain_extraction.utils import percentile
-from torch_staintools.functional.utility.implementation import transpose_trailing, img_from_concentration
+from torch_staintools.functional.utility import transpose_trailing, img_from_concentration
 from .base import Normalizer
 from ..cache.tensor_cache import TensorCache
 from typing import Optional, List, Hashable
@@ -30,10 +31,10 @@ class StainSeparation(Normalizer):
     num_stains: int
     regularizer: float
     rng: torch.Generator
-    concentration_method: METHOD_FACTORIZE
+    concentration_solver: ConcentrateSolver
 
     def __init__(self, stain_alg: StainAlg,
-                 concentration_method: METHOD_FACTORIZE = 'fista',
+                 concentration_solver: ConcentrateSolver,
                  num_stains: int = 2,
                  luminosity_threshold: float = 0.8,
                  rng: Optional[int | torch.Generator] = None,
@@ -47,17 +48,13 @@ class StainSeparation(Normalizer):
 
         Args:
             stain_alg: the Callable to obtain stain matrix - e.g., Vahadane or Macenko
-            concentration_method:  How to get stain concentration from stain matrix and OD through factorization.
-                support 'ista', 'cd', and 'ls'. 'ls' simply solves the least square problem for factorization of
-                min||HExC - OD|| but is faster. 'ista'/cd enforce the sparse penalty but slower.
-                'ls' may fail on individual large image due to resource limit.
-            num_stains: number of stains to separate. For macenko only 2 is supported.
-                In general cases it is recommended to set num_stains as 2.
+            concentration_solver:  The callable to handle the concentration computation.
+            num_stains: number of stains to separate. For now, Macenko only supports 2.
             luminosity_threshold: luminosity threshold to ignore the background. None means all regions are considered
                 as tissue.
         """
         super().__init__(cache=cache, device=device, rng=rng)
-        self.concentration_method = concentration_method
+        self.concentration_solver = concentration_solver
         self.get_stain_matrix = StainExtraction(stain_alg)
         self.num_stains = num_stains
         self.luminosity_threshold = luminosity_threshold
@@ -79,11 +76,11 @@ class StainSeparation(Normalizer):
         """
         assert target.shape[0] == 1
         stain_matrix_target = self.get_stain_matrix(target, num_stains=self.num_stains,
-                                                    luminosity_threshold=self.luminosity_threshold)
+                                                    luminosity_threshold=self.luminosity_threshold,
+                                                    rng=self.rng)
 
         self.register_buffer('stain_matrix_target', stain_matrix_target)
-        target_conc = get_concentrations(target, self.stain_matrix_target, regularizer=self.regularizer,
-                                         algorithm='fista', rng=self.rng)
+        target_conc = self.concentration_solver(target, self.stain_matrix_target, rng=self.rng)
         self.register_buffer('target_concentrations', target_conc)
         # B x (HW) x 2
         conc_transpose = transpose_trailing(self.target_concentrations)
@@ -121,14 +118,17 @@ class StainSeparation(Normalizer):
             image: Image input must be BxCxHxW cast to torch.float32 and rescaled to [0, 1]
                 Check torchvision.transforms.convert_image_dtype.
             cache_keys: unique keys point the input batch to the cached stain matrices. `None` means no cache.
+            kwargs: For compatibility of parent class signatures.
 
         Returns:
             torch.Tensor: normalized output in BxCxHxW shape and float32 dtype. Note that some pixel value may exceed
             [0, 1] and therefore a clipping operation is applied.
         """
         # one source matrix - multiple target
-        get_stain_matrix = self.get_stain_matrix
-        stain_matrix_source = self.tensor_from_cache(cache_keys=cache_keys, func=get_stain_matrix,
+        get_stain_partial = partial(self.get_stain_matrix,
+                                    luminosity_threshold=self.luminosity_threshold,
+                                    num_stains=self.num_stains, rng=self.rng)
+        stain_matrix_source = self.tensor_from_cache(cache_keys=cache_keys, func=get_stain_partial,
                                                      target=image)
 
         # stain_matrix_source -- B x 2 x 3 wherein B is 1. Note that the input batch size is independent of how many
@@ -139,9 +139,8 @@ class StainSeparation(Normalizer):
         if stain_matrix_source.shape[0] != image.shape[0] and stain_matrix_source.shape[0] == 1:
             stain_matrix_source = StainSeparation.repeat_stain_mat(stain_matrix_source, image)
         # B * 2 * (HW)
-        source_concentration = get_concentrations(image, stain_matrix_source,
-                                                  algorithm=self.concentration_method,
-                                                  regularizer=self.regularizer, rng=self.rng)
+        source_concentration = self.concentration_solver(image, stain_matrix_source,
+                                                         rng=self.rng)
         # individual shape (2,) (HE)
         # note that c_transposed_src is just a view of source_concentration and therefore any inplace operation on
         # them will be reflected to each other, but this should be avoided for better readability
@@ -155,14 +154,13 @@ class StainSeparation(Normalizer):
         return img_from_concentration(c_transposed_src, self.stain_matrix_target, image.shape, (0, 1))
 
     def forward(self, x: torch.Tensor,
-                cache_keys: Optional[List[Hashable]] = None,  **stain_mat_kwargs) -> torch.Tensor:
+                cache_keys: Optional[List[Hashable]] = None, **kwargs) -> torch.Tensor:
         """
 
         Args:
             x: input batch image tensor in shape of BxCxHxW
             cache_keys: unique keys point the input batch to the cached stain matrices. `None` means no cache.
-            **stain_mat_kwargs: Other keyword arguments for stain matrix estimators than those defined in __init__,
-                i.e., luminosity_threshold, regularizer, and num_stains.
+            kwargs: For compatibility of parent class signatures.
 
         Returns:
             torch.Tensor: normalized output in BxCxHxW shape and float32 dtype. Note that some pixel value may exceed
@@ -173,7 +171,7 @@ class StainSeparation(Normalizer):
     @classmethod
     def build(cls,
               stain_alg: StainAlg,
-              concentration_method: METHOD_FACTORIZE = 'fista',
+              concentration_solver: ConcentrateSolver,
               num_stains: int = 2,
               luminosity_threshold: float = 0.8,
               rng: Optional[int | torch.Generator] = None,
@@ -186,7 +184,7 @@ class StainSeparation(Normalizer):
 
         Args:
             stain_alg: stain algorithm to use.
-            concentration_method: method to obtain the concentration. default ista for computational efficiency on GPU.
+            concentration_solver: method to obtain the concentration. default ista for computational efficiency on GPU.
                 support 'ista', 'cd', and 'ls'. 'ls' simply solves the least square problem for factorization of
                 min||HExC - OD|| but is faster. 'ista'/cd enforce the sparse penalty but slower.
             num_stains: number of stains to separate. Currently, Macenko only supports 2. In general cases it is
@@ -205,6 +203,6 @@ class StainSeparation(Normalizer):
         """
         cache = cls._init_cache(use_cache, cache_size_limit=cache_size_limit, device=device,
                                 load_path=load_path)
-        return cls(stain_alg, concentration_method=concentration_method, num_stains=num_stains,
+        return cls(stain_alg, concentration_solver=concentration_solver, num_stains=num_stains,
                    luminosity_threshold=luminosity_threshold, rng=rng,
                    cache=cache, device=device).to(device)

@@ -1,14 +1,34 @@
-from typing import Optional
+from typing import Optional, Callable, get_args
 
 import torch
 
 from torch_staintools.constants import CONFIG, PARAM
 from torch_staintools.functional.conversion.od import rgb2od
 from torch_staintools.functional.optimization.solver import coord_descent, ista, fista
-from torch_staintools.functional.optimization.sparse_util import initialize_code, METHOD_FACTORIZE, _batch_supported, \
-    collate_params
+from torch_staintools.functional.optimization.sparse_util import initialize_code, METHOD_FACTORIZE, collate_params, \
+    METHOD_ISTA, METHOD_FISTA, METHOD_CD, METHOD_LS
 from torch_staintools.functional.utility import transpose_trailing
+from dataclasses import dataclass
 
+
+
+_batch_supported = {
+    get_args(METHOD_ISTA)[0]: False,
+    get_args(METHOD_FISTA)[0]: False,
+    get_args(METHOD_CD)[0]: False,
+    get_args(METHOD_LS)[0]: True,
+}
+
+
+@dataclass(frozen=True)
+class ConcentCfg:
+    algorithm: METHOD_FACTORIZE = 'fista'
+    regularizer: float = CONFIG.OPTIM_DEFAULT_SPARSE_LAMBDA
+    rng: Optional[torch.Generator] = None
+    maxiter: int = PARAM.OPTIM_SPARSE_DEFAULT_MAX_ITER
+    lr: Optional[float] = None
+    tol: float = PARAM.OPTIM_DEFAULT_TOL
+    positive: bool = CONFIG.DICT_POSITIVE_CODE
 
 def get_concentrations_single(od_flatten: torch.Tensor,
                               stain_matrix: torch.Tensor,
@@ -121,13 +141,13 @@ def get_concentration_batch(od_flatten: torch.Tensor,
 
 def get_concentrations(image: torch.Tensor,
                        stain_matrix: torch.Tensor,
-                       regularizer: float = 0.01,
-                       algorithm: METHOD_FACTORIZE = 'fista',
-                       lr: Optional[float] = None,
-                       maxiter: int = PARAM.OPTIM_SPARSE_DEFAULT_MAX_ITER,
-                       tol: float = PARAM.OPTIM_DEFAULT_TOL,
-                       rng: Optional[torch.Generator] = None,
-                       positive: bool = CONFIG.DICT_POSITIVE_CODE,):
+                       regularizer: float,
+                       algorithm: METHOD_FACTORIZE,
+                       lr: Optional[float],
+                       maxiter: int,
+                       tol: float ,
+                       rng: Optional[torch.Generator],
+                       positive: bool,):
     """Estimate concentration matrix given an image and stain matrix.
 
     Warnings:
@@ -157,3 +177,18 @@ def get_concentrations(image: torch.Tensor,
     od_flatten = od.flatten(start_dim=2, end_dim=-1).permute(0, 2, 1)
     return get_concentration_batch(od_flatten, stain_matrix, regularizer, algorithm,
                                    lr=lr, maxiter=maxiter, tol=tol, rng=rng, positive=positive)
+
+class ConcentrateSolver(Callable):
+    cfg: ConcentCfg
+
+    def __init__(self, cfg: ConcentCfg):
+        self.cfg = cfg
+
+    def __call__(self, image: torch.Tensor, stain_matrix, rng: Optional[torch.Generator]) -> torch.Tensor:
+        return get_concentrations(image, stain_matrix,
+                                  regularizer=self.cfg.regularizer,
+                                  algorithm=self.cfg.algorithm,
+                                  lr=self.cfg.lr,
+                                  maxiter=self.cfg.maxiter,
+                                  tol=self.cfg.tol,
+                                  rng=rng, positive=CONFIG.DICT_POSITIVE_CODE)

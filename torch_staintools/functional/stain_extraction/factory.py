@@ -1,4 +1,4 @@
-from .vahadane import VahadaneExtractor
+from .vahadane import VahadaneAlg
 from .macenko import MacenkoAlg
 from .extractor import StainExtraction
 
@@ -17,5 +17,5 @@ def build_from_name(algo: str) -> StainExtraction:
         case 'macenko':
             return MacenkoAlg()
         case 'vahadane':
-            return VahadaneExtractor()
+            return VahadaneAlg()
     raise ValueError(f"{algo} not defined")

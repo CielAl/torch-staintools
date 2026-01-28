@@ -100,6 +100,7 @@ from torchvision.transforms import ToTensor
 from torch_staintools.normalizer import NormalizerBuilder
 from torch_staintools.augmentor import AugmentorBuilder
 import os
+
 seed = 0
 torch.manual_seed(seed)
 torch.cuda.manual_seed(seed)
@@ -117,7 +118,6 @@ norm = cv2.imread(os.path.join(root_dir, 'test_images/TCGA-95-8494-01Z-00-DX1.'
 # shape: HWC
 norm = cv2.cvtColor(norm, cv2.COLOR_BGR2RGB)
 
-
 # shape: Batch x Channel x Height x Width (BCHW); in the showcase here batch size is 1 (B=1) - scaled to [0, 1] torch.float32
 target_tensor = ToTensor()(target).unsqueeze(0).to(device)
 
@@ -134,7 +134,7 @@ norm_tensor = ToTensor()(norm).unsqueeze(0).to(device)
 # alternatively, 'cd' (coordinate descent) and 'ls' (least square from torch.linalg) is available.
 # Note that 'ls' does not can be much faster on batches of smaller input, but may fail on GPU for individual large input 
 # in terms of width and height, regardless of the batch size
-normalizer_vahadane = NormalizerBuilder.build('vahadane', concentration_method='ista')
+normalizer_vahadane = NormalizerBuilder.build('vahadane', concentration_solver='ista')
 # move the normalizer to the device (CPU or GPU)
 normalizer_vahadane = normalizer_vahadane.to(device)
 # fit. For macenko and vahadane this step will compute the stain matrix and concentration
@@ -170,28 +170,28 @@ augmentor = augmentor.to(device)
 num_augment = 5
 # multiple copies of different random augmentation of the same tile may be generated
 for _ in range(num_augment):
-    # B x C x H x W
-    # use a list of Hashable key (e.g., str) to map the batch input to its corresponding stain matrix in cache.
-    # this key should be unique, e.g., using the filename of the input tile.
-    # leave it as None if no caching is intended, even if use_cache is enabled.
-    # note since the inputs are all batchified, the cache_key are in form of a list, with each element in the 
-    # list corresponding to a data point in the batch.
-    aug_out = augmentor(norm_tensor, cache_keys=['some unique key'])
-    # do anything to the augmentation output
-    
+  # B x C x H x W
+  # use a list of Hashable key (e.g., str) to map the batch input to its corresponding stain matrix in cache.
+  # this key should be unique, e.g., using the filename of the input tile.
+  # leave it as None if no caching is intended, even if use_cache is enabled.
+  # note since the inputs are all batchified, the cache_key are in form of a list, with each element in the 
+  # list corresponding to a data point in the batch.
+  aug_out = augmentor(norm_tensor, cache_keys=['some unique key'])
+  # do anything to the augmentation output
+
 # dump the cache of stain matrices for future usage
 augmentor.dump_cache('./cache.pickle')
 
 # fast batch operation
 tile_size = 512
-tiles: torch.Tensor = norm_tensor.unfold(2, tile_size, tile_size)\
-    .unfold(3, tile_size, tile_size).reshape(1, 3, -1, tile_size, tile_size).squeeze(0).permute(1, 0, 2, 3).contiguous()
+tiles: torch.Tensor = norm_tensor.unfold(2, tile_size, tile_size)
+.unfold(3, tile_size, tile_size).reshape(1, 3, -1, tile_size, tile_size).squeeze(0).permute(1, 0, 2, 3).contiguous()
 print(tiles.shape)
 # use macenko normalization as example
 normalizer_macenko = NormalizerBuilder.build('macenko', use_cache=True,
                                              # use least square solver, along with cache, to perform
                                              # normalization on-the-fly
-                                             concentration_method='ls')
+                                             concentration_solver='ls')
 normalizer_macenko = normalizer_macenko.to(device)
 normalizer_macenko.fit(target_tensor)
 normalizer_macenko(tiles)

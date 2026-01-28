@@ -5,7 +5,8 @@ from torch_staintools.functional.optimization.dict_learning import dict_learning
 from .utils import normalize_matrix_rows
 from dataclasses import dataclass
 
-from ..optimization.sparse_util import METHOD_SPARSE
+from ..optimization.sparse_util import METHOD_SPARSE, MODE_INIT
+from ...constants import PARAM
 
 
 @dataclass(frozen=True)
@@ -25,21 +26,24 @@ class Vcfg:
     maxiter: maximum number of iterations in ista loops and cd for code update
     tol: tolerance for convergence of code update.
     lr: step size for ista loops only. not applied to cd.  If None, the 1/Lipschitz will be selected.
-    rng: torch.Generator for any random initializations incurred (e.g., if `init` is set to be unif)
 
 """
     regularizer: float
     algorithm: METHOD_SPARSE
     steps: int
-    init: str  # ridge
+    init: MODE_INIT  # ridge
     maxiter: int
     lr: Optional[float]
     tol: float
     lambd_ridge: float  # 1e-2
-    rng: Optional[torch.Generator]
+
+DEFAULT_VAHADANE_CONFIG = Vcfg(regularizer=PARAM.OPTIM_DEFAULT_SPARSE_LAMBDA,
+                               algorithm="fista", steps=PARAM.DICT_ITER_STEPS,
+                               init='transpose', maxiter=PARAM.OPTIM_SPARSE_DEFAULT_MAX_ITER,
+                               lr=None, tol=PARAM.OPTIM_DEFAULT_TOL, lambd_ridge=PARAM.INIT_RIDGE_L2)
 
 
-class VahadaneExtractor(Callable):
+class VahadaneAlg(Callable):
     cfg: Vcfg
 
     def __init__(self, cfg: Vcfg):
@@ -48,7 +52,8 @@ class VahadaneExtractor(Callable):
 
     def __call__(self, od: torch.Tensor,
                        tissue_mask: torch.Tensor,
-                       num_stains: int) -> torch.Tensor:
+                       num_stains: int,
+                       rng: Optional[torch.Generator]) -> torch.Tensor:
         """
         Stain matrix estimation via method of:
         A. Vahadane et al. 'Structure-Preserving Color Normalization
@@ -79,7 +84,6 @@ class VahadaneExtractor(Callable):
         lambd_ridge = self.cfg.lambd_ridge
         steps = self.cfg.steps
         init = self.cfg.init
-        rng = self.cfg.rng
         maxiter = self.cfg.maxiter
         lr = self.cfg.lr
         tol = self.cfg.tol

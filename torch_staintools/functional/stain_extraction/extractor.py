@@ -1,9 +1,6 @@
-from abc import ABC, abstractmethod
 import torch
-
-from torch_staintools.functional.stain_extraction.macenko import MckCfg
 from torch_staintools.functional.tissue_mask import get_tissue_mask
-from typing import Callable, Protocol, runtime_checkable
+from typing import Callable, Protocol, runtime_checkable, Optional
 from torch_staintools.functional.conversion.od import rgb2od
 
 
@@ -20,6 +17,7 @@ class StainAlg(Protocol):
                  od: torch.Tensor,
                  tissue_mask: torch.Tensor,
                  num_stains: int,
+                 rng: Optional[torch.Generator],
                  ) -> torch.Tensor:
         """
         Args:
@@ -45,7 +43,8 @@ class StainExtraction(Callable):
 
 
     def __call__(self, image: torch.Tensor,
-                 *, luminosity_threshold: float = 0.8,  num_stains: int = 2
+                 *, luminosity_threshold: float,  num_stains: int,
+                 rng: Optional[torch.Generator],
                  ) -> torch.Tensor:
         """Interface of stain extractor.  Adapted from StainTools.
 
@@ -68,4 +67,4 @@ class StainExtraction(Callable):
         #  B x (HxWx1)
 
         od = rgb2od(image)
-        return self.stain_algorithm(od, tissue_mask, num_stains)
+        return self.stain_algorithm(od, tissue_mask, num_stains, rng)
