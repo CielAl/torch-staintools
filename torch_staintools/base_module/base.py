@@ -35,7 +35,7 @@ class CachedRNGModule(torch.nn.Module):
     device: torch.device
     _tensor_cache: TensorCache
     CACHE_FIELD: str = '_tensor_cache'
-    rng: Optional[torch.Generator]
+    _rng: Optional[torch.Generator]
 
     def _tensor_cache_helper(self) -> Optional[TensorCache]:
         return getattr(self, CachedRNGModule.CACHE_FIELD)
@@ -84,27 +84,13 @@ class CachedRNGModule(torch.nn.Module):
         assert self.cache_initialized()
         self.tensor_cache.dump(path)
 
-    # @staticmethod
-    # def _stain_mat_kwargs_helper(luminosity_threshold,
-    #                              num_stains,
-    #                              regularizer,
-    #                              **stain_mat_kwargs):
-    #     arg_dict = {
-    #         'luminosity_threshold': luminosity_threshold,
-    #         'num_stains': num_stains,
-    #         'regularizer': regularizer,
-    #     }
-    #     stain_mat_kwargs = {k: v for k, v in stain_mat_kwargs.items()}
-    #     stain_mat_kwargs.update(arg_dict)
-    #     return stain_mat_kwargs
-
     @staticmethod
     def tensor_from_cache_helper(cache: TensorCache, *,
                                  cache_keys: List[Hashable],
-                                 func_partial: Callable,
+                                 func: Callable,
                                  target) -> torch.Tensor:
 
-        stain_mat_list = cache.get_batch(cache_keys, func_partial, target)
+        stain_mat_list = cache.get_batch(cache_keys, func, target)
         if isinstance(stain_mat_list, torch.Tensor):
             return stain_mat_list
 
@@ -113,21 +99,21 @@ class CachedRNGModule(torch.nn.Module):
     def tensor_from_cache(self,
                           *,
                           cache_keys: Optional[List[Hashable]],
-                          func_partial: Callable,
+                          func: Callable,
                           target) -> torch.Tensor:
         if cache_keys is not None and not self.cache_initialized():
             logger.warning(f"Cache keys are given but the cache is not initialized: {cache_keys[:3]} etc..")
 
         if not self.cache_initialized() or cache_keys is None:
             logger.debug(f'{self.cache_initialized()} + {cache_keys is None} - no cache')
-            return func_partial(target)
+            return func(target)
         # if using cache
         assert self.cache_initialized(), f"Attempt to fetch data from cache but cache is not initialized"
         assert cache_keys is not None, f"Attempt to fetch data from cache but key is not given"
         # move fetched stain matrix to the same device of the target
         logger.debug(f"{cache_keys[0:3]}. cache initialized")
         return CachedRNGModule.tensor_from_cache_helper(cache=self.tensor_cache, cache_keys=cache_keys,
-                                                        func_partial=func_partial,
+                                                        func=func,
                                                         target=target).to(target.device)
 
     def __init__(self, cache: Optional[TensorCache], device: Optional[torch.device],
@@ -136,7 +122,15 @@ class CachedRNGModule(torch.nn.Module):
 
         self._tensor_cache = cache
         self.device = default_device(device)
-        self.rng = default_rng(rng, self.device)
+        self._rng = default_rng(rng, self.device)
+
+    @property
+    def rng(self):
+        return self._rng
+
+    @rng.setter
+    def rng(self, rng: torch.Generator):
+        self._rng = default_rng(rng, self.device)
 
     @classmethod
     @abstractmethod

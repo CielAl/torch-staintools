@@ -3,10 +3,9 @@
 """
 
 import torch
-from torch_staintools.functional.stain_extraction.extractor import StainExtraction
+from torch_staintools.functional.stain_extraction.extractor import StainExtraction, StainAlg
 from ..functional.optimization.sparse_util import METHOD_FACTORIZE
 from ..functional.optimization.concentration import get_concentrations
-from torch_staintools.functional.stain_extraction.factory import build_from_name
 from torch_staintools.functional.stain_extraction.utils import percentile
 from torch_staintools.functional.utility.implementation import transpose_trailing, img_from_concentration
 from .base import Normalizer
@@ -33,11 +32,10 @@ class StainSeparation(Normalizer):
     rng: torch.Generator
     concentration_method: METHOD_FACTORIZE
 
-    def __init__(self, get_stain_matrix: StainExtraction,
+    def __init__(self, stain_alg: StainAlg,
                  concentration_method: METHOD_FACTORIZE = 'fista',
                  num_stains: int = 2,
                  luminosity_threshold: float = 0.8,
-                 regularizer: float = 0.1,
                  rng: Optional[int | torch.Generator] = None,
                  cache: Optional[TensorCache] = None,
                  device: Optional[torch.device] = None):
@@ -48,8 +46,7 @@ class StainSeparation(Normalizer):
             regardless of batch size. Therefore, 'ls' is better for multiple small inputs in terms of H and W.
 
         Args:
-            get_stain_matrix: the Callable to obtain stain matrix - e.g., Vahadane's dict learning or
-                macenko's SVD
+            stain_alg: the Callable to obtain stain matrix - e.g., Vahadane or Macenko
             concentration_method:  How to get stain concentration from stain matrix and OD through factorization.
                 support 'ista', 'cd', and 'ls'. 'ls' simply solves the least square problem for factorization of
                 min||HExC - OD|| but is faster. 'ista'/cd enforce the sparse penalty but slower.
@@ -58,17 +55,15 @@ class StainSeparation(Normalizer):
                 In general cases it is recommended to set num_stains as 2.
             luminosity_threshold: luminosity threshold to ignore the background. None means all regions are considered
                 as tissue.
-            regularizer: Regularizer term in dict learning. Note that similar to staintools, for image
-                reconstruction step, we also use dictionary learning to get the target stain concentration.
         """
         super().__init__(cache=cache, device=device, rng=rng)
         self.concentration_method = concentration_method
-        self.get_stain_matrix = get_stain_matrix
+        self.get_stain_matrix = StainExtraction(stain_alg)
         self.num_stains = num_stains
         self.luminosity_threshold = luminosity_threshold
-        self.regularizer = regularizer
 
-    def fit(self, target, concentration_method: Optional[METHOD_FACTORIZE] = None, **stainmat_kwargs):
+
+    def fit(self, target, concentration_method: Optional[METHOD_FACTORIZE] = None):
         """Fit to a target image.
 
         Note that the stain matrices are registered into buffers so that it's move to specified device
@@ -78,18 +73,13 @@ class StainSeparation(Normalizer):
             target: BCHW. Assume it's cast to torch.float32 and scaled to [0, 1]
             concentration_method: method to obtain concentration. Use the `self.concentration_method` if not specified
                 in the signature.
-            **stainmat_kwargs: Extra keyword argument of stain seperator, besides the num_stains/luminosity_threshold
-              that are set in the __init__
 
         Returns:
 
         """
         assert target.shape[0] == 1
         stain_matrix_target = self.get_stain_matrix(target, num_stains=self.num_stains,
-                                                    regularizer=self.regularizer,
-                                                    luminosity_threshold=self.luminosity_threshold,
-                                                    rng=self.rng,
-                                                    **stainmat_kwargs)
+                                                    luminosity_threshold=self.luminosity_threshold)
 
         self.register_buffer('stain_matrix_target', stain_matrix_target)
         target_conc = get_concentrations(target, self.stain_matrix_target, regularizer=self.regularizer,
@@ -119,7 +109,7 @@ class StainSeparation(Normalizer):
 
     def transform(self, image: torch.Tensor,
                   cache_keys: Optional[List[Hashable]] = None,
-                  **stain_mat_kwargs) -> torch.Tensor:
+                  **kwargs) -> torch.Tensor:
         """Transformation operation.
 
         Stain matrix is extracted from source image use specified stain seperator (dict learning or svd)
@@ -131,22 +121,14 @@ class StainSeparation(Normalizer):
             image: Image input must be BxCxHxW cast to torch.float32 and rescaled to [0, 1]
                 Check torchvision.transforms.convert_image_dtype.
             cache_keys: unique keys point the input batch to the cached stain matrices. `None` means no cache.
-            **stain_mat_kwargs: Extra keyword argument of stain seperator besides the num_stains
-                and luminosity_threshold that was already set in __init__.
-                For instance, in Macenko, an angular percentile argument "perc" may be selected to separate
-                the angles of OD vector projected on SVD and the x-positive axis.
 
         Returns:
             torch.Tensor: normalized output in BxCxHxW shape and float32 dtype. Note that some pixel value may exceed
             [0, 1] and therefore a clipping operation is applied.
         """
         # one source matrix - multiple target
-        get_stain_mat_partial = self.get_stain_matrix.get_partial(luminosity_threshold=self.luminosity_threshold,
-                                                                  num_stains=self.num_stains,
-                                                                  regularizer=self.regularizer,
-                                                                  rng=self.rng,
-                                                                  **stain_mat_kwargs)
-        stain_matrix_source = self.tensor_from_cache(cache_keys=cache_keys, func_partial=get_stain_mat_partial,
+        get_stain_matrix = self.get_stain_matrix
+        stain_matrix_source = self.tensor_from_cache(cache_keys=cache_keys, func=get_stain_matrix,
                                                      target=image)
 
         # stain_matrix_source -- B x 2 x 3 wherein B is 1. Note that the input batch size is independent of how many
@@ -186,14 +168,14 @@ class StainSeparation(Normalizer):
             torch.Tensor: normalized output in BxCxHxW shape and float32 dtype. Note that some pixel value may exceed
             [0, 1] and therefore a clipping operation is applied.
         """
-        return self.transform(x, cache_keys, **stain_mat_kwargs)
+        return self.transform(x, cache_keys)
 
     @classmethod
-    def build(cls, method: str,
+    def build(cls,
+              stain_alg: StainAlg,
               concentration_method: METHOD_FACTORIZE = 'fista',
               num_stains: int = 2,
               luminosity_threshold: float = 0.8,
-              regularizer: float = 0.1,
               rng: Optional[int | torch.Generator] = None,
               use_cache: bool = False,
               cache_size_limit: int = -1,
@@ -203,7 +185,7 @@ class StainSeparation(Normalizer):
         """Builder.
 
         Args:
-            method: method of stain extractor name: vadahane or macenko
+            stain_alg: stain algorithm to use.
             concentration_method: method to obtain the concentration. default ista for computational efficiency on GPU.
                 support 'ista', 'cd', and 'ls'. 'ls' simply solves the least square problem for factorization of
                 min||HExC - OD|| but is faster. 'ista'/cd enforce the sparse penalty but slower.
@@ -211,8 +193,7 @@ class StainSeparation(Normalizer):
                 recommended to set num_stains as 2.
             luminosity_threshold: luminosity threshold to ignore the background. None means all regions are considered
                 as tissue.
-            regularizer: regularizer term in ista for stain separation and concentration computation.
-            rng: seed or torch.Generator for any random initialization might incur.
+            rng: Optional. Seed for reproducibility.
             use_cache: whether to use cache to save the stain matrix of input image to normalize
             cache_size_limit: size limit of the cache. negative means no limits.
             device: what device to hold the cache and the normalizer. If none the device is set to cpu.
@@ -222,10 +203,8 @@ class StainSeparation(Normalizer):
         Returns:
             StainSeparation normalizer.
         """
-        method = method.lower()
-        extractor = build_from_name(method)
         cache = cls._init_cache(use_cache, cache_size_limit=cache_size_limit, device=device,
                                 load_path=load_path)
-        return cls(extractor, concentration_method=concentration_method, num_stains=num_stains,
-                   luminosity_threshold=luminosity_threshold, regularizer=regularizer, rng=rng,
+        return cls(stain_alg, concentration_method=concentration_method, num_stains=num_stains,
+                   luminosity_threshold=luminosity_threshold, rng=rng,
                    cache=cache, device=device).to(device)

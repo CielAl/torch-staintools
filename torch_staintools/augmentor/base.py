@@ -234,7 +234,7 @@ class Augmentor(CachedRNGModule):
                                                                   rng=self.rng,
                                                                   **stain_mat_kwargs)
 
-        target_stain_matrix = self.tensor_from_cache(cache_keys=cache_keys, func_partial=get_stain_mat_partial,
+        target_stain_matrix = self.tensor_from_cache(cache_keys=cache_keys, func=get_stain_mat_partial,
                                                      target=target)
 
         #  B x num_stains x num_pixel_in_mask

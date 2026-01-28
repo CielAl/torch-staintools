@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Callable, Optional
 
 import torch
 from .utils import percentile, cov
@@ -11,8 +11,11 @@ class MckCfg:
     Attributes:
         perc: Percentile number to find the minimum angular term. min angular as 1 percentile
             max angular as 100 - perc percentile.
+        rng: torch.Generator for any random initializations incurred (e.g., if `init` is set to be unif)
+
     """
     perc: int
+    rng: Optional[torch.Generator]
 
 class MacenkoAlg(Callable):
     cfg: MckCfg
