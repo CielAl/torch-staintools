@@ -14,19 +14,18 @@ class Vcfg:
     """Configuration for Vahadane stain estimation
 
     Attributes:
-    regularizer: lambda term used in dictionary learning if ISTA/FISTA is used.
-    lambd_ridge: lambda term used in ridge algorithm in the dictionary step,
-        if no positive constraint is enforced.
-    steps: number of steps of the dictionary learning iteration.
-    algorithm: which algorithm to use, iterative-shrinkage soft thresholding algorithm `ista`, 'fista' or
-        coordinate descent `cd`.
+        regularizer: lambda term used in dictionary learning if ISTA/FISTA is used.
+        lambd_ridge: lambda term used in ridge algorithm in the dictionary step,
+            if no positive constraint is enforced.
+        steps: number of steps of the dictionary learning iteration.
+        algorithm: which algorithm to use, iterative-shrinkage soft thresholding algorithm `ista`, 'fista' or
+            coordinate descent `cd`.
 
-    init: init method of the codes `a` in `X = D x a`. Selected from `ridge`, `zero`, `unif` (uniformly random),
-        or `transpose`. Details see torch_staintools.functional.optimization.sparse_util.initialize_code
-    maxiter: maximum number of iterations in ista loops and cd for code update
-    tol: tolerance for convergence of code update.
-    lr: step size for ista loops only. not applied to cd.  If None, the 1/Lipschitz will be selected.
-
+        init: init method of the codes `a` in `X = D x a`. Selected from `ridge`, `zero`, `unif` (uniformly random),
+            or `transpose`. Details see torch_staintools.functional.optimization.sparse_util.initialize_code
+        maxiter: maximum number of iterations in ista loops and cd for code update
+        tol: tolerance for convergence of code update.
+        lr: step size for ista loops only. not applied to cd.  If None, the 1/Lipschitz will be selected.
 """
     regularizer: float
     algorithm: METHOD_SPARSE

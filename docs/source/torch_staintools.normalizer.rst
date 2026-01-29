@@ -11,7 +11,6 @@ torch\_staintools.normalizer.base module
    :members:
    :undoc-members:
    :show-inheritance:
-   :private-members:
 
 torch\_staintools.normalizer.factory module
 -------------------------------------------
@@ -20,7 +19,6 @@ torch\_staintools.normalizer.factory module
    :members:
    :undoc-members:
    :show-inheritance:
-   :private-members:
 
 torch\_staintools.normalizer.reinhard module
 --------------------------------------------
@@ -29,7 +27,6 @@ torch\_staintools.normalizer.reinhard module
    :members:
    :undoc-members:
    :show-inheritance:
-   :private-members:
 
 torch\_staintools.normalizer.separation module
 ----------------------------------------------
@@ -38,7 +35,6 @@ torch\_staintools.normalizer.separation module
    :members:
    :undoc-members:
    :show-inheritance:
-   :private-members:
 
 Module contents
 ---------------
@@ -47,4 +43,3 @@ Module contents
    :members:
    :undoc-members:
    :show-inheritance:
-   :private-members:
