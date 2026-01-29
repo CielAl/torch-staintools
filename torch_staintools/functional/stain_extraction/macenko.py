@@ -93,9 +93,8 @@ class MacenkoAlg(Callable):
         perc = self.cfg.perc
 
         device = od.device
-        if num_stains != 2:
-            # todo - generic ND angular component computation to stratify the space into N parts for stain separation
-            raise NotImplementedError(f"Num stains: {num_stains} not currently supported in Macenko. Only support: 2")
+        # todo - generic ND angular component computation to stratify the space into N parts for stain separation
+        assert num_stains == 2, f"Num stains: {num_stains} not currently supported in Macenko. Only support: 2"
         #  B x (HxWx1)
         tissue_mask_flatten = tissue_mask.flatten(start_dim=1, end_dim=-1).to(device)
         # B x (H*W) x C

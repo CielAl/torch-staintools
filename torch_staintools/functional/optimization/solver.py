@@ -56,9 +56,16 @@ def coord_descent(x: torch.Tensor, z0: torch.Tensor, weight: torch.Tensor,
     return z
 
 def rss_grad(z_k: torch.Tensor, x: torch.Tensor, weight: torch.Tensor):
+    # kernelize it?
     resid = torch.matmul(z_k, weight.T) - x
     return torch.matmul(resid, weight)
 
+def rss_grad_fast(z_k: torch.Tensor, hessian: torch.Tensor, b: torch.Tensor):
+    return torch.mm(z_k, hessian) - b
+
+def _grad_precompute(x: torch.Tensor, weight: torch.Tensor):
+    # return Hessian and bias
+    return torch.mm(weight.T, weight), torch.mm(x, weight)
 
 def softshrink(x: torch.Tensor, lambd: torch.Tensor) -> torch.Tensor:
     lambd = lambd.clamp_min(0)
@@ -67,8 +74,8 @@ def softshrink(x: torch.Tensor, lambd: torch.Tensor) -> torch.Tensor:
 
 def ista_step(
     z: torch.Tensor,
-    x: torch.Tensor,
-    weight: torch.Tensor,
+    hessian: torch.Tensor,
+    b: torch.Tensor,
     alpha: torch.Tensor,
     lr: torch.Tensor,
     positive: bool,
@@ -77,8 +84,10 @@ def ista_step(
 
     Args:
         z: code. num_pixels x num_stain
-        x: OD space. num_pixels x num_channel
-        weight: init from stain matrix --> num_channel x num_stain
+        # x: OD space. num_pixels x num_channel
+        # weight: init from stain matrix --> num_channel x num_stain
+        hessian: precomputed wtw
+        b: precomputed xw
         alpha: tensor form of the ista penalizer
         lr: tensor form of step size
         positive: if force z to be positive
@@ -88,7 +97,8 @@ def ista_step(
 
 
     z_k_safe = torch.nan_to_num(z, nan=0.0, posinf=0.0, neginf=0.0)
-    g = rss_grad(z_k_safe, x, weight) # same shape as z
+    # g = rss_grad(z_k_safe, x, weight) # same shape as z
+    g = rss_grad_fast(z_k_safe, hessian, b)
     g_safe = torch.nan_to_num(g, nan=0.0, posinf=0.0, neginf=0.0)
 
     # guard lr
@@ -108,15 +118,15 @@ def fista_step(
         z: torch.Tensor,
         y: torch.Tensor,
         t: torch.Tensor,
-        x: torch.Tensor,
-        weight: torch.Tensor,
+        hessian: torch.Tensor,
+        b: torch.Tensor,
         alpha: torch.Tensor,
         lr: torch.Tensor,
         positive_code: bool,
         tol: float
 ):
 
-    z_next = ista_step(y, x, weight, alpha, lr, positive_code)
+    z_next = ista_step(y, hessian, b, alpha, lr, positive_code)
     delta = z_next - z
     diff = delta.abs().sum()
     just_finished = diff <= tol
@@ -128,12 +138,12 @@ def fista_step(
 
 
 @torch.compile
-def ista_loop(z: torch.Tensor, x: torch.Tensor, weight: torch.Tensor,
+def ista_loop(z: torch.Tensor, hessian: torch.Tensor, b: torch.Tensor,
               alpha: torch.Tensor, lr: torch.Tensor,
               tol: float, maxiter: int, positive_code: bool):
     is_converged = torch.tensor(False, device=z.device, dtype=torch.bool)
     for _ in range(maxiter):
-        z_next = ista_step(z, x, weight, alpha, lr, positive_code)
+        z_next = ista_step(z, hessian, b, alpha, lr, positive_code)
         # check convergence
         diff = (z - z_next).abs().sum()
         just_finished = diff <= tol
@@ -146,8 +156,8 @@ def ista_loop(z: torch.Tensor, x: torch.Tensor, weight: torch.Tensor,
 @torch.compile
 def fista_loop(
         z: torch.Tensor,
-        x: torch.Tensor,
-        weight: torch.Tensor,
+        hessian: torch.Tensor,
+        b: torch.Tensor,
         alpha: torch.Tensor,
         lr: torch.Tensor,
         tol: float,
@@ -158,8 +168,10 @@ def fista_loop(
 
     Args:
         z: Initial guess
-        x: Data input (OD space)
-        weight: Dictionary matrix
+        # x: Data input (OD space)
+        # weight: Dictionary matrix
+        hessian: precomputed wtw
+        b: precomputed xw
         alpha: Regularization strength
         lr: Learning rate
         maxiter: Maximum iterations
@@ -176,7 +188,7 @@ def fista_loop(
     for i in range(maxiter):
 
         z_next, y_next, t_next, just_finished = fista_step(z, y, t,
-                                                           x, weight,
+                                                           hessian, b,
                                                            alpha, lr,
                                                            positive_code, tol)
 
@@ -212,8 +224,10 @@ def ista(x: torch.Tensor, z0: torch.Tensor,
     z0 = z0.contiguous()
     x = x.contiguous()
     weight = weight.contiguous()
-
-    return ista_loop(z0, x, weight, alpha, lr, tol, maxiter, positive_code)
+    hessian, b = _grad_precompute(x, weight)
+    # hessian = hessian.contiguous()
+    # b = b.contiguous()
+    return ista_loop(z0, hessian, b, alpha, lr, tol, maxiter, positive_code)
 
 
 def fista(x: torch.Tensor, z0: torch.Tensor,
@@ -240,5 +254,7 @@ def fista(x: torch.Tensor, z0: torch.Tensor,
     z0 = z0.contiguous()
     x = x.contiguous()
     weight = weight.contiguous()
-
-    return fista_loop(z0, x, weight, alpha, lr, tol, maxiter, positive_code)
+    hessian, b = _grad_precompute(x, weight)
+    # hessian = hessian.contiguous()
+    # b = b.contiguous()
+    return fista_loop(z0, hessian, b, alpha, lr, tol, maxiter, positive_code)

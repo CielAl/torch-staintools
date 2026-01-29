@@ -12,7 +12,7 @@ class _Config:
     DICT_POSITIVE_CODE: bool = True
 
 
-CONFIG = _Config()
+CONFIG: _Config = _Config()
 
 
 

@@ -5,20 +5,24 @@ from .solver import coord_descent, ista, fista
 from .sparse_util import METHOD_SPARSE, validate_code, initialize_dict, collate_params
 import torch
 import torch.nn.functional as F
-from typing import Optional, cast
+from typing import Optional, cast, Tuple
 from ..eps import get_eps
 from torch_staintools.constants import CONFIG
 
+
+@torch.compile
 def update_dict_cd(dictionary: torch.Tensor, x: torch.Tensor, code: torch.Tensor,
                    positive: bool = True,
-                   dead_thresh=1e-7, rng: torch.Generator = None):
+                   dead_thresh=1e-7,
+                   rng: torch.Generator = None) -> Tuple[torch.Tensor, torch.Tensor]:
     """Update the dictionary (stain matrix) using Block Coordinate Descent algorithm.
 
     Can satisfy the positive constraint of dictionaries if specified.
-
+    Side effects: code is updated inplace.
 
     Args:
-        dictionary:  Tensor of shape (n_features, n_components) Value of the dictionary at the previous iteration.
+        dictionary: Tensor of shape (n_features, n_components).
+            Value of the dictionary at the previous iteration.
         x: Tensor of shape (n_samples, n_components)
             Sparse coding of the data against which to optimize the dictionary.
         code:  Tensor of shape (n_samples, n_components)
@@ -28,7 +32,7 @@ def update_dict_cd(dictionary: torch.Tensor, x: torch.Tensor, code: torch.Tensor
         rng: torch.Generator for initialization of dictionary and code.
 
     Returns:
-
+        torch.Tensor, torch.Tensor, corresponding to the weight and the updated code.
     """
     n_components = dictionary.size(1)
 
@@ -38,10 +42,18 @@ def update_dict_cd(dictionary: torch.Tensor, x: torch.Tensor, code: torch.Tensor
     for k in range(n_components):
         d_k = dictionary[:, k]
         z_k = code[:, k]
-        update_term = torch.outer(z_k, d_k)
-        # Update k'th atom
-        R += update_term
-        new_d_k = torch.mv(R.T, z_k)
+
+        # vanilla.  new_d =  (R + z*d^T)^T * z
+        # new_d = R^T*z + (d*z^T)*z = R^T*z + d*(z^T*z)
+        # update_term = torch.outer(z_k, d_k)
+        # R += update_term
+        # new_d_k = torch.mv(R.T, z_k) # target
+
+        # R^T*z
+        rtz = torch.mv(R.T, z_k)
+        ztz = torch.dot(z_k, z_k)
+        new_d_k = rtz + (d_k * ztz)
+
         if positive:
             new_d_k = torch.clamp(new_d_k, min=0)
 
@@ -60,14 +72,22 @@ def update_dict_cd(dictionary: torch.Tensor, x: torch.Tensor, code: torch.Tensor
         d_k_standard = new_d_k / (d_norm + get_eps(dictionary))
         d_k_final = torch.where(is_dead, d_k_random, d_k_standard)
         z_k_final = torch.where(is_dead, torch.zeros_like(z_k), z_k)
+
+        # fused
+        # must be done before updating the dict
+        r_delta = torch.outer(z_k, d_k) - torch.outer(z_k_final, d_k_final)
+
         dictionary[:, k] = d_k_final
         code[:, k] = z_k_final
-        R -= torch.outer(z_k_final, d_k_final)
 
-    return dictionary
+        #R -= torch.outer(z_k_final, d_k_final)
+        R += r_delta
+
+    return dictionary, code
 
 
-def update_dict_ridge(x, code, lambd=1e-4):
+@torch.compile
+def update_dict_ridge(x: torch.Tensor, code: torch.Tensor, lambd: float) -> Tuple[torch.Tensor, torch.Tensor]:
     """Update an (unconstrained) dictionary with ridge regression
 
     This is equivalent to a Newton step with the (L2-regularized) squared
@@ -80,17 +100,17 @@ def update_dict_ridge(x, code, lambd=1e-4):
         lambd:  weight decay parameter
 
     Returns:
-
+        torch.Tensor, torch.Tensor, corresponding to the weight and the unmodified code.
     """
 
     rhs = torch.mm(code.T, x)
     M = torch.mm(code.T, code)
     M.diagonal().add_(lambd * x.size(0))
     L = torch.linalg.cholesky(M)
-    V = torch.cholesky_solve(rhs, L).T
+    weight = torch.cholesky_solve(rhs, L).T
 
-    V = F.normalize(V, dim=0, eps=1e-12)
-    return V
+    weight = F.normalize(weight, dim=0, eps=1e-12)
+    return weight, code
 
 
 def sparse_code(x: torch.Tensor,
@@ -118,7 +138,6 @@ def sparse_code(x: torch.Tensor,
             raise ValueError("invalid algorithm parameter '{}'.".format(algorithm))
     return z
 
-
 def dict_learning_loop(x: torch.Tensor,
                        z0: torch.Tensor,
                        weight: torch.Tensor,
@@ -135,7 +154,6 @@ def dict_learning_loop(x: torch.Tensor,
 
     for _ in range(steps):
         # infer sparse coefficients and compute loss
-
         z = sparse_code(x, weight, alpha, z0, algorithm=cast(METHOD_SPARSE, algorithm),
                         lr=lr, maxiter=maxiter, tol=tol,
                         positive_code=CONFIG.DICT_POSITIVE_CODE).contiguous()
@@ -145,13 +163,13 @@ def dict_learning_loop(x: torch.Tensor,
         if CONFIG.DICT_PERSIST_CODE:
             z0 = z
         else:
-            z0 = validate_code(algorithm, init, None, weight, x, rng)
+            z0 = validate_code(algorithm, init, z0=None, x=x, weight=weight, rng=rng)
 
         # update dictionary
         if CONFIG.DICT_POSITIVE_DICTIONARY:
-            weight = update_dict_cd(weight, x, z, positive=True, rng=rng)
+            weight, z = update_dict_cd(weight, x, z, positive=True, rng=rng)
         else:
-            weight = update_dict_ridge(x, z, lambd=lambd_ridge)
+            weight, z = update_dict_ridge(x, z, lambd=lambd_ridge)
 
     return weight
 
@@ -159,22 +177,23 @@ def dict_learning_loop(x: torch.Tensor,
 def dict_learning(x: torch.Tensor,
                   n_components: int,
                   algorithm: METHOD_SPARSE,
-                  *, alpha: float = 1e-1,
-                  lambd_ridge: float = 1e-2,
-                  steps: int = 60,
-                  rng: torch.Generator = None,
-                  init: Optional[str] = 'zero',
-                  lr: Optional[float] = None,
-                  maxiter: int = 50,
-                  tol: float = 1e-5, ):
+                  *, alpha: float,
+                  lambd_ridge: float,
+                  steps: int,
+                  rng: Optional[torch.Generator],
+                  init: Optional[str],
+                  lr: Optional[float],
+                  maxiter: int,
+                  tol: float, ):
     n_samples, n_features = x.shape
+    # pixel x c
     x = x.contiguous()
-
+    # c x stain
     weight = initialize_dict(n_features=n_features, n_components=n_components, device=x.device,
                              rng=rng, positive_dict=CONFIG.DICT_POSITIVE_DICTIONARY)
 
     # initialize
-    z0 = validate_code(algorithm, init, None, weight, x, rng)
+    z0 = validate_code(algorithm, init, z0=None, x=x, weight=weight, rng=rng)
     assert z0 is not None
     lr, alpha, tol = collate_params(z0, x, lr, weight, alpha, tol)
     return dict_learning_loop(x, z0, weight, alpha, algorithm, lambd_ridge=lambd_ridge,

@@ -58,12 +58,16 @@ class AugmentorBuilder:
         aug_method: Callable
         match method:
             case 'macenko' | 'vahadane':
-                return Augmentor.build(method=method, concentration_method=concentration_method,
-                                       rng=rng, target_stain_idx=target_stain_idx,
+                return Augmentor.build(method=method,
+                                       concentration_method=concentration_method,
+                                       rng=rng,
+                                       target_stain_idx=target_stain_idx,
                                        sigma_alpha=sigma_alpha,
-                                       sigma_beta=sigma_beta, luminosity_threshold=luminosity_threshold,
+                                       sigma_beta=sigma_beta,
+                                       luminosity_threshold=luminosity_threshold,
                                        use_cache=use_cache,
                                        regularizer=regularizer,
-                                       cache_size_limit=cache_size_limit, device=device, load_path=load_path)
+                                       cache_size_limit=cache_size_limit,
+                                       device=device, load_path=load_path)
             case _:
                 raise NotImplementedError(f"{method} not implemented.")

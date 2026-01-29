@@ -23,7 +23,7 @@ _batch_supported = {
 @dataclass(frozen=True)
 class ConcentCfg:
     algorithm: METHOD_FACTORIZE = 'fista'
-    regularizer: float = CONFIG.OPTIM_DEFAULT_SPARSE_LAMBDA
+    regularizer: float = PARAM.OPTIM_DEFAULT_SPARSE_LAMBDA
     rng: Optional[torch.Generator] = None
     maxiter: int = PARAM.OPTIM_SPARSE_DEFAULT_MAX_ITER
     lr: Optional[float] = None

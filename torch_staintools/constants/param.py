@@ -20,7 +20,7 @@ class _Param:
     OPTIM_SPARSE_DEFAULT_MAX_ITER: float = 50
 
 
-PARAM = _Param()
+PARAM: _Param = _Param()
 
 
 

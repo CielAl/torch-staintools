@@ -1,4 +1,4 @@
-from typing import Optional, Literal, get_args, Tuple
+from typing import Optional, Literal, get_args, Tuple, cast
 import torch
 from torch.nn import functional as F
 from torch_staintools.constants import PARAM
@@ -81,14 +81,14 @@ def initialize_dict(n_features: int, n_components: int,
 
 
 def validate_code(algorithm: METHOD_SPARSE,
-                  init: str, z0: Optional[torch.Tensor],
-                  x: torch.Tensor, weight, rng):
+                  init: Optional[MODE_INIT], z0: Optional[torch.Tensor],
+                  x: torch.Tensor, weight: torch.Tensor, rng):
     # initialize code variable
     n_samples = x.size(0)
     n_components = weight.size(1)
     init = _init_defaults.get(algorithm, 'zero') if init is None else init
     if z0 is None:
-        z0 = initialize_code(x, weight, mode=init, rng=rng)
+        z0 = initialize_code(x, weight, mode=cast(MODE_INIT, init), rng=rng)
     assert z0.shape == (n_samples, n_components)
     return z0
 
