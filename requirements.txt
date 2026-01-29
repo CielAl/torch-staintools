@@ -3,4 +3,4 @@ kornia~=0.8.2
 scipy~=1.10.0
 scikit-image~=0.19.3
 torchvision
-torch
+torch>=2.8.0
