@@ -1,23 +1,21 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="./">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>torch_staintools.functional.tissue_mask package &mdash; Torch-StainTools 1.0.0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+  <title>torch_staintools.functional.tissue_mask package &mdash; Torch-StainTools 1.0.5 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
 
   
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="_static/jquery.js?v=5d32c60e"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=8d563738"></script>
-        <script src="_static/doctools.js?v=888ff710"></script>
-        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=d55fa986"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -46,27 +44,24 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="torch_staintools.augmentor.html">torch_staintools.augmentor package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="torch_staintools.normalizer.html">torch_staintools.normalizer package</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="torch_staintools.functional.html">torch_staintools.functional package</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="torch_staintools.functional.html#subpackages">Subpackages</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="torch_staintools.functional.conversion.html">torch_staintools.functional.conversion package</a></li>
-<li class="toctree-l3"><a class="reference internal" href="torch_staintools.functional.optimization.html">torch_staintools.functional.optimization package</a></li>
-<li class="toctree-l3"><a class="reference internal" href="torch_staintools.functional.stain_extraction.html">torch_staintools.functional.stain_extraction package</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">torch_staintools.functional.tissue_mask package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#module-torch_staintools.functional.tissue_mask">Module contents</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">torch_staintools</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="torch_staintools.html">torch_staintools package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="torch_staintools.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="torch_staintools.augmentor.html">torch_staintools.augmentor package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="torch_staintools.base_module.html">torch_staintools.base_module package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="torch_staintools.cache.html">torch_staintools.cache package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="torch_staintools.constants.html">torch_staintools.constants package</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="torch_staintools.functional.html">torch_staintools.functional package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="torch_staintools.normalizer.html">torch_staintools.normalizer package</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="torch_staintools.functional.utility.html">torch_staintools.functional.utility package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="torch_staintools.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="torch_staintools.html#module-torch_staintools.version">torch_staintools.version module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="torch_staintools.html#module-torch_staintools">Module contents</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="torch_staintools.functional.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="torch_staintools.functional.html#module-torch_staintools.functional.eps">torch_staintools.functional.eps module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="torch_staintools.functional.html#module-torch_staintools.functional">Module contents</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="torch_staintools.cache.html">torch_staintools.cache package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="torch_staintools.base_module.html">torch_staintools.base_module package</a></li>
 </ul>
 
         </div>
@@ -83,6 +78,8 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">torch_staintools</a></li>
+          <li class="breadcrumb-item"><a href="torch_staintools.html">torch_staintools package</a></li>
           <li class="breadcrumb-item"><a href="torch_staintools.functional.html">torch_staintools.functional package</a></li>
       <li class="breadcrumb-item active">torch_staintools.functional.tissue_mask package</li>
       <li class="wy-breadcrumbs-aside">
@@ -124,28 +121,6 @@ results or even crash if the nearly entire input image is background.</p></li>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>mask (B1HW)</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="torch_staintools.functional.tissue_mask.get_tissue_mask_np">
-<span class="sig-prename descclassname"><span class="pre">torch_staintools.functional.tissue_mask.</span></span><span class="sig-name descname"><span class="pre">get_tissue_mask_np</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">I</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">luminosity_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throw_error</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#torch_staintools.functional.tissue_mask.get_tissue_mask_np" title="Link to this definition"></a></dt>
-<dd><p>Get a binary mask where true denotes pixels with a luminosity less than the specified threshold.</p>
-<p>A numpy version for preprocessing purposes. Note that both Macenko and Vahadane may fail due to mathematical
-instability to process image that is mostly bright background and no tissue at all.</p>
-<p>Typically, we use to identify tissue in the image and exclude the bright white background.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>I</strong> – numpy image. H x W x C. Input will be automatically converted to uint8 format and range [0, 255]</p></li>
-<li><p><strong>luminosity_threshold</strong> – threshold of luminosity in range of [0, 1].  Pixels with intensity within (0, threshold)
-are considered as tissue. If None then all pixels are considered as tissue, effectively bypass this step.</p></li>
-<li><p><strong>throw_error</strong> – Whether to throw an error if no tissue is found.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>binary mask in H x W</p>
 </dd>
 </dl>
 </dd></dl>

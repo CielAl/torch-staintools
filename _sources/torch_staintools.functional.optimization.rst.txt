@@ -11,7 +11,6 @@ torch\_staintools.functional.optimization.dict\_learning module
    :members:
    :undoc-members:
    :show-inheritance:
-   :private-members:
 
 torch\_staintools.functional.optimization.solver module
 -------------------------------------------------------
@@ -20,7 +19,6 @@ torch\_staintools.functional.optimization.solver module
    :members:
    :undoc-members:
    :show-inheritance:
-   :private-members:
 
 torch\_staintools.functional.optimization.sparse\_util module
 -------------------------------------------------------------
@@ -29,7 +27,6 @@ torch\_staintools.functional.optimization.sparse\_util module
    :members:
    :undoc-members:
    :show-inheritance:
-   :private-members:
 
 Module contents
 ---------------
@@ -38,4 +35,3 @@ Module contents
    :members:
    :undoc-members:
    :show-inheritance:
-   :private-members:

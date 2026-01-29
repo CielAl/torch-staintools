@@ -1,23 +1,21 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="./">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>torch_staintools.functional.optimization package &mdash; Torch-StainTools 1.0.0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+  <title>torch_staintools.functional.optimization package &mdash; Torch-StainTools 1.0.5 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
 
   
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="_static/jquery.js?v=5d32c60e"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=8d563738"></script>
-        <script src="_static/doctools.js?v=888ff710"></script>
-        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=d55fa986"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -46,31 +44,24 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="torch_staintools.augmentor.html">torch_staintools.augmentor package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="torch_staintools.normalizer.html">torch_staintools.normalizer package</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="torch_staintools.functional.html">torch_staintools.functional package</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="torch_staintools.functional.html#subpackages">Subpackages</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="torch_staintools.functional.conversion.html">torch_staintools.functional.conversion package</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">torch_staintools.functional.optimization package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#submodules">Submodules</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#module-torch_staintools.functional.optimization.dict_learning">torch_staintools.functional.optimization.dict_learning module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#module-torch_staintools.functional.optimization.solver">torch_staintools.functional.optimization.solver module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#module-torch_staintools.functional.optimization.sparse_util">torch_staintools.functional.optimization.sparse_util module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#module-torch_staintools.functional.optimization">Module contents</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">torch_staintools</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="torch_staintools.html">torch_staintools package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="torch_staintools.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="torch_staintools.augmentor.html">torch_staintools.augmentor package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="torch_staintools.base_module.html">torch_staintools.base_module package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="torch_staintools.cache.html">torch_staintools.cache package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="torch_staintools.constants.html">torch_staintools.constants package</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="torch_staintools.functional.html">torch_staintools.functional package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="torch_staintools.normalizer.html">torch_staintools.normalizer package</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="torch_staintools.functional.stain_extraction.html">torch_staintools.functional.stain_extraction package</a></li>
-<li class="toctree-l3"><a class="reference internal" href="torch_staintools.functional.tissue_mask.html">torch_staintools.functional.tissue_mask package</a></li>
-<li class="toctree-l3"><a class="reference internal" href="torch_staintools.functional.utility.html">torch_staintools.functional.utility package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="torch_staintools.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="torch_staintools.html#module-torch_staintools.version">torch_staintools.version module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="torch_staintools.html#module-torch_staintools">Module contents</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="torch_staintools.functional.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="torch_staintools.functional.html#module-torch_staintools.functional.eps">torch_staintools.functional.eps module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="torch_staintools.functional.html#module-torch_staintools.functional">Module contents</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="torch_staintools.cache.html">torch_staintools.cache package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="torch_staintools.base_module.html">torch_staintools.base_module package</a></li>
 </ul>
 
         </div>
@@ -87,6 +78,8 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">torch_staintools</a></li>
+          <li class="breadcrumb-item"><a href="torch_staintools.html">torch_staintools package</a></li>
           <li class="breadcrumb-item"><a href="torch_staintools.functional.html">torch_staintools.functional package</a></li>
       <li class="breadcrumb-item active">torch_staintools.functional.optimization package</li>
       <li class="wy-breadcrumbs-aside">
@@ -107,154 +100,52 @@
 <span id="torch-staintools-functional-optimization-dict-learning-module"></span><h2>torch_staintools.functional.optimization.dict_learning module<a class="headerlink" href="#module-torch_staintools.functional.optimization.dict_learning" title="Link to this heading"></a></h2>
 <p>code directly adapted from <a class="reference external" href="https://github.com/rfeinman/pytorch-lasso">https://github.com/rfeinman/pytorch-lasso</a></p>
 <dl class="py function">
-<dt class="sig sig-object py" id="torch_staintools.functional.optimization.dict_learning._ls_batch">
-<span class="sig-prename descclassname"><span class="pre">torch_staintools.functional.optimization.dict_learning.</span></span><span class="sig-name descname"><span class="pre">_ls_batch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">od_flatten</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stain_matrix</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torch_staintools.functional.optimization.dict_learning._ls_batch" title="Link to this definition"></a></dt>
-<dd><p>Use least square to solve the factorization for concentration.</p>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>May fail on GPU for individual large input (e.g., 1000 x 1000), regardless of batch size.
-Better for multiple small inputs in terms of H and W.</p>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>od_flatten</strong> – B * (HW) x num_input_channel</p></li>
-<li><p><strong>stain_matrix</strong> – B x num_stains x num_input_channel</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>concentration B x num_stains x (HW)</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="torch_staintools.functional.optimization.dict_learning.dict_evaluate">
-<span class="sig-prename descclassname"><span class="pre">torch_staintools.functional.optimization.dict_learning.</span></span><span class="sig-name descname"><span class="pre">dict_evaluate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Generator</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torch_staintools.functional.optimization.dict_learning.dict_evaluate" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
 <dt class="sig sig-object py" id="torch_staintools.functional.optimization.dict_learning.dict_learning">
-<span class="sig-prename descclassname"><span class="pre">torch_staintools.functional.optimization.dict_learning.</span></span><span class="sig-name descname"><span class="pre">dict_learning</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_components</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">constrained</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">persist</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lambd</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">steps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">60</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpu'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">progbar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Generator</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">solver_kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torch_staintools.functional.optimization.dict_learning.dict_learning" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">torch_staintools.functional.optimization.dict_learning.</span></span><span class="sig-name descname"><span class="pre">dict_learning</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_components</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">algorithm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'ista'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'cd'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'fista'</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lambd_ridge</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Generator</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxiter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torch_staintools.functional.optimization.dict_learning.dict_learning" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="torch_staintools.functional.optimization.dict_learning.get_concentration_batch">
-<span class="sig-prename descclassname"><span class="pre">torch_staintools.functional.optimization.dict_learning.</span></span><span class="sig-name descname"><span class="pre">get_concentration_batch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">od_flatten</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stain_matrix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regularizer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">algorithm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torch_staintools.functional.optimization.dict_learning.get_concentration_batch" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="torch_staintools.functional.optimization.dict_learning.dict_learning_loop">
+<span class="sig-prename descclassname"><span class="pre">torch_staintools.functional.optimization.dict_learning.</span></span><span class="sig-name descname"><span class="pre">dict_learning_loop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">algorithm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'ista'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'cd'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'fista'</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lambd_ridge</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Generator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxiter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torch_staintools.functional.optimization.dict_learning.dict_learning_loop" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="torch_staintools.functional.optimization.dict_learning.get_concentration_one_by_one">
-<span class="sig-prename descclassname"><span class="pre">torch_staintools.functional.optimization.dict_learning.</span></span><span class="sig-name descname"><span class="pre">get_concentration_one_by_one</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">od_flatten</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stain_matrix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regularizer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">algorithm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torch_staintools.functional.optimization.dict_learning.get_concentration_one_by_one" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="torch_staintools.functional.optimization.dict_learning.sparse_code">
+<span class="sig-prename descclassname"><span class="pre">torch_staintools.functional.optimization.dict_learning.</span></span><span class="sig-name descname"><span class="pre">sparse_code</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">algorithm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'ista'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'cd'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'fista'</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxiter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">positive_code</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torch_staintools.functional.optimization.dict_learning.sparse_code" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="torch_staintools.functional.optimization.dict_learning.get_concentrations">
-<span class="sig-prename descclassname"><span class="pre">torch_staintools.functional.optimization.dict_learning.</span></span><span class="sig-name descname"><span class="pre">get_concentrations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stain_matrix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regularizer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">algorithm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'ista'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'cd'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'ls'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'ista'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Generator</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torch_staintools.functional.optimization.dict_learning.get_concentrations" title="Link to this definition"></a></dt>
-<dd><p>Estimate concentration matrix given an image and stain matrix.</p>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>algorithm = ‘ls’ May fail on GPU for individual large input (e.g., 1000 x 1000), regardless of batch size.
-Better for multiple small inputs in terms of H and W.</p>
-</div>
+<dt class="sig sig-object py" id="torch_staintools.functional.optimization.dict_learning.update_dict_cd">
+<span class="sig-prename descclassname"><span class="pre">torch_staintools.functional.optimization.dict_learning.</span></span><span class="sig-name descname"><span class="pre">update_dict_cd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dictionary</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">positive</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dead_thresh</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-07</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Generator</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Tensor</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Tensor</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#torch_staintools.functional.optimization.dict_learning.update_dict_cd" title="Link to this definition"></a></dt>
+<dd><p>Update the dictionary (stain matrix) using Block Coordinate Descent algorithm.</p>
+<p>Can satisfy the positive constraint of dictionaries if specified.
+Side effects: code is updated inplace.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>image</strong> – batched image(s) in shape of BxCxHxW</p></li>
-<li><p><strong>stain_matrix</strong> – B x num_stain x input channel</p></li>
-<li><p><strong>regularizer</strong> – regularization term if ISTA algorithm is used</p></li>
-<li><p><strong>algorithm</strong> – which method to compute the concentration: Solve min||HExC - OD||p
-support ‘ista’, ‘cd’, and ‘ls’. ‘ls’ simply solves the least square problem for factorization of
-min||HExC - OD||F (Frobenius norm) but is faster. ‘ista’/cd enforce the sparse penalty (L1 norm) but slower.</p></li>
-<li><p><strong>rng</strong> – torch.Generator for random initializations</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>B x num_stains x num_pixel_in_tissue_mask</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>concentration matrix</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="torch_staintools.functional.optimization.dict_learning.get_concentrations_single">
-<span class="sig-prename descclassname"><span class="pre">torch_staintools.functional.optimization.dict_learning.</span></span><span class="sig-name descname"><span class="pre">get_concentrations_single</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">od_flatten</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stain_matrix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regularizer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'ista'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'cd'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'ls'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'ista'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Generator</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torch_staintools.functional.optimization.dict_learning.get_concentrations_single" title="Link to this definition"></a></dt>
-<dd><p>Helper function to estimate concentration matrix given an image and stain matrix with shape: 2 x (H*W)</p>
-<p>For solvers without batch support. Inputs are individual data points from a batch</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>od_flatten</strong> – Flattened optical density vectors in shape of (H*W) x C (H and W dimensions flattened).</p></li>
-<li><p><strong>stain_matrix</strong> – the computed stain matrices in shape of num_stain x input channel</p></li>
-<li><p><strong>regularizer</strong> – regularization term if ISTA algorithm is used</p></li>
-<li><p><strong>method</strong> – which method to compute the concentration: coordinate descent (‘cd’) or iterative-shrinkage soft
-thresholding algorithm (‘ista’)</p></li>
-<li><p><strong>rng</strong> – torch.Generator for random initializations</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>num_stains x num_pixel_in_tissue_mask</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>computed concentration</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="torch_staintools.functional.optimization.dict_learning.lasso_loss">
-<span class="sig-prename descclassname"><span class="pre">torch_staintools.functional.optimization.dict_learning.</span></span><span class="sig-name descname"><span class="pre">lasso_loss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Z</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#torch_staintools.functional.optimization.dict_learning.lasso_loss" title="Link to this definition"></a></dt>
-<dd><p>Lasso loss definition.</p>
-<p>sum(X-Z)^2 + lambda1 <a href="#id3"><span class="problematic" id="id4">|weight|</span></a> + (1-alpha) * <a href="#id1"><span class="problematic" id="id2">|</span></a>weight|2</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>X</strong> – </p></li>
-<li><p><strong>Z</strong> – </p></li>
-<li><p><strong>weight</strong> – </p></li>
-<li><p><strong>alpha</strong> – for compatibility purpose. Not used.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>lasso loss</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="torch_staintools.functional.optimization.dict_learning.sparse_encode">
-<span class="sig-prename descclassname"><span class="pre">torch_staintools.functional.optimization.dict_learning.</span></span><span class="sig-name descname"><span class="pre">sparse_encode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">algorithm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'ista'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'cd'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'ista'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Generator</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torch_staintools.functional.optimization.dict_learning.sparse_encode" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="torch_staintools.functional.optimization.dict_learning.update_dict">
-<span class="sig-prename descclassname"><span class="pre">torch_staintools.functional.optimization.dict_learning.</span></span><span class="sig-name descname"><span class="pre">update_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dictionary</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">positive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-07</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Generator</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torch_staintools.functional.optimization.dict_learning.update_dict" title="Link to this definition"></a></dt>
-<dd><p>Update the dense dictionary factor in place.</p>
-<p>Modified from <cite>_update_dict</cite> in sklearn.decomposition._dict_learning</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>dictionary</strong> – Tensor of shape (n_features, n_components) Value of the dictionary at the previous iteration.</p></li>
+<li><p><strong>dictionary</strong> – Tensor of shape (n_features, n_components).
+Value of the dictionary at the previous iteration.</p></li>
 <li><p><strong>x</strong> – Tensor of shape (n_samples, n_components)
 Sparse coding of the data against which to optimize the dictionary.</p></li>
 <li><p><strong>code</strong> – Tensor of shape (n_samples, n_components)
 Sparse coding of the data against which to optimize the dictionary.</p></li>
 <li><p><strong>positive</strong> – Whether to enforce positivity when finding the dictionary.</p></li>
-<li><p><strong>eps</strong> – Minimum vector norm before considering “degenerate”</p></li>
+<li><p><strong>dead_thresh</strong> – Minimum vector norm before considering “degenerate”</p></li>
 <li><p><strong>rng</strong> – torch.Generator for initialization of dictionary and code.</p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>torch.Tensor, torch.Tensor, corresponding to the weight and the updated code.</p>
+</dd>
 </dl>
-<p>Returns:</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="torch_staintools.functional.optimization.dict_learning.update_dict_ridge">
-<span class="sig-prename descclassname"><span class="pre">torch_staintools.functional.optimization.dict_learning.</span></span><span class="sig-name descname"><span class="pre">update_dict_ridge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lambd</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0001</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torch_staintools.functional.optimization.dict_learning.update_dict_ridge" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">torch_staintools.functional.optimization.dict_learning.</span></span><span class="sig-name descname"><span class="pre">update_dict_ridge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lambd</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Tensor</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Tensor</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#torch_staintools.functional.optimization.dict_learning.update_dict_ridge" title="Link to this definition"></a></dt>
 <dd><p>Update an (unconstrained) dictionary with ridge regression</p>
-<p>This is equivalent to a Newton step with the (L2-regularized) squared
+<p>This is equivalent to a Newton step with the (L2-regularized) squared.
+May have severe numerical stability issues compared to update_dict_cd.
 error objective:
 f(V) = (1/2N) * ||Vz - x||_2^2 + (lambd/2) * ||V||_2^2</p>
 <dl class="field-list simple">
@@ -268,8 +159,10 @@ f(V) = (1/2N) * ||Vz - x||_2^2 + (lambd/2) * ||V||_2^2</p>
 <li><p><strong>lambd</strong> – weight decay parameter</p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>torch.Tensor, torch.Tensor, corresponding to the weight and the unmodified code.</p>
+</dd>
 </dl>
-<p>Returns:</p>
 </dd></dl>
 
 </section>
@@ -277,26 +170,63 @@ f(V) = (1/2N) * ||Vz - x||_2^2 + (lambd/2) * ||V||_2^2</p>
 <span id="torch-staintools-functional-optimization-solver-module"></span><h2>torch_staintools.functional.optimization.solver module<a class="headerlink" href="#module-torch_staintools.functional.optimization.solver" title="Link to this heading"></a></h2>
 <p>code directly adapted from <a class="reference external" href="https://github.com/rfeinman/pytorch-lasso">https://github.com/rfeinman/pytorch-lasso</a></p>
 <dl class="py function">
-<dt class="sig sig-object py" id="torch_staintools.functional.optimization.solver._lipschitz_constant">
-<span class="sig-prename descclassname"><span class="pre">torch_staintools.functional.optimization.solver.</span></span><span class="sig-name descname"><span class="pre">_lipschitz_constant</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">W</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torch_staintools.functional.optimization.solver._lipschitz_constant" title="Link to this definition"></a></dt>
-<dd><p>find the Lipscitz constant to compute the learning rate in ISTA</p>
+<dt class="sig sig-object py" id="torch_staintools.functional.optimization.solver.coord_descent">
+<span class="sig-prename descclassname"><span class="pre">torch_staintools.functional.optimization.solver.</span></span><span class="sig-name descname"><span class="pre">coord_descent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxiter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">positive_code</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torch_staintools.functional.optimization.solver.coord_descent" title="Link to this definition"></a></dt>
+<dd><p>modified coord_descent</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="torch_staintools.functional.optimization.solver.fista">
+<span class="sig-prename descclassname"><span class="pre">torch_staintools.functional.optimization.solver.</span></span><span class="sig-name descname"><span class="pre">fista</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxiter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">positive_code</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torch_staintools.functional.optimization.solver.fista" title="Link to this definition"></a></dt>
+<dd><p>Fast ISTA solver</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>W</strong> – weights w in f(z) = ||Wz - x||^2</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – data</p></li>
+<li><p><strong>z0</strong> – code, or the initialization mode of the code.</p></li>
+<li><p><strong>weight</strong> – dict</p></li>
+<li><p><strong>alpha</strong> – penalty term for code</p></li>
+<li><p><strong>lr</strong> – learning rate/step size. If <cite>auto</cite> then it will be specified by
+the Lipschitz constant of f(z) = ||Wz - x||^2</p></li>
+<li><p><strong>maxiter</strong> – max number of iteration if not converge.</p></li>
+<li><p><strong>tol</strong> – tolerance term of convergence test.</p></li>
+<li><p><strong>positive_code</strong> – whether enforce the positive z constraint</p></li>
+</ul>
 </dd>
 </dl>
 <p>Returns:</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="torch_staintools.functional.optimization.solver.coord_descent">
-<span class="sig-prename descclassname"><span class="pre">torch_staintools.functional.optimization.solver.</span></span><span class="sig-name descname"><span class="pre">coord_descent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">W</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lambda1</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxiter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-06</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torch_staintools.functional.optimization.solver.coord_descent" title="Link to this definition"></a></dt>
-<dd><p>modified coord_descent</p>
+<dt class="sig sig-object py" id="torch_staintools.functional.optimization.solver.fista_loop">
+<span class="sig-prename descclassname"><span class="pre">torch_staintools.functional.optimization.solver.</span></span><span class="sig-name descname"><span class="pre">fista_loop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hessian</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxiter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">positive_code</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#torch_staintools.functional.optimization.solver.fista_loop" title="Link to this definition"></a></dt>
+<dd><p>FISTA Loop</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>z</strong> – Initial guess</p></li>
+<li><p><strong>x</strong> (<em>#</em>) – Data input (OD space)</p></li>
+<li><p><strong>weight</strong> (<em>#</em>) – Dictionary matrix</p></li>
+<li><p><strong>hessian</strong> – precomputed wtw</p></li>
+<li><p><strong>b</strong> – precomputed xw</p></li>
+<li><p><strong>alpha</strong> – Regularization strength</p></li>
+<li><p><strong>lr</strong> – Learning rate</p></li>
+<li><p><strong>maxiter</strong> – Maximum iterations</p></li>
+<li><p><strong>tol</strong> – Convergence tolerance</p></li>
+<li><p><strong>positive_code</strong></p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="torch_staintools.functional.optimization.solver.fista_step">
+<span class="sig-prename descclassname"><span class="pre">torch_staintools.functional.optimization.solver.</span></span><span class="sig-name descname"><span class="pre">fista_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hessian</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">positive_code</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torch_staintools.functional.optimization.solver.fista_step" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="torch_staintools.functional.optimization.solver.ista">
-<span class="sig-prename descclassname"><span class="pre">torch_staintools.functional.optimization.solver.</span></span><span class="sig-name descname"><span class="pre">ista</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fast</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxiter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lambda1</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Generator</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torch_staintools.functional.optimization.solver.ista" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">torch_staintools.functional.optimization.solver.</span></span><span class="sig-name descname"><span class="pre">ista</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxiter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">positive_code</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torch_staintools.functional.optimization.solver.ista" title="Link to this definition"></a></dt>
 <dd><p>ISTA solver</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -304,39 +234,97 @@ f(V) = (1/2N) * ||Vz - x||_2^2 + (lambd/2) * ||V||_2^2</p>
 <li><p><strong>x</strong> – data</p></li>
 <li><p><strong>z0</strong> – code, or the initialization mode of the code.</p></li>
 <li><p><strong>weight</strong> – dict</p></li>
-<li><p><strong>alpha</strong> – eps term for code initialization</p></li>
-<li><p><strong>fast</strong> – whether to use FISTA (fast-ista) instead of ISTA</p></li>
+<li><p><strong>alpha</strong> – penalty term for code</p></li>
 <li><p><strong>lr</strong> – learning rate/step size. If <cite>auto</cite> then it will be specified by
 the Lipschitz constant of f(z) = ||Wz - x||^2</p></li>
 <li><p><strong>maxiter</strong> – max number of iteration if not converge.</p></li>
 <li><p><strong>tol</strong> – tolerance term of convergence test.</p></li>
-<li><p><strong>lambda1</strong> – lambda of the sparse terms.</p></li>
-<li><p><strong>verbose</strong> – whether to print the progress</p></li>
-<li><p><strong>rng</strong> – torch.Generator for random initialization</p></li>
+<li><p><strong>positive_code</strong> – whether enforce the positive z constraint</p></li>
 </ul>
 </dd>
 </dl>
 <p>Returns:</p>
 </dd></dl>
 
+<dl class="py function">
+<dt class="sig sig-object py" id="torch_staintools.functional.optimization.solver.ista_loop">
+<span class="sig-prename descclassname"><span class="pre">torch_staintools.functional.optimization.solver.</span></span><span class="sig-name descname"><span class="pre">ista_loop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hessian</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxiter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">positive_code</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torch_staintools.functional.optimization.solver.ista_loop" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="torch_staintools.functional.optimization.solver.ista_step">
+<span class="sig-prename descclassname"><span class="pre">torch_staintools.functional.optimization.solver.</span></span><span class="sig-name descname"><span class="pre">ista_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hessian</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">positive</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#torch_staintools.functional.optimization.solver.ista_step" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>z</strong> – code. num_pixels x num_stain</p></li>
+<li><p><strong>x</strong> (<em>#</em>) – OD space. num_pixels x num_channel</p></li>
+<li><p><strong>weight</strong> (<em>#</em>) – init from stain matrix –&gt; num_channel x num_stain</p></li>
+<li><p><strong>hessian</strong> – precomputed wtw</p></li>
+<li><p><strong>b</strong> – precomputed xw</p></li>
+<li><p><strong>alpha</strong> – tensor form of the ista penalizer</p></li>
+<li><p><strong>lr</strong> – tensor form of step size</p></li>
+<li><p><strong>positive</strong> – if force z to be positive</p></li>
+</ul>
+</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="torch_staintools.functional.optimization.solver.rss_grad">
+<span class="sig-prename descclassname"><span class="pre">torch_staintools.functional.optimization.solver.</span></span><span class="sig-name descname"><span class="pre">rss_grad</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z_k</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torch_staintools.functional.optimization.solver.rss_grad" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="torch_staintools.functional.optimization.solver.rss_grad_fast">
+<span class="sig-prename descclassname"><span class="pre">torch_staintools.functional.optimization.solver.</span></span><span class="sig-name descname"><span class="pre">rss_grad_fast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z_k</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hessian</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torch_staintools.functional.optimization.solver.rss_grad_fast" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="torch_staintools.functional.optimization.solver.softshrink">
+<span class="sig-prename descclassname"><span class="pre">torch_staintools.functional.optimization.solver.</span></span><span class="sig-name descname"><span class="pre">softshrink</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lambd</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#torch_staintools.functional.optimization.solver.softshrink" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
 </section>
 <section id="module-torch_staintools.functional.optimization.sparse_util">
 <span id="torch-staintools-functional-optimization-sparse-util-module"></span><h2>torch_staintools.functional.optimization.sparse_util module<a class="headerlink" href="#module-torch_staintools.functional.optimization.sparse_util" title="Link to this heading"></a></h2>
 <dl class="py function">
+<dt class="sig sig-object py" id="torch_staintools.functional.optimization.sparse_util.as_scalar">
+<span class="sig-prename descclassname"><span class="pre">torch_staintools.functional.optimization.sparse_util.</span></span><span class="sig-name descname"><span class="pre">as_scalar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">like</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#torch_staintools.functional.optimization.sparse_util.as_scalar" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="torch_staintools.functional.optimization.sparse_util.collate_params">
+<span class="sig-prename descclassname"><span class="pre">torch_staintools.functional.optimization.sparse_util.</span></span><span class="sig-name descname"><span class="pre">collate_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Tensor</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Tensor</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Tensor</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#torch_staintools.functional.optimization.sparse_util.collate_params" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="torch_staintools.functional.optimization.sparse_util.initialize_code">
-<span class="sig-prename descclassname"><span class="pre">torch_staintools.functional.optimization.sparse_util.</span></span><span class="sig-name descname"><span class="pre">initialize_code</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Generator</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torch_staintools.functional.optimization.sparse_util.initialize_code" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">torch_staintools.functional.optimization.sparse_util.</span></span><span class="sig-name descname"><span class="pre">initialize_code</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'zero'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'transpose'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'unif'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'ridge'</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Generator</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torch_staintools.functional.optimization.sparse_util.initialize_code" title="Link to this definition"></a></dt>
 <dd><p>code initialization in dictionary learning.</p>
 <p>The dictionary learning is to find the sparse decomposition of data X = D * A,
-wherein D is the dictionary and A is the code.</p>
+wherein D is the dictionary and A is the code.
+For ridge initialization, the L2 penalty is customized with constants.INIT_RIDGE_L2
+:param x: data
+:param weight: dictionary
+:param mode: code initialization method
+:param rng: torch.Generator for random initialization modes</p>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="torch_staintools.functional.optimization.sparse_util.initialize_dict">
+<span class="sig-prename descclassname"><span class="pre">torch_staintools.functional.optimization.sparse_util.</span></span><span class="sig-name descname"><span class="pre">initialize_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_features</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_components</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">device</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Generator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">positive_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torch_staintools.functional.optimization.sparse_util.initialize_dict" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="torch_staintools.functional.optimization.sparse_util.lipschitz_constant">
+<span class="sig-prename descclassname"><span class="pre">torch_staintools.functional.optimization.sparse_util.</span></span><span class="sig-name descname"><span class="pre">lipschitz_constant</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">w</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torch_staintools.functional.optimization.sparse_util.lipschitz_constant" title="Link to this definition"></a></dt>
+<dd><p>find the Lipschitz constant to compute the learning rate in ISTA</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> – data</p></li>
-<li><p><strong>weight</strong> – dictionary</p></li>
-<li><p><strong>alpha</strong> – small eps term on diagonal for ridge initialization</p></li>
-<li><p><strong>mode</strong> – code initialization method</p></li>
-<li><p><strong>rng</strong> – torch.Generator for random initialization modes</p></li>
-</ul>
+<dd class="field-odd"><p><strong>w</strong> – weights w in f(z) = ||Wz - x||^2</p>
 </dd>
 </dl>
 <p>Returns:</p>
@@ -344,7 +332,12 @@ wherein D is the dictionary and A is the code.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="torch_staintools.functional.optimization.sparse_util.ridge">
-<span class="sig-prename descclassname"><span class="pre">torch_staintools.functional.optimization.sparse_util.</span></span><span class="sig-name descname"><span class="pre">ridge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0001</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torch_staintools.functional.optimization.sparse_util.ridge" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">torch_staintools.functional.optimization.sparse_util.</span></span><span class="sig-name descname"><span class="pre">ridge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torch_staintools.functional.optimization.sparse_util.ridge" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="torch_staintools.functional.optimization.sparse_util.validate_code">
+<span class="sig-prename descclassname"><span class="pre">torch_staintools.functional.optimization.sparse_util.</span></span><span class="sig-name descname"><span class="pre">validate_code</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">algorithm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'ista'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'cd'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'fista'</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'zero'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'transpose'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'unif'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'ridge'</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torch_staintools.functional.optimization.sparse_util.validate_code" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </section>

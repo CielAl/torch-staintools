@@ -1,27 +1,25 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="./">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>torch_staintools.functional.utility package &mdash; Torch-StainTools 1.0.0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+  <title>torch_staintools.functional.utility package &mdash; Torch-StainTools 1.0.5 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
 
   
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="_static/jquery.js?v=5d32c60e"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=8d563738"></script>
-        <script src="_static/doctools.js?v=888ff710"></script>
-        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=d55fa986"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="torch_staintools.cache package" href="torch_staintools.cache.html" />
+    <link rel="next" title="torch_staintools.normalizer package" href="torch_staintools.normalizer.html" />
     <link rel="prev" title="torch_staintools.functional.tissue_mask package" href="torch_staintools.functional.tissue_mask.html" /> 
 </head>
 
@@ -46,29 +44,24 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="torch_staintools.augmentor.html">torch_staintools.augmentor package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="torch_staintools.normalizer.html">torch_staintools.normalizer package</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="torch_staintools.functional.html">torch_staintools.functional package</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="torch_staintools.functional.html#subpackages">Subpackages</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="torch_staintools.functional.conversion.html">torch_staintools.functional.conversion package</a></li>
-<li class="toctree-l3"><a class="reference internal" href="torch_staintools.functional.optimization.html">torch_staintools.functional.optimization package</a></li>
-<li class="toctree-l3"><a class="reference internal" href="torch_staintools.functional.stain_extraction.html">torch_staintools.functional.stain_extraction package</a></li>
-<li class="toctree-l3"><a class="reference internal" href="torch_staintools.functional.tissue_mask.html">torch_staintools.functional.tissue_mask package</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">torch_staintools.functional.utility package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#submodules">Submodules</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#module-torch_staintools.functional.utility.implementation">torch_staintools.functional.utility.implementation module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#module-torch_staintools.functional.utility">Module contents</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">torch_staintools</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="torch_staintools.html">torch_staintools package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="torch_staintools.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="torch_staintools.augmentor.html">torch_staintools.augmentor package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="torch_staintools.base_module.html">torch_staintools.base_module package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="torch_staintools.cache.html">torch_staintools.cache package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="torch_staintools.constants.html">torch_staintools.constants package</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="torch_staintools.functional.html">torch_staintools.functional package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="torch_staintools.normalizer.html">torch_staintools.normalizer package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="torch_staintools.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="torch_staintools.html#module-torch_staintools.version">torch_staintools.version module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="torch_staintools.html#module-torch_staintools">Module contents</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="torch_staintools.functional.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="torch_staintools.functional.html#module-torch_staintools.functional.eps">torch_staintools.functional.eps module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="torch_staintools.functional.html#module-torch_staintools.functional">Module contents</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="torch_staintools.cache.html">torch_staintools.cache package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="torch_staintools.base_module.html">torch_staintools.base_module package</a></li>
 </ul>
 
         </div>
@@ -85,6 +78,8 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">torch_staintools</a></li>
+          <li class="breadcrumb-item"><a href="torch_staintools.html">torch_staintools package</a></li>
           <li class="breadcrumb-item"><a href="torch_staintools.functional.html">torch_staintools.functional package</a></li>
       <li class="breadcrumb-item active">torch_staintools.functional.utility package</li>
       <li class="wy-breadcrumbs-aside">
@@ -145,8 +140,8 @@ the seed if an int seed is given.</p></li>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>concentration</strong> – B x (HW) x num_stain</p></li>
 <li><p><strong>stain_matrix</strong> – B x num_stain x input channel</p></li>
-<li><p><strong>img_shape</strong> – </p></li>
-<li><p><strong>out_range</strong> – </p></li>
+<li><p><strong>img_shape</strong></p></li>
+<li><p><strong>out_range</strong></p></li>
 </ul>
 </dd>
 </dl>
@@ -201,7 +196,7 @@ it reduces along that dimension(s), otherwise reduces all dimensions.</p>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="torch_staintools.functional.tissue_mask.html" class="btn btn-neutral float-left" title="torch_staintools.functional.tissue_mask package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="torch_staintools.cache.html" class="btn btn-neutral float-right" title="torch_staintools.cache package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="torch_staintools.normalizer.html" class="btn btn-neutral float-right" title="torch_staintools.normalizer package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

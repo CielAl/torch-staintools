@@ -1,23 +1,21 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="./">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>torch_staintools.functional.stain_extraction package &mdash; Torch-StainTools 1.0.0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+  <title>torch_staintools.functional.stain_extraction package &mdash; Torch-StainTools 1.0.5 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
 
   
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="_static/jquery.js?v=5d32c60e"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=8d563738"></script>
-        <script src="_static/doctools.js?v=888ff710"></script>
-        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=d55fa986"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -46,33 +44,24 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="torch_staintools.augmentor.html">torch_staintools.augmentor package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="torch_staintools.normalizer.html">torch_staintools.normalizer package</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="torch_staintools.functional.html">torch_staintools.functional package</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="torch_staintools.functional.html#subpackages">Subpackages</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="torch_staintools.functional.conversion.html">torch_staintools.functional.conversion package</a></li>
-<li class="toctree-l3"><a class="reference internal" href="torch_staintools.functional.optimization.html">torch_staintools.functional.optimization package</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">torch_staintools.functional.stain_extraction package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#submodules">Submodules</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#module-torch_staintools.functional.stain_extraction.extractor">torch_staintools.functional.stain_extraction.extractor module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#module-torch_staintools.functional.stain_extraction.factory">torch_staintools.functional.stain_extraction.factory module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#module-torch_staintools.functional.stain_extraction.macenko">torch_staintools.functional.stain_extraction.macenko module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#module-torch_staintools.functional.stain_extraction.utils">torch_staintools.functional.stain_extraction.utils module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#module-torch_staintools.functional.stain_extraction.vahadane">torch_staintools.functional.stain_extraction.vahadane module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#module-torch_staintools.functional.stain_extraction">Module contents</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">torch_staintools</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="torch_staintools.html">torch_staintools package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="torch_staintools.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="torch_staintools.augmentor.html">torch_staintools.augmentor package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="torch_staintools.base_module.html">torch_staintools.base_module package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="torch_staintools.cache.html">torch_staintools.cache package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="torch_staintools.constants.html">torch_staintools.constants package</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="torch_staintools.functional.html">torch_staintools.functional package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="torch_staintools.normalizer.html">torch_staintools.normalizer package</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="torch_staintools.functional.tissue_mask.html">torch_staintools.functional.tissue_mask package</a></li>
-<li class="toctree-l3"><a class="reference internal" href="torch_staintools.functional.utility.html">torch_staintools.functional.utility package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="torch_staintools.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="torch_staintools.html#module-torch_staintools.version">torch_staintools.version module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="torch_staintools.html#module-torch_staintools">Module contents</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="torch_staintools.functional.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="torch_staintools.functional.html#module-torch_staintools.functional.eps">torch_staintools.functional.eps module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="torch_staintools.functional.html#module-torch_staintools.functional">Module contents</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="torch_staintools.cache.html">torch_staintools.cache package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="torch_staintools.base_module.html">torch_staintools.base_module package</a></li>
 </ul>
 
         </div>
@@ -89,6 +78,8 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">torch_staintools</a></li>
+          <li class="breadcrumb-item"><a href="torch_staintools.html">torch_staintools package</a></li>
           <li class="breadcrumb-item"><a href="torch_staintools.functional.html">torch_staintools.functional package</a></li>
       <li class="breadcrumb-item active">torch_staintools.functional.stain_extraction package</li>
       <li class="wy-breadcrumbs-aside">
@@ -108,49 +99,44 @@
 <section id="module-torch_staintools.functional.stain_extraction.extractor">
 <span id="torch-staintools-functional-stain-extraction-extractor-module"></span><h2>torch_staintools.functional.stain_extraction.extractor module<a class="headerlink" href="#module-torch_staintools.functional.stain_extraction.extractor" title="Link to this heading"></a></h2>
 <dl class="py class">
-<dt class="sig sig-object py" id="torch_staintools.functional.stain_extraction.extractor.BaseExtractor">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torch_staintools.functional.stain_extraction.extractor.</span></span><span class="sig-name descname"><span class="pre">BaseExtractor</span></span><a class="headerlink" href="#torch_staintools.functional.stain_extraction.extractor.BaseExtractor" title="Link to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Callable</span></code></p>
-<p>Stain Extraction by stain matrix estimation.</p>
-<p>Regulate how a stain matrix estimation function should look like</p>
+<dt class="sig sig-object py" id="torch_staintools.functional.stain_extraction.extractor.StainAlg">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torch_staintools.functional.stain_extraction.extractor.</span></span><span class="sig-name descname"><span class="pre">StainAlg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torch_staintools.functional.stain_extraction.extractor.StainAlg" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code></p>
+<p>Interface of stain separation algorithms.</p>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="torch_staintools.functional.stain_extraction.extractor.BaseExtractor._abc_impl">
-<span class="sig-name descname"><span class="pre">_abc_impl</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;_abc._abc_data</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#torch_staintools.functional.stain_extraction.extractor.BaseExtractor._abc_impl" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="torch_staintools.functional.stain_extraction.extractor.StainAlg.cfg">
+<span class="sig-name descname"><span class="pre">cfg</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">object</span></em><a class="headerlink" href="#torch_staintools.functional.stain_extraction.extractor.StainAlg.cfg" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="torch_staintools.functional.stain_extraction.extractor.BaseExtractor.get_partial">
-<span class="sig-name descname"><span class="pre">get_partial</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">luminosity_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_stains</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regularizer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">perc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Generator</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Callable</span></span></span><a class="headerlink" href="#torch_staintools.functional.stain_extraction.extractor.BaseExtractor.get_partial" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="torch_staintools.functional.stain_extraction.extractor.BaseExtractor.get_stain_matrix_from_od">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_stain_matrix_from_od</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">od</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tissue_mask</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_stains</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#torch_staintools.functional.stain_extraction.extractor.BaseExtractor.get_stain_matrix_from_od" title="Link to this definition"></a></dt>
-<dd><p>Abstract function to implement: how to estimate stain matrices from optical density vectors.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>od</strong> – optical density image in batch (BxCxHxW)</p></li>
-<li><p><strong>tissue_mask</strong> – tissue mask so that only pixels in tissue regions will be evaluated</p></li>
-<li><p><strong>num_stains</strong> – number of stains.</p></li>
-<li><p><strong>*args</strong> – other positional arguments</p></li>
-<li><p><strong>**kwargs</strong> – other keyword arguments.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>B x num_stain x num_input_color_channel</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>output batch of stain matrices</p>
-</dd>
-</dl>
 </dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="torch_staintools.functional.stain_extraction.extractor.BaseExtractor.normalize_matrix_rows">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">normalize_matrix_rows</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#torch_staintools.functional.stain_extraction.extractor.BaseExtractor.normalize_matrix_rows" title="Link to this definition"></a></dt>
+<dl class="py class">
+<dt class="sig sig-object py" id="torch_staintools.functional.stain_extraction.extractor.StainExtraction">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torch_staintools.functional.stain_extraction.extractor.</span></span><span class="sig-name descname"><span class="pre">StainExtraction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stain_algorithm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#torch_staintools.functional.stain_extraction.extractor.StainAlg" title="torch_staintools.functional.stain_extraction.extractor.StainAlg"><span class="pre">StainAlg</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torch_staintools.functional.stain_extraction.extractor.StainExtraction" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Callable</span></code></p>
+<p>Stain Extraction by stain matrix estimation.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torch_staintools.functional.stain_extraction.extractor.StainExtraction.stain_algorithm">
+<span class="sig-name descname"><span class="pre">stain_algorithm</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#torch_staintools.functional.stain_extraction.extractor.StainAlg" title="torch_staintools.functional.stain_extraction.extractor.StainAlg"><span class="pre">StainAlg</span></a></em><a class="headerlink" href="#torch_staintools.functional.stain_extraction.extractor.StainExtraction.stain_algorithm" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-torch_staintools.functional.stain_extraction.utils">
+<span id="torch-staintools-functional-stain-extraction-utils-module"></span><h2>torch_staintools.functional.stain_extraction.utils module<a class="headerlink" href="#module-torch_staintools.functional.stain_extraction.utils" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="torch_staintools.functional.stain_extraction.utils.cov">
+<span class="sig-prename descclassname"><span class="pre">torch_staintools.functional.stain_extraction.utils.</span></span><span class="sig-name descname"><span class="pre">cov</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torch_staintools.functional.stain_extraction.utils.cov" title="Link to this definition"></a></dt>
+<dd><p>Covariance matrix for eigen decomposition.
+<a class="reference external" href="https://en.wikipedia.org/wiki/Covariance_matrix">https://en.wikipedia.org/wiki/Covariance_matrix</a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="torch_staintools.functional.stain_extraction.utils.normalize_matrix_rows">
+<span class="sig-prename descclassname"><span class="pre">torch_staintools.functional.stain_extraction.utils.</span></span><span class="sig-name descname"><span class="pre">normalize_matrix_rows</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#torch_staintools.functional.stain_extraction.utils.normalize_matrix_rows" title="Link to this definition"></a></dt>
 <dd><p>Normalize the rows of an array.
-:param A: An array to normalize</p>
+:param a: An array to normalize</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Array with rows normalized.</p>
@@ -158,96 +144,6 @@
 </dl>
 </dd></dl>
 
-</dd></dl>
-
-</section>
-<section id="module-torch_staintools.functional.stain_extraction.factory">
-<span id="torch-staintools-functional-stain-extraction-factory-module"></span><h2>torch_staintools.functional.stain_extraction.factory module<a class="headerlink" href="#module-torch_staintools.functional.stain_extraction.factory" title="Link to this heading"></a></h2>
-<dl class="py function">
-<dt class="sig sig-object py" id="torch_staintools.functional.stain_extraction.factory.build_from_name">
-<span class="sig-prename descclassname"><span class="pre">torch_staintools.functional.stain_extraction.factory.</span></span><span class="sig-name descname"><span class="pre">build_from_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">algo</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#torch_staintools.functional.stain_extraction.extractor.BaseExtractor" title="torch_staintools.functional.stain_extraction.extractor.BaseExtractor"><span class="pre">BaseExtractor</span></a></span></span><a class="headerlink" href="#torch_staintools.functional.stain_extraction.factory.build_from_name" title="Link to this definition"></a></dt>
-<dd><p>A factory builder to create stain extractor from name.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>algo</strong> – support ‘macenko’ and ‘vahadane’</p>
-</dd>
-</dl>
-<p>Returns:</p>
-</dd></dl>
-
-</section>
-<section id="module-torch_staintools.functional.stain_extraction.macenko">
-<span id="torch-staintools-functional-stain-extraction-macenko-module"></span><h2>torch_staintools.functional.stain_extraction.macenko module<a class="headerlink" href="#module-torch_staintools.functional.stain_extraction.macenko" title="Link to this heading"></a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="torch_staintools.functional.stain_extraction.macenko.MacenkoExtractor">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torch_staintools.functional.stain_extraction.macenko.</span></span><span class="sig-name descname"><span class="pre">MacenkoExtractor</span></span><a class="headerlink" href="#torch_staintools.functional.stain_extraction.macenko.MacenkoExtractor" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#torch_staintools.functional.stain_extraction.extractor.BaseExtractor" title="torch_staintools.functional.stain_extraction.extractor.BaseExtractor"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseExtractor</span></code></a></p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="torch_staintools.functional.stain_extraction.macenko.MacenkoExtractor._abc_impl">
-<span class="sig-name descname"><span class="pre">_abc_impl</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;_abc._abc_data</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#torch_staintools.functional.stain_extraction.macenko.MacenkoExtractor._abc_impl" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="torch_staintools.functional.stain_extraction.macenko.MacenkoExtractor.angular_helper">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">angular_helper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t_hat</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torch_staintools.functional.stain_extraction.macenko.MacenkoExtractor.angular_helper" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="torch_staintools.functional.stain_extraction.macenko.MacenkoExtractor.cov">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cov</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torch_staintools.functional.stain_extraction.macenko.MacenkoExtractor.cov" title="Link to this definition"></a></dt>
-<dd><p>Covariance matrix for eigen decomposition.
-<a class="reference external" href="https://en.wikipedia.org/wiki/Covariance_matrix">https://en.wikipedia.org/wiki/Covariance_matrix</a></p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="torch_staintools.functional.stain_extraction.macenko.MacenkoExtractor.get_stain_matrix_from_od">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_stain_matrix_from_od</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">od</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tissue_mask</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">perc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_stains</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torch_staintools.functional.stain_extraction.macenko.MacenkoExtractor.get_stain_matrix_from_od" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>od</strong> – Image in the Optical Density space with shape of BxCxHxW</p></li>
-<li><p><strong>tissue_mask</strong> – tissue mask so that only pixels in tissue regions will be evaluated</p></li>
-<li><p><strong>perc</strong> – Percentile number to find the minimum angular term. min angular as perc percentile
-max angular as 100 - perc percentile.</p></li>
-<li><p><strong>num_stains</strong> – number of stains to separate. For now only support 2 as it might be complicated to separate
-angular terms in a 3D or higher dimensional space.</p></li>
-<li><p><strong>**kwargs</strong> – Not used. For compatibility.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Stain Matrices in shape of B x num_stains x num_input_color_channel. For H&amp;E stain estimation, if the
-original image is RGB before converted to OD, then the stain matrix is B x 2 x 3, with the first row,
-i.e., stain_mat[:, 0, :] as H, and the second row, i.e., stain_mat[:, 1, :] as E.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="torch_staintools.functional.stain_extraction.macenko.MacenkoExtractor.stain_matrix_helper">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">stain_matrix_helper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t_hat</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">perc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eig_vecs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torch_staintools.functional.stain_extraction.macenko.MacenkoExtractor.stain_matrix_helper" title="Link to this definition"></a></dt>
-<dd><p>Helper function to compute the stain matrix.</p>
-<p>Separate the projected OD vectors on singular vectors (SVD of OD in Macenko paper, which is also the
-eigen vector of the covariance matrix of the OD)</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>t_hat</strong> – projection of OD on the plane of most significant singular vectors of OD.</p></li>
-<li><p><strong>perc</strong> – perc –&gt; min angular term, 100 - perc –&gt; max angular term</p></li>
-<li><p><strong>eig_vecs</strong> – eigen vectors of the cov(OD), which may also be the singular vectors of OD.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>sorted stain matrix in shape of B x num_stains x num_input_color_channel. For H&amp;E cases, the first row
-in dimension of num_stains is H and the second is E (only num_stains=2 supported for now).</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-</section>
-<section id="module-torch_staintools.functional.stain_extraction.utils">
-<span id="torch-staintools-functional-stain-extraction-utils-module"></span><h2>torch_staintools.functional.stain_extraction.utils module<a class="headerlink" href="#module-torch_staintools.functional.stain_extraction.utils" title="Link to this heading"></a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="torch_staintools.functional.stain_extraction.utils.percentile">
 <span class="sig-prename descclassname"><span class="pre">torch_staintools.functional.stain_extraction.utils.</span></span><span class="sig-name descname"><span class="pre">percentile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">q</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#torch_staintools.functional.stain_extraction.utils.percentile" title="Link to this definition"></a></dt>
@@ -273,51 +169,6 @@ in dimension of num_stains is H and the second is E (only num_stains=2 supported
 <dd class="field-even"><p>Resulting value (scalar).</p>
 </dd>
 </dl>
-</dd></dl>
-
-</section>
-<section id="module-torch_staintools.functional.stain_extraction.vahadane">
-<span id="torch-staintools-functional-stain-extraction-vahadane-module"></span><h2>torch_staintools.functional.stain_extraction.vahadane module<a class="headerlink" href="#module-torch_staintools.functional.stain_extraction.vahadane" title="Link to this heading"></a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="torch_staintools.functional.stain_extraction.vahadane.VahadaneExtractor">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torch_staintools.functional.stain_extraction.vahadane.</span></span><span class="sig-name descname"><span class="pre">VahadaneExtractor</span></span><a class="headerlink" href="#torch_staintools.functional.stain_extraction.vahadane.VahadaneExtractor" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#torch_staintools.functional.stain_extraction.extractor.BaseExtractor" title="torch_staintools.functional.stain_extraction.extractor.BaseExtractor"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseExtractor</span></code></a></p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="torch_staintools.functional.stain_extraction.vahadane.VahadaneExtractor._abc_impl">
-<span class="sig-name descname"><span class="pre">_abc_impl</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;_abc._abc_data</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#torch_staintools.functional.stain_extraction.vahadane.VahadaneExtractor._abc_impl" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="torch_staintools.functional.stain_extraction.vahadane.VahadaneExtractor.get_stain_matrix_from_od">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_stain_matrix_from_od</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">od</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tissue_mask</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regularizer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lambd</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_stains</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">algorithm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'ista'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">steps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">constrained</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">persist</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'ridge'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Generator</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#torch_staintools.functional.stain_extraction.vahadane.VahadaneExtractor.get_stain_matrix_from_od" title="Link to this definition"></a></dt>
-<dd><p>Stain matrix estimation via method of:
-A. Vahadane et al. ‘Structure-Preserving Color Normalization
-and Sparse Stain Separation for Histological Images’</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>od</strong> – optical density image in batch (BxCxHxW)</p></li>
-<li><p><strong>tissue_mask</strong> – tissue mask so that only pixels in tissue regions will be evaluated</p></li>
-<li><p><strong>regularizer</strong> – regularization term in ista for dictionary learning</p></li>
-<li><p><strong>lambd</strong> – lambda term for the sparse penalty in objective of dictionary learning</p></li>
-<li><p><strong>num_stains</strong> – # of stains to separate</p></li>
-<li><p><strong>algorithm</strong> – which algorithm to use, iterative-shrinkage soft thresholding algorithm <cite>ista</cite> or
-coordinate descent <cite>cd</cite>.</p></li>
-<li><p><strong>steps</strong> – max number of steps if still not converged</p></li>
-<li><p><strong>constrained</strong> – whether to force dictionary to be positive</p></li>
-<li><p><strong>persist</strong> – whether retain the previous z value for its update or initialize every time in the iteration.</p></li>
-<li><p><strong>init</strong> – init method of the codes <cite>a</cite> in <cite>X = D x a</cite>. Selected from <cite>ridge</cite>, <cite>zero</cite>, <cite>unif</cite> (uniformly random),
-or <cite>transpose</cite>. Details see torch_staintools.functional.optimization.sparse_util.initialize_code</p></li>
-<li><p><strong>verbose</strong> – whether to print progress messages.</p></li>
-<li><p><strong>rng</strong> – torch.Generator for any random initializations incurred (e.g., if <cite>init</cite> is set to be unif)</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>List of HE matrix (B*2x3 - H on the 1st row in the 2nd dimension)</p>
-</dd>
-</dl>
-</dd></dl>
-
 </dd></dl>
 
 </section>

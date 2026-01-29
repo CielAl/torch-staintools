@@ -1,27 +1,26 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="./">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>torch_staintools.base_module package &mdash; Torch-StainTools 1.0.0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+  <title>torch_staintools.base_module package &mdash; Torch-StainTools 1.0.5 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
 
   
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="_static/jquery.js?v=5d32c60e"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=8d563738"></script>
-        <script src="_static/doctools.js?v=888ff710"></script>
-        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=d55fa986"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="torch_staintools.cache package" href="torch_staintools.cache.html" /> 
+    <link rel="next" title="torch_staintools.cache package" href="torch_staintools.cache.html" />
+    <link rel="prev" title="torch_staintools.augmentor package" href="torch_staintools.augmentor.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -45,34 +44,22 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="torch_staintools.augmentor.html">torch_staintools.augmentor package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="torch_staintools.normalizer.html">torch_staintools.normalizer package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="torch_staintools.functional.html">torch_staintools.functional package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="torch_staintools.cache.html">torch_staintools.cache package</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">torch_staintools.base_module package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-torch_staintools.base_module.base">torch_staintools.base_module.base module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#torch_staintools.base_module.base.CachedRNGModule"><code class="docutils literal notranslate"><span class="pre">CachedRNGModule</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.base_module.base.CachedRNGModule.CACHE_FIELD"><code class="docutils literal notranslate"><span class="pre">CachedRNGModule.CACHE_FIELD</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.base_module.base.CachedRNGModule._init_cache"><code class="docutils literal notranslate"><span class="pre">CachedRNGModule._init_cache()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.base_module.base.CachedRNGModule._rng_to"><code class="docutils literal notranslate"><span class="pre">CachedRNGModule._rng_to()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.base_module.base.CachedRNGModule._tensor_cache"><code class="docutils literal notranslate"><span class="pre">CachedRNGModule._tensor_cache</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.base_module.base.CachedRNGModule._tensor_cache_helper"><code class="docutils literal notranslate"><span class="pre">CachedRNGModule._tensor_cache_helper()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.base_module.base.CachedRNGModule.build"><code class="docutils literal notranslate"><span class="pre">CachedRNGModule.build()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.base_module.base.CachedRNGModule.cache_initialized"><code class="docutils literal notranslate"><span class="pre">CachedRNGModule.cache_initialized()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.base_module.base.CachedRNGModule.cache_size_limit"><code class="docutils literal notranslate"><span class="pre">CachedRNGModule.cache_size_limit</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.base_module.base.CachedRNGModule.device"><code class="docutils literal notranslate"><span class="pre">CachedRNGModule.device</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.base_module.base.CachedRNGModule.dump_cache"><code class="docutils literal notranslate"><span class="pre">CachedRNGModule.dump_cache()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.base_module.base.CachedRNGModule.rng"><code class="docutils literal notranslate"><span class="pre">CachedRNGModule.rng</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.base_module.base.CachedRNGModule.tensor_cache"><code class="docutils literal notranslate"><span class="pre">CachedRNGModule.tensor_cache</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.base_module.base.CachedRNGModule.tensor_from_cache"><code class="docutils literal notranslate"><span class="pre">CachedRNGModule.tensor_from_cache()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.base_module.base.CachedRNGModule.tensor_from_cache_helper"><code class="docutils literal notranslate"><span class="pre">CachedRNGModule.tensor_from_cache_helper()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.base_module.base.CachedRNGModule.to"><code class="docutils literal notranslate"><span class="pre">CachedRNGModule.to()</span></code></a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">torch_staintools</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="torch_staintools.html">torch_staintools package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="torch_staintools.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="torch_staintools.augmentor.html">torch_staintools.augmentor package</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">torch_staintools.base_module package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="torch_staintools.cache.html">torch_staintools.cache package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="torch_staintools.constants.html">torch_staintools.constants package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="torch_staintools.functional.html">torch_staintools.functional package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="torch_staintools.normalizer.html">torch_staintools.normalizer package</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="torch_staintools.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="torch_staintools.html#module-torch_staintools.version">torch_staintools.version module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="torch_staintools.html#module-torch_staintools">Module contents</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#module-torch_staintools.base_module">Module contents</a></li>
 </ul>
 </li>
 </ul>
@@ -91,6 +78,8 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">torch_staintools</a></li>
+          <li class="breadcrumb-item"><a href="torch_staintools.html">torch_staintools package</a></li>
       <li class="breadcrumb-item active">torch_staintools.base_module package</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/torch_staintools.base_module.rst.txt" rel="nofollow"> View page source</a>
@@ -120,26 +109,6 @@
 <dd></dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="torch_staintools.base_module.base.CachedRNGModule._init_cache">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_init_cache</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">use_cache</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_size_limit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">device</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="torch_staintools.cache.html#torch_staintools.cache.tensor_cache.TensorCache" title="torch_staintools.cache.tensor_cache.TensorCache"><span class="pre">TensorCache</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#torch_staintools.base_module.base.CachedRNGModule._init_cache" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="torch_staintools.base_module.base.CachedRNGModule._rng_to">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_rng_to</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rng</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Generator</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">device</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torch_staintools.base_module.base.CachedRNGModule._rng_to" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="torch_staintools.base_module.base.CachedRNGModule._tensor_cache">
-<span class="sig-name descname"><span class="pre">_tensor_cache</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="torch_staintools.cache.html#torch_staintools.cache.tensor_cache.TensorCache" title="torch_staintools.cache.tensor_cache.TensorCache"><span class="pre">TensorCache</span></a></em><a class="headerlink" href="#torch_staintools.base_module.base.CachedRNGModule._tensor_cache" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="torch_staintools.base_module.base.CachedRNGModule._tensor_cache_helper">
-<span class="sig-name descname"><span class="pre">_tensor_cache_helper</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="torch_staintools.cache.html#torch_staintools.cache.tensor_cache.TensorCache" title="torch_staintools.cache.tensor_cache.TensorCache"><span class="pre">TensorCache</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#torch_staintools.base_module.base.CachedRNGModule._tensor_cache_helper" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="torch_staintools.base_module.base.CachedRNGModule.build">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torch_staintools.base_module.base.CachedRNGModule.build" title="Link to this definition"></a></dt>
 <dd></dd></dl>
@@ -164,9 +133,9 @@
 <span class="sig-name descname"><span class="pre">dump_cache</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torch_staintools.base_module.base.CachedRNGModule.dump_cache" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
+<dl class="py property">
 <dt class="sig sig-object py" id="torch_staintools.base_module.base.CachedRNGModule.rng">
-<span class="sig-name descname"><span class="pre">rng</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Generator</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#torch_staintools.base_module.base.CachedRNGModule.rng" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">rng</span></span><a class="headerlink" href="#torch_staintools.base_module.base.CachedRNGModule.rng" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
@@ -176,18 +145,18 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="torch_staintools.base_module.base.CachedRNGModule.tensor_from_cache">
-<span class="sig-name descname"><span class="pre">tensor_from_cache</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_keys</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Hashable</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">func_partial</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#torch_staintools.base_module.base.CachedRNGModule.tensor_from_cache" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">tensor_from_cache</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_keys</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Hashable</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">func</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#torch_staintools.base_module.base.CachedRNGModule.tensor_from_cache" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="torch_staintools.base_module.base.CachedRNGModule.tensor_from_cache_helper">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">tensor_from_cache_helper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cache</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="torch_staintools.cache.html#torch_staintools.cache.tensor_cache.TensorCache" title="torch_staintools.cache.tensor_cache.TensorCache"><span class="pre">TensorCache</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_keys</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Hashable</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">func_partial</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#torch_staintools.base_module.base.CachedRNGModule.tensor_from_cache_helper" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">tensor_from_cache_helper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cache</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="torch_staintools.cache.html#torch_staintools.cache.tensor_cache.TensorCache" title="torch_staintools.cache.tensor_cache.TensorCache"><span class="pre">TensorCache</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_keys</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Hashable</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">func</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#torch_staintools.base_module.base.CachedRNGModule.tensor_from_cache_helper" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="torch_staintools.base_module.base.CachedRNGModule.to">
 <span class="sig-name descname"><span class="pre">to</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">device</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torch_staintools.base_module.base.CachedRNGModule.to" title="Link to this definition"></a></dt>
-<dd><p>Moves and/or casts the parameters and buffers.</p>
+<dd><p>Move and/or cast the parameters and buffers.</p>
 <p>This can be called as</p>
 <dl class="py function">
 <dt class="sig sig-object py">
@@ -297,7 +266,8 @@ only argument)</p></li>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="torch_staintools.cache.html" class="btn btn-neutral float-left" title="torch_staintools.cache package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="torch_staintools.augmentor.html" class="btn btn-neutral float-left" title="torch_staintools.augmentor package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="torch_staintools.cache.html" class="btn btn-neutral float-right" title="torch_staintools.cache package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

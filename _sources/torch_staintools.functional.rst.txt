@@ -7,6 +7,8 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
+   torch_staintools.functional.compile
+   torch_staintools.functional.concentration
    torch_staintools.functional.conversion
    torch_staintools.functional.optimization
    torch_staintools.functional.stain_extraction
@@ -23,7 +25,6 @@ torch\_staintools.functional.eps module
    :members:
    :undoc-members:
    :show-inheritance:
-   :private-members:
 
 Module contents
 ---------------
@@ -32,4 +33,3 @@ Module contents
    :members:
    :undoc-members:
    :show-inheritance:
-   :private-members:

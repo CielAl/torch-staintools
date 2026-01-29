@@ -11,25 +11,6 @@ torch\_staintools.functional.stain\_extraction.extractor module
    :members:
    :undoc-members:
    :show-inheritance:
-   :private-members:
-
-torch\_staintools.functional.stain\_extraction.factory module
--------------------------------------------------------------
-
-.. automodule:: torch_staintools.functional.stain_extraction.factory
-   :members:
-   :undoc-members:
-   :show-inheritance:
-   :private-members:
-
-torch\_staintools.functional.stain\_extraction.macenko module
--------------------------------------------------------------
-
-.. automodule:: torch_staintools.functional.stain_extraction.macenko
-   :members:
-   :undoc-members:
-   :show-inheritance:
-   :private-members:
 
 torch\_staintools.functional.stain\_extraction.utils module
 -----------------------------------------------------------
@@ -38,16 +19,6 @@ torch\_staintools.functional.stain\_extraction.utils module
    :members:
    :undoc-members:
    :show-inheritance:
-   :private-members:
-
-torch\_staintools.functional.stain\_extraction.vahadane module
---------------------------------------------------------------
-
-.. automodule:: torch_staintools.functional.stain_extraction.vahadane
-   :members:
-   :undoc-members:
-   :show-inheritance:
-   :private-members:
 
 Module contents
 ---------------
@@ -56,4 +27,3 @@ Module contents
    :members:
    :undoc-members:
    :show-inheritance:
-   :private-members:

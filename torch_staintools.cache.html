@@ -1,28 +1,26 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="./">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>torch_staintools.cache package &mdash; Torch-StainTools 1.0.0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+  <title>torch_staintools.cache package &mdash; Torch-StainTools 1.0.5 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
 
   
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="_static/jquery.js?v=5d32c60e"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=8d563738"></script>
-        <script src="_static/doctools.js?v=888ff710"></script>
-        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=d55fa986"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="torch_staintools.base_module package" href="torch_staintools.base_module.html" />
-    <link rel="prev" title="torch_staintools.functional.utility package" href="torch_staintools.functional.utility.html" /> 
+    <link rel="next" title="torch_staintools.constants package" href="torch_staintools.constants.html" />
+    <link rel="prev" title="torch_staintools.base_module package" href="torch_staintools.base_module.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -46,58 +44,24 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="torch_staintools.augmentor.html">torch_staintools.augmentor package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="torch_staintools.normalizer.html">torch_staintools.normalizer package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="torch_staintools.functional.html">torch_staintools.functional package</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">torch_staintools.cache package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-torch_staintools.cache.base">torch_staintools.cache.base module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#torch_staintools.cache.base.Cache"><code class="docutils literal notranslate"><span class="pre">Cache</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.cache.base.Cache.__size_limit"><code class="docutils literal notranslate"><span class="pre">Cache.__size_limit</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.cache.base.Cache._abc_impl"><code class="docutils literal notranslate"><span class="pre">Cache._abc_impl</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.cache.base.Cache._dump_helper"><code class="docutils literal notranslate"><span class="pre">Cache._dump_helper()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.cache.base.Cache._new_cache"><code class="docutils literal notranslate"><span class="pre">Cache._new_cache()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.cache.base.Cache._write_to_cache_helper"><code class="docutils literal notranslate"><span class="pre">Cache._write_to_cache_helper()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.cache.base.Cache.build"><code class="docutils literal notranslate"><span class="pre">Cache.build()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.cache.base.Cache.data_cache"><code class="docutils literal notranslate"><span class="pre">Cache.data_cache</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.cache.base.Cache.dump"><code class="docutils literal notranslate"><span class="pre">Cache.dump()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.cache.base.Cache.get"><code class="docutils literal notranslate"><span class="pre">Cache.get()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.cache.base.Cache.get_batch"><code class="docutils literal notranslate"><span class="pre">Cache.get_batch()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.cache.base.Cache.is_cached"><code class="docutils literal notranslate"><span class="pre">Cache.is_cached()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.cache.base.Cache.load"><code class="docutils literal notranslate"><span class="pre">Cache.load()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.cache.base.Cache.query"><code class="docutils literal notranslate"><span class="pre">Cache.query()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.cache.base.Cache.size_in_bound"><code class="docutils literal notranslate"><span class="pre">Cache.size_in_bound()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.cache.base.Cache.size_limit"><code class="docutils literal notranslate"><span class="pre">Cache.size_limit</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.cache.base.Cache.write_batch"><code class="docutils literal notranslate"><span class="pre">Cache.write_batch()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.cache.base.Cache.write_to_cache"><code class="docutils literal notranslate"><span class="pre">Cache.write_to_cache()</span></code></a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">torch_staintools</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="torch_staintools.html">torch_staintools package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="torch_staintools.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="torch_staintools.augmentor.html">torch_staintools.augmentor package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="torch_staintools.base_module.html">torch_staintools.base_module package</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">torch_staintools.cache package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="torch_staintools.constants.html">torch_staintools.constants package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="torch_staintools.functional.html">torch_staintools.functional package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="torch_staintools.normalizer.html">torch_staintools.normalizer package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="torch_staintools.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="torch_staintools.html#module-torch_staintools.version">torch_staintools.version module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="torch_staintools.html#module-torch_staintools">Module contents</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#module-torch_staintools.cache.tensor_cache">torch_staintools.cache.tensor_cache module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#torch_staintools.cache.tensor_cache.TensorCache"><code class="docutils literal notranslate"><span class="pre">TensorCache</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.cache.tensor_cache.TensorCache.__size_limit"><code class="docutils literal notranslate"><span class="pre">TensorCache.__size_limit</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.cache.tensor_cache.TensorCache._abc_impl"><code class="docutils literal notranslate"><span class="pre">TensorCache._abc_impl</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.cache.tensor_cache.TensorCache._dump_helper"><code class="docutils literal notranslate"><span class="pre">TensorCache._dump_helper()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.cache.tensor_cache.TensorCache._new_cache"><code class="docutils literal notranslate"><span class="pre">TensorCache._new_cache()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.cache.tensor_cache.TensorCache._to_device"><code class="docutils literal notranslate"><span class="pre">TensorCache._to_device()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.cache.tensor_cache.TensorCache._write_to_cache_helper"><code class="docutils literal notranslate"><span class="pre">TensorCache._write_to_cache_helper()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.cache.tensor_cache.TensorCache.build"><code class="docutils literal notranslate"><span class="pre">TensorCache.build()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.cache.tensor_cache.TensorCache.data_cache"><code class="docutils literal notranslate"><span class="pre">TensorCache.data_cache</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.cache.tensor_cache.TensorCache.device"><code class="docutils literal notranslate"><span class="pre">TensorCache.device</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.cache.tensor_cache.TensorCache.is_cached"><code class="docutils literal notranslate"><span class="pre">TensorCache.is_cached()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.cache.tensor_cache.TensorCache.load"><code class="docutils literal notranslate"><span class="pre">TensorCache.load()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.cache.tensor_cache.TensorCache.query"><code class="docutils literal notranslate"><span class="pre">TensorCache.query()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.cache.tensor_cache.TensorCache.to"><code class="docutils literal notranslate"><span class="pre">TensorCache.to()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#torch_staintools.cache.tensor_cache.TensorCache.validate_value_type"><code class="docutils literal notranslate"><span class="pre">TensorCache.validate_value_type()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#module-torch_staintools.cache">Module contents</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="torch_staintools.base_module.html">torch_staintools.base_module package</a></li>
 </ul>
 
         </div>
@@ -114,6 +78,8 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">torch_staintools</a></li>
+          <li class="breadcrumb-item"><a href="torch_staintools.html">torch_staintools package</a></li>
       <li class="breadcrumb-item active">torch_staintools.cache package</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/torch_staintools.cache.rst.txt" rel="nofollow"> View page source</a>
@@ -136,48 +102,6 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torch_staintools.cache.base.</span></span><span class="sig-name descname"><span class="pre">Cache</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size_limit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torch_staintools.cache.base.Cache" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">C</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">V</span></code>]</p>
 <p>A simple abstraction of cache.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="torch_staintools.cache.base.Cache.__size_limit">
-<span class="sig-name descname"><span class="pre">__size_limit</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#torch_staintools.cache.base.Cache.__size_limit" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="torch_staintools.cache.base.Cache._abc_impl">
-<span class="sig-name descname"><span class="pre">_abc_impl</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;_abc._abc_data</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#torch_staintools.cache.base.Cache._abc_impl" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="torch_staintools.cache.base.Cache._dump_helper">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_dump_helper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torch_staintools.cache.base.Cache._dump_helper" title="Link to this definition"></a></dt>
-<dd><p>To implement: dump the cached data to the local file system.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>path</strong> – output filename</p>
-</dd>
-</dl>
-<p>Returns:</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="torch_staintools.cache.base.Cache._new_cache">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_new_cache</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#torch_staintools.cache.base.Cache._new_cache" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="torch_staintools.cache.base.Cache._write_to_cache_helper">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_write_to_cache_helper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Hashable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">V</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torch_staintools.cache.base.Cache._write_to_cache_helper" title="Link to this definition"></a></dt>
-<dd><p>Write the data (value) to the given address (key) in the cache</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>key</strong> – any hashable that points the data to the address in the cache</p></li>
-<li><p><strong>value</strong> – value of the data to cache</p></li>
-</ul>
-</dd>
-</dl>
-<p>Returns:</p>
-</dd></dl>
-
 <dl class="py method">
 <dt class="sig sig-object py" id="torch_staintools.cache.base.Cache.build">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torch_staintools.cache.base.Cache.build" title="Link to this definition"></a></dt>
@@ -265,7 +189,7 @@ Might be useful if batchified processing is much faster than individually proces
 <dd><p>Load cache from the local file system.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>path</strong> – </p>
+<dd class="field-odd"><p><strong>path</strong></p>
 </dd>
 </dl>
 <p>Returns:</p>
@@ -277,7 +201,7 @@ Might be useful if batchified processing is much faster than individually proces
 <dd><p>Behavior of how to read data under key in cache. Used in <cite>get</cite> and <cite>get_batch</cite></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>key</strong> – </p>
+<dd class="field-odd"><p><strong>key</strong></p>
 </dd>
 </dl>
 <p>Returns:</p>
@@ -350,75 +274,6 @@ Might be useful if batchified processing is much faster than individually proces
 (e.g., 2x3 for mapping between H&amp;E and RGB).</p>
 <p>Size of concentrations, however, are proportionally to number of pixels x num_stains, therefore it might be better
 to be cached on the local file system.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="torch_staintools.cache.tensor_cache.TensorCache.__size_limit">
-<span class="sig-name descname"><span class="pre">__size_limit</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#torch_staintools.cache.tensor_cache.TensorCache.__size_limit" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="torch_staintools.cache.tensor_cache.TensorCache._abc_impl">
-<span class="sig-name descname"><span class="pre">_abc_impl</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;_abc._abc_data</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#torch_staintools.cache.tensor_cache.TensorCache._abc_impl" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="torch_staintools.cache.tensor_cache.TensorCache._dump_helper">
-<span class="sig-name descname"><span class="pre">_dump_helper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torch_staintools.cache.tensor_cache.TensorCache._dump_helper" title="Link to this definition"></a></dt>
-<dd><p>Dump the dict to the local file system.</p>
-<p>Note: A copy of the dict will be created, with all stored tensors copied to CPU. Dumped tensors are all
-CPU tensors.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>path</strong> – file path to dump.</p>
-</dd>
-</dl>
-<p>Returns:</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="torch_staintools.cache.tensor_cache.TensorCache._new_cache">
-<span class="sig-name descname"><span class="pre">_new_cache</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span></span></span><a class="headerlink" href="#torch_staintools.cache.tensor_cache.TensorCache._new_cache" title="Link to this definition"></a></dt>
-<dd><p>Implementation of creating new cache - built-in dict.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A new empty dict.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="torch_staintools.cache.tensor_cache.TensorCache._to_device">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_to_device</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_cache</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">Hashable</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Tensor</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">device</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dict_inplace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torch_staintools.cache.tensor_cache.TensorCache._to_device" title="Link to this definition"></a></dt>
-<dd><p>Helper function to move all cached tensors to the specified device</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>data_cache</strong> – the dict to operate on.</p></li>
-<li><p><strong>device</strong> – target device. Note if a tensor is already on the target device, tensor.to(device) will be a no-op.</p></li>
-<li><p><strong>dict_inplace</strong> – whether to move the tensors inplace of the same dict, or create a new dict to store moved
-tensors.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>the original (dict_inplace=True) or the new dict (dict_inplace=False) to store the moved tensors.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="torch_staintools.cache.tensor_cache.TensorCache._write_to_cache_helper">
-<span class="sig-name descname"><span class="pre">_write_to_cache_helper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torch_staintools.cache.tensor_cache.TensorCache._write_to_cache_helper" title="Link to this definition"></a></dt>
-<dd><p>Write the value into the key in cache. Will be moved to the specified device (GPU/CPU) during the procedure.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>key</strong> – key to write</p></li>
-<li><p><strong>value</strong> – value to write</p></li>
-</ul>
-</dd>
-</dl>
-<p>Returns:</p>
-</dd></dl>
-
 <dl class="py method">
 <dt class="sig sig-object py" id="torch_staintools.cache.tensor_cache.TensorCache.build">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size_limit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">device</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torch_staintools.cache.tensor_cache.TensorCache.build" title="Link to this definition"></a></dt>
@@ -483,7 +338,7 @@ affected.</p>
 <p>Read from dict directly</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>key</strong> – </p>
+<dd class="field-odd"><p><strong>key</strong></p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>queried output</p>
@@ -542,8 +397,8 @@ device if they are not already on the target device.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="torch_staintools.functional.utility.html" class="btn btn-neutral float-left" title="torch_staintools.functional.utility package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="torch_staintools.base_module.html" class="btn btn-neutral float-right" title="torch_staintools.base_module package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="torch_staintools.base_module.html" class="btn btn-neutral float-left" title="torch_staintools.base_module package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="torch_staintools.constants.html" class="btn btn-neutral float-right" title="torch_staintools.constants package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
