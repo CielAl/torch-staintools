@@ -137,7 +137,7 @@ augmentor = AugmentorBuilder.build('vahadane',
                                    sparse_stain_solver='fista',
                                    concentration_solver='fista',
                                    num_stains=2,
-                                   rng=314159,  # None if globally managing the seeds
+                                   rng=None,  # None if globally managing the seeds
                                    sigma_alpha=0.2,
                                    sigma_beta=0.2,
                                    # for two stains (herein, H&E), augment both H and E.

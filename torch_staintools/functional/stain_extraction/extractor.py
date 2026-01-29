@@ -44,7 +44,7 @@ class StainExtraction(Callable):
 
 
     def __call__(self, image: torch.Tensor,
-                 *, luminosity_threshold: float,  num_stains: int,
+                 *, luminosity_threshold: Optional[float],  num_stains: int,
                  rng: Optional[torch.Generator],
                  ) -> torch.Tensor:
         """Interface of stain extractor.  Adapted from StainTools.
