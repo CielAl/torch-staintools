@@ -1,17 +1,21 @@
 """
 code directly adapted from https://github.com/rfeinman/pytorch-lasso
 """
-from scipy.sparse.linalg import eigsh
 import torch
-from .sparse_util import initialize_code
-from ..eps import get_eps
 import torch.nn.functional as F
-import numpy as np
+
+from torch_staintools.functional.compile import lazy_compile
 
 
-def coord_descent(x, W, z0=None, alpha=1.0, lambda1=0.01, maxiter=1000, tol=1e-6, verbose=False):
+def coord_descent(x: torch.Tensor, z0: torch.Tensor, weight: torch.Tensor,
+                  alpha: torch.Tensor,
+                  maxiter: int, tol: float,
+                  positive_code: bool):
     """ modified coord_descent"""
-    input_dim, code_dim = W.shape  # [D,K]
+    if isinstance(alpha, torch.Tensor):
+        assert alpha.numel() == 1
+        alpha = alpha.item()
+    input_dim, code_dim = weight.shape  # [D,K]
     batch_size, input_dim1 = x.shape  # [N,D]
     assert input_dim1 == input_dim
     tol = tol * code_dim
@@ -21,21 +25,18 @@ def coord_descent(x, W, z0=None, alpha=1.0, lambda1=0.01, maxiter=1000, tol=1e-6
         assert z0.shape == (batch_size, code_dim)
         z = z0
 
-    # initialize b
-    # TODO: how should we initialize b when 'z0' is provided?
-    b = torch.mm(x, W)  # [N,K]
+    b = torch.mm(x, weight)  # [N,K]
 
     # precompute S = I - W^T @ W
-    S = - torch.mm(W.T, W)  # [K,K]
+    S = - torch.mm(weight.T, weight)  # [K,K]
     S.diagonal().add_(1.)
 
-    def fn(z):
-        x_hat = torch.matmul(W, z.T)
-        loss = 0.5 * (x - x_hat).norm(p=2).pow(2) + z.norm(p=1) * lambda1
-        return loss
 
     def cd_update(z, b):
-        z_next = F.softshrink(b, alpha)  # [N,K]
+        if positive_code:
+            z_next = (b - alpha).clamp_min(0)
+        else:
+            z_next = F.softshrink(b, alpha)  # [N,K]
         z_diff = z_next - z  # [N,K]
         k = z_diff.abs().argmax(1)  # [N]
         kk = k.unsqueeze(1)  # [N,1]
@@ -43,7 +44,7 @@ def coord_descent(x, W, z0=None, alpha=1.0, lambda1=0.01, maxiter=1000, tol=1e-6
         z = z.scatter(1, kk, z_next.gather(1, kk))
         return z, b
 
-    active = torch.arange(batch_size, device=W.device)
+    active = torch.arange(batch_size, device=weight.device)
     for i in range(maxiter):
         if len(active) == 0:
             break
@@ -52,103 +53,214 @@ def coord_descent(x, W, z0=None, alpha=1.0, lambda1=0.01, maxiter=1000, tol=1e-6
         update = (z_new - z_old).abs().sum(1)
         z[active] = z_new
         active = active[update > tol]
-        if verbose:
-            print('iter %i - loss: %0.4f' % (i, fn(F.softshrink(b, alpha))))
 
     z = F.softshrink(b, alpha)
+    return z
+
+def rss_grad(z_k: torch.Tensor, x: torch.Tensor, weight: torch.Tensor):
+    # kernelize it?
+    resid = torch.matmul(z_k, weight.T) - x
+    return torch.matmul(resid, weight)
+
+def rss_grad_fast(z_k: torch.Tensor, hessian: torch.Tensor, b: torch.Tensor):
+    return torch.mm(z_k, hessian) - b
+
+def _grad_precompute(x: torch.Tensor, weight: torch.Tensor):
+    # return Hessian and bias
+    return torch.mm(weight.T, weight), torch.mm(x, weight)
+
+def softshrink(x: torch.Tensor, lambd: torch.Tensor) -> torch.Tensor:
+    lambd = lambd.clamp_min(0)
+    return x.sign() * (x.abs() - lambd).clamp_min(0)
+
+
+def ista_step(
+    z: torch.Tensor,
+    hessian: torch.Tensor,
+    b: torch.Tensor,
+    alpha: torch.Tensor,
+    lr: torch.Tensor,
+    positive: bool,
+) -> torch.Tensor:
+    """
+
+    Args:
+        z: code. num_pixels x num_stain
+        # x: OD space. num_pixels x num_channel
+        # weight: init from stain matrix --> num_channel x num_stain
+        hessian: precomputed wtw
+        b: precomputed xw
+        alpha: tensor form of the ista penalizer
+        lr: tensor form of step size
+        positive: if force z to be positive
+    Returns:
+
+    """
+
+
+    z_k_safe = torch.nan_to_num(z, nan=0.0, posinf=0.0, neginf=0.0)
+    # g = rss_grad(z_k_safe, x, weight) # same shape as z
+    g = rss_grad_fast(z_k_safe, hessian, b)
+    g_safe = torch.nan_to_num(g, nan=0.0, posinf=0.0, neginf=0.0)
+
+    # guard lr
+    lr_safe = torch.nan_to_num(lr, nan=0.0, posinf=0.0, neginf=0.0)
+    z_proposal = z - lr * g_safe
+    threshold = alpha * lr
+    if positive:
+        z_next = (z_proposal - threshold).clamp_min(0)
+    else:
+        # z_next = F.softshrink(z_prev - lr * rss_grad(z_prev, x, weight), alpha * lr)
+        z_next = softshrink(z_k_safe - lr_safe * g_safe, alpha * lr_safe)
+    finite_mask = torch.isfinite(z) & torch.isfinite(g) & torch.isfinite(lr)
+    return torch.where(finite_mask, z_next, z)
+
+
+def fista_step(
+        z: torch.Tensor,
+        y: torch.Tensor,
+        t: torch.Tensor,
+        hessian: torch.Tensor,
+        b: torch.Tensor,
+        alpha: torch.Tensor,
+        lr: torch.Tensor,
+        positive_code: bool,
+        tol: float
+):
+
+    z_next = ista_step(y, hessian, b, alpha, lr, positive_code)
+    delta = z_next - z
+    diff = delta.abs().sum()
+    just_finished = diff <= tol
+    t_next = (1 + torch.sqrt(1 + 4 * t ** 2)) / 2
+    m = (t - 1) / t_next
+    y_next = z_next + m * delta
+    return z_next, y_next, t_next, just_finished
+
+
+
+# @torch.compile
+# @static_compile
+@lazy_compile
+def ista_loop(z: torch.Tensor, hessian: torch.Tensor, b: torch.Tensor,
+              alpha: torch.Tensor, lr: torch.Tensor,
+              tol: float, maxiter: int, positive_code: bool):
+    is_converged = torch.tensor(False, device=z.device, dtype=torch.bool)
+    for _ in range(maxiter):
+        z_next = ista_step(z, hessian, b, alpha, lr, positive_code)
+        # check convergence
+        diff = (z - z_next).abs().sum()
+        just_finished = diff <= tol
+        # lock the status - so in future loops is_converged will never be False again
+        is_converged = is_converged | just_finished
+        z = torch.where(is_converged, z, z_next)
+    return z
+
+
+# @torch.compile
+# @static_compile
+@lazy_compile
+def fista_loop(
+        z: torch.Tensor,
+        hessian: torch.Tensor,
+        b: torch.Tensor,
+        alpha: torch.Tensor,
+        lr: torch.Tensor,
+        tol: float,
+        maxiter: int,
+        positive_code: bool = True,
+) -> torch.Tensor:
+    """  FISTA Loop
+
+    Args:
+        z: Initial guess
+        # x: Data input (OD space)
+        # weight: Dictionary matrix
+        hessian: precomputed wtw
+        b: precomputed xw
+        alpha: Regularization strength
+        lr: Learning rate
+        maxiter: Maximum iterations
+        tol: Convergence tolerance
+        positive_code:
+    """
+
+    # momentum
+    y = z.clone()
+    # step size for the momentum
+    t = torch.tensor(1, dtype=z.dtype).to(z.device)
+    is_converged = torch.tensor(False, device=z.device, dtype=torch.bool)
+
+    for i in range(maxiter):
+
+        z_next, y_next, t_next, just_finished = fista_step(z, y, t,
+                                                           hessian, b,
+                                                           alpha, lr,
+                                                           positive_code, tol)
+
+        z = torch.where(is_converged, z, z_next)
+        y = torch.where(is_converged, y, y_next)
+        t = torch.where(is_converged, t, t_next)
+        is_converged = is_converged | just_finished
 
     return z
 
 
-def _lipschitz_constant(W):
-    """find the Lipscitz constant to compute the learning rate in ISTA
-
-    Args:
-        W: weights w in f(z) = ||Wz - x||^2
-
-    Returns:
-
-    """
-    # L = torch.linalg.norm(W, ord=2) ** 2
-    # W has nan
-    WtW = torch.matmul(W.t(), W)
-    WtW += torch.eye(WtW.size(0)).to(W.device) * get_eps(WtW)
-    # L = torch.linalg.eigvalsh(WtW)[-1]
-    # scipy.sparse.linalg._eigen.arpack.arpack.ArpackError: ARPACK error 3: No shifts could be applied during
-    # a cycle of the Implicitly restarted Arnoldi iteration.
-    # One possibility is to increase the size of NCV relative to NEV.
-
-    L = eigsh(WtW.detach().cpu().numpy(), k=1, which='LM', return_eigenvectors=False).item()
-    if not np.isfinite(L):  # sometimes L is not finite because of potential cublas error.
-        L = torch.linalg.norm(W, ord=2) ** 2
-    return L
-
-
-def ista(x, z0, weight, alpha=1.0, fast=True, lr='auto', maxiter=50,
-         tol=1e-5, lambda1=0.01, verbose=False, rng: torch.Generator = None):
+def ista(x: torch.Tensor, z0: torch.Tensor,
+         weight: torch.Tensor, alpha: torch.Tensor,
+         lr: torch.Tensor,
+         maxiter: int,
+         tol: float, positive_code: bool):
     """ISTA solver
 
     Args:
         x: data
         z0: code, or the initialization mode of the code.
         weight: dict
-        alpha: eps term for code initialization
-        fast: whether to use FISTA (fast-ista) instead of ISTA
+        alpha: penalty term for code
         lr: learning rate/step size. If `auto` then it will be specified by
             the Lipschitz constant of f(z) = ||Wz - x||^2
         maxiter: max number of iteration if not converge.
         tol: tolerance term of convergence test.
-        lambda1: lambda of the sparse terms.
-        verbose: whether to print the progress
-        rng: torch.Generator for random initialization
-
+        positive_code: whether enforce the positive z constraint
     Returns:
 
     """
-    if type(z0) is str:
-        z0 = initialize_code(x, weight, alpha, z0, rng=rng)
+    # lr, alpha, tol = collate_params(z0, x, lr, weight, alpha, tol)
+    z0 = z0.contiguous()
+    x = x.contiguous()
+    weight = weight.contiguous()
+    hessian, b = _grad_precompute(x, weight)
+    # hessian = hessian.contiguous()
+    # b = b.contiguous()
+    return ista_loop(z0, hessian, b, alpha, lr, tol, maxiter, positive_code)
 
-    if lr == 'auto':
-        # set lr based on the maximum eigenvalue of W^T @ W; i.e. the
-        # Lipschitz constant of \grad f(z), where f(z) = ||Wz - x||^2
-        L = _lipschitz_constant(weight)
-        lr = 1 / L
-    tol = z0.numel() * tol
 
-    def loss_fn(z_k):
-        x_hat = torch.matmul(weight, z_k.T)
-        loss = 0.5 * (x.T - x_hat).norm(p=2).pow(2) + z_k.norm(p=1) * lambda1
-        return loss
+def fista(x: torch.Tensor, z0: torch.Tensor,
+          weight: torch.Tensor,
+          alpha: torch.Tensor, lr: torch.Tensor,
+          maxiter: int,
+          tol: float, positive_code):
+    """Fast ISTA solver
 
-    def rss_grad(z_k):
-        resid = torch.matmul(z_k, weight.T) - x
-        return torch.matmul(resid, weight)
-    # optimize
-    z = z0
-    if fast:
-        y, t = z0, torch.tensor(1, dtype=torch.float32).to(z0.device)
-    for _ in range(maxiter):
-        if verbose:
-            print('loss: %0.4f' % loss_fn(z), "weight:", weight, "lr:", lr, "z:", z)
-        # ista update
-        z_prev = y if fast else z
-        try:
-            z_next = F.softshrink(z_prev - lr * rss_grad(z_prev), alpha * lr)
-        except RuntimeError as e:
-            print(e)
-            print('lr error ', lr, 'did not update z')
-            z_next = z_prev  # if there is a failure just reset state.
+    Args:
+        x: data
+        z0: code, or the initialization mode of the code.
+        weight: dict
+        alpha: penalty term for code
+        lr: learning rate/step size. If `auto` then it will be specified by
+            the Lipschitz constant of f(z) = ||Wz - x||^2
+        maxiter: max number of iteration if not converge.
+        tol: tolerance term of convergence test.
+        positive_code: whether enforce the positive z constraint
+    Returns:
 
-        # check convergence
-        if (z - z_next).abs().sum() <= tol:
-            z = z_next
-            break
-
-        # update variables
-        if fast:
-            t_next = (1 + torch.sqrt(1 + 4 * t ** 2)) / 2
-            y = z_next + ((t - 1) / t_next) * (z_next - z)
-            t = t_next
-        z = z_next
-
-    return z
+    """
+   #  lr, alpha, tol = collate_params(z0, x, lr, weight, alpha, tol)
+    z0 = z0.contiguous()
+    x = x.contiguous()
+    weight = weight.contiguous()
+    hessian, b = _grad_precompute(x, weight)
+    # hessian = hessian.contiguous()
+    # b = b.contiguous()
+    return fista_loop(z0, hessian, b, alpha, lr, tol, maxiter, positive_code)

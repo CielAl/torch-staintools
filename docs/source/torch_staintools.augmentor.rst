@@ -11,7 +11,6 @@ torch\_staintools.augmentor.base module
    :members:
    :undoc-members:
    :show-inheritance:
-   :private-members:
 
 torch\_staintools.augmentor.factory module
 ------------------------------------------
@@ -20,7 +19,6 @@ torch\_staintools.augmentor.factory module
    :members:
    :undoc-members:
    :show-inheritance:
-   :private-members:
 
 Module contents
 ---------------
@@ -29,4 +27,3 @@ Module contents
    :members:
    :undoc-members:
    :show-inheritance:
-   :private-members:

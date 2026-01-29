@@ -10,8 +10,20 @@ Subpackages
    torch_staintools.augmentor
    torch_staintools.base_module
    torch_staintools.cache
+   torch_staintools.constants
    torch_staintools.functional
    torch_staintools.normalizer
+
+Submodules
+----------
+
+torch\_staintools.version module
+--------------------------------
+
+.. automodule:: torch_staintools.version
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
 Module contents
 ---------------
@@ -20,4 +32,3 @@ Module contents
    :members:
    :undoc-members:
    :show-inheritance:
-   :private-members:

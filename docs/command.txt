@@ -1,4 +1,6 @@
-
-sphinx-apidoc  -P -F -o docs/source torch_staintools tests/* setup.py demo.py version.py */loggers.py
+sphinx-apidoc -f -o docs/source torch_staintools tests/* setup.py demo.py version.py */loggers.py \
+    torch_staintools/functional/stain_extraction/macenko.py \
+    torch_staintools/functional/stain_extraction/vahadane.py
+# sphinx-apidoc  -P -F -o docs/source torch_staintools tests/* setup.py demo.py version.py */loggers.py
 cd docs
 make html
