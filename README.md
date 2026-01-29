@@ -60,33 +60,33 @@ timeit. Comparison between torch_stain_tools in CPU/GPU mode, as well as that of
 ### Transformation
 *```torch.compile``` enabled.
 
-| Method   | CPU[s] | GPU[s]      | StainTool[s] |
-|:---------|:-------|:------------|:-------------| 
-| Vahadane | 119.00 | ~~7.5~~4.60 | 20.90        |  
-| Macenko  | 5.57   | 0.48        | 20.70        |
-| Reinhard | 0.84   | 0.02        | 0.41         |  
+| Method   | CPU[s] | GPU[s]       | StainTool[s] |
+|:---------|:-------|:-------------|:-------------| 
+| Vahadane | 119.00 | ~~7.5~~ 4.60 | 20.90        |  
+| Macenko  | 5.57   | 0.48         | 20.70        |
+| Reinhard | 0.84   | 0.02         | 0.41         |  
 
 ### Fitting
 ```torch.compile``` enabled.
 
-| Method   | CPU[s] | GPU[s]       | StainTool[s] |
-|:---------|:-------|:-------------|:-------------| 
-| Vahadane | 132.00 | ~~8.40~~5.20 | 19.10        |  
-| Macenko  | 6.99   | 0.06         | 20.00        |
-| Reinhard | 0.42   | 0.01         | 0.08         |  
+| Method   | CPU[s] | GPU[s]        | StainTool[s] |
+|:---------|:-------|:--------------|:-------------| 
+| Vahadane | 132.00 | ~~8.40~~ 5.20 | 19.10        |  
+| Macenko  | 6.99   | 0.06          | 20.00        |
+| Reinhard | 0.42   | 0.01          | 0.08         |  
 
 ### Batchified Concentration Computation
 * Split the sample images under ./test_images (size `2500x2500x3`) into 81 non-overlapping `256x256x3` tiles as a batch.
 * For the StainTools baseline, a for-loop is implemented to get the individual concentration of each of the numpy array of the 81 tiles.
 * ```torch.compile``` enabled.
 * 
-| Method                                 | CPU[s] | GPU[s]       | 
-|:---------------------------------------|:-------|:-------------| 
-| FISTA (`concentration_solver='fista'`) | 1.47   | ~~1.24~~0.24 |  
-| ISTA (`concentration_solver='ista'`)   | 3.12   | ~~1.24~~0.31 |  
-| CD   (`concentration_solver='cd'`)     | 29.30s | 4.87         | 
-| LS   (`concentration_solver='ls'`)     | 0.22   | **0.097**    |
-| StainTools (SPAMS)                     | 16.60  | N/A          |
+| Method                                 | CPU[s] | GPU[s]        | 
+|:---------------------------------------|:-------|:--------------| 
+| FISTA (`concentration_solver='fista'`) | 1.47   | ~~1.24~~ 0.24 |  
+| ISTA (`concentration_solver='ista'`)   | 3.12   | ~~1.24~~ 0.31 |  
+| CD   (`concentration_solver='cd'`)     | 29.30s | 4.87          | 
+| LS   (`concentration_solver='ls'`)     | 0.22   | **0.097**     |
+| StainTools (SPAMS)                     | 16.60  | N/A           |
 
 
 ## Use Cases and Tips
