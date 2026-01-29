@@ -1,3 +1,5 @@
+import warnings
+
 from ..cache.tensor_cache import TensorCache
 import torch
 from typing import Optional, List, Hashable, Callable
@@ -123,6 +125,9 @@ class CachedRNGModule(torch.nn.Module):
         self._tensor_cache = cache
         self.device = default_device(device)
         self._rng = default_rng(rng, self.device)
+        if self._rng is not None:
+            warnings.warn(f"A custom RNG is passed and may cause graph break if torch.compile is used."
+                          f"Consider fixing random states globally instead.")
 
     @property
     def rng(self):

@@ -36,7 +36,7 @@ If this toolkit helps you in your publication, please feel free to cite with the
 * Stain Augmentation using Macenko and Vahadane as stain extraction.
 * Fast normalization/augmentation on GPU with stain matrices caching.
 * Simulate the workflow in [StainTools library](https://github.com/Peter554/StainTools) but use the Iterative Shrinkage Thresholding Algorithm (ISTA), or optionally, the coordinate descent (CD) to solve the dictionary learning for stain matrix computation in Vahadane or Macenko (stain concentration only) algorithm. The implementation of ISTA and CD are derived from Cédric Walker's [torchvahadane](https://github.com/cwlkr/torchvahadane)
-* Stain Concentration is solved via factorization of `Stain_Matrix x Concentration = Optical_Density`. For efficient sparse solution and more robust outcomes, ISTA can be applied. Alternatively, Least Square solver (LS) from `torch.linalg.lstsq` might be applied for faster non-sparse solution.
+* Stain Concentration is solved via factorization of `Stain_Matrix x Concentration = Optical_Density`. For efficient sparse solution and more robust outcomes, ISTA can be applied. Alternatively, the Least Square solver (LS) from `torch.linalg.lstsq` might be applied for faster non-sparse solution.
 * No SPAMS requirement (which is a dependency in StainTools).
 
 <br />
@@ -90,7 +90,7 @@ timeit. Comparison between torch_stain_tools in CPU/GPU mode, as well as that of
 * Normalizers are wrapped as `torch.nn.Module`, working similarly to a standalone neural network. This means that for a workflow involving dataloader with multiprocessing, the normalizer
   (Note that CUDA has poor support in multiprocessing, and therefore it may not be the best practice to perform GPU-accelerated on-the-fly stain transformation in pytorch's dataset/dataloader)
 
-* `concentration_method='ls'` (i.e., `torch.linalg.lstsq`) can be efficient for batches of many smaller input (e.g., `256x256`) in terms of width and height. However, it may fail on GPU for a single larger input image (width and height). This happens even if the 
+* `concentration_method='ls'` (i.e., `torch.linalg.lstsq`) can be efficient for batches of many smaller input (e.g., `256x256`) in terms of width and height. However, it may fail on GPU for a single larger input image (width and height). This happens even if 
 the total number of pixels of the image is fewer than the aforementioned batch of multiple smaller input. Therefore, `concentration_method='ls'` could be suitable to deal with huge amount of small images in batches on the fly.
 
 ```python
@@ -184,8 +184,7 @@ augmentor.dump_cache('./cache.pickle')
 
 # fast batch operation
 tile_size = 512
-tiles: torch.Tensor = norm_tensor.unfold(2, tile_size, tile_size)
-.unfold(3, tile_size, tile_size).reshape(1, 3, -1, tile_size, tile_size).squeeze(0).permute(1, 0, 2, 3).contiguous()
+tiles: torch.Tensor = norm_tensor.unfold(2, tile_size, tile_size).unfold(3, tile_size, tile_size).reshape(1, 3, -1, tile_size, tile_size).squeeze(0).permute(1, 0, 2, 3).contiguous()
 print(tiles.shape)
 # use macenko normalization as example
 normalizer_macenko = NormalizerBuilder.build('macenko', use_cache=True,

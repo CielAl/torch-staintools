@@ -1,6 +1,7 @@
 """Demo prerequisite:
-    tqdm
+    tqdm (progress bar)
     staintools (for comparison)
+    cv2 (read and process images)
 """
 import cv2
 import torch
@@ -8,6 +9,7 @@ from torchvision.transforms import ToTensor
 from torchvision.transforms.functional import convert_image_dtype
 from torch_staintools.normalizer import NormalizerBuilder
 from torch_staintools.augmentor import AugmentorBuilder
+from torch_staintools.constants import CONFIG
 import matplotlib.pyplot as plt
 import numpy as np
 from tqdm import tqdm
@@ -41,6 +43,7 @@ norm_tensor = ToTensor()(norm).unsqueeze(0).to(device)
 
 # test with multiple smaller regions from the sample image
 tile_size = 1024
+# split the sample images into a batch of patches.
 tiles: torch.Tensor = norm_tensor.unfold(2, tile_size, tile_size)\
     .unfold(3, tile_size, tile_size).reshape(1, 3, -1, tile_size, tile_size).squeeze(0).permute(1, 0, 2, 3).contiguous()
 
@@ -53,14 +56,25 @@ plt.title("Template")
 plt.show()
 
 
+# helper function to convert tensor back to numpy arrays for visualization purposes.
 def postprocess(image_tensor): return convert_image_dtype(image_tensor, torch.uint8)\
     .squeeze().detach().cpu().permute(1, 2, 0).numpy()
 
-
+# We enable the torch.compile (note this is True by default)
+CONFIG.ENABLE_COMPILE = True
 # ######### Vahadane
 normalizer_vahadane = NormalizerBuilder.build('vahadane',
-                                              concentration_solver='ista', use_cache=True,
-                                              rng=1,
+                                              # use fista (fast iterative shrinkage-thresholding algorithm)
+                                              # for dictionary learning to
+                                              # estimate the stain matrix (sparse constraints)
+                                              # alternative: 'cd' (coordinate descent);
+                                              # 'ista' (iterative shrinkage-thresholding algorithm)
+                                              sparse_stain_solver='fista',
+                                              concentration_solver='fista',
+                                              # whether to cache the stain matrix.
+                                              # must pair the input with an identifier (e.g. filename)
+                                              # otherwise cache will be ignored.
+                                              use_cache=True
                                               )
 normalizer_vahadane = normalizer_vahadane.to(device)
 normalizer_vahadane.fit(target_tensor)
@@ -68,9 +82,10 @@ normalizer_vahadane.fit(target_tensor)
 # that may enclose parameters.
 with torch.no_grad():
     for idx, tile_single in enumerate(tqdm(tiles, disable=False)):
-
+        tile_single: torch.Tensor
         tile_single = tile_single.unsqueeze(0)
         # BCHW - scaled to [0 1] torch.float32
+        # cache key herein is the index of data points.
         test_out = normalizer_vahadane(tile_single, cache_keys=[idx])
         test_out = postprocess(test_out)
         plt.imshow(test_out)
@@ -80,9 +95,11 @@ with torch.no_grad():
 # %timeit normalizer_vahadane(norm_tensor, positive_dict=True)
 
 #   #################### Macenko
-
-
-normalizer_macenko = NormalizerBuilder.build('macenko', use_cache=True, concentration_solver='ls')
+# if using cusolver, 'ls' (least square) will fail on single large images.
+# try magma backend if 'ls' is still preferred as the concentration estimator (see below)
+# torch.backends.cuda.preferred_linalg_library('magma')
+normalizer_macenko = NormalizerBuilder.build('macenko', use_cache=True,
+                                             concentration_solver='fista')  # 'ls'
 normalizer_macenko = normalizer_macenko.to(device)
 normalizer_macenko.fit(target_tensor)
 
@@ -117,9 +134,14 @@ with torch.no_grad():
 # Augmentation
 
 augmentor = AugmentorBuilder.build('vahadane',
-                                   rng=314159,
+                                   sparse_stain_solver='fista',
+                                   concentration_solver='fista',
+                                   num_stains=2,
+                                   rng=314159,  # None if globally managing the seeds
                                    sigma_alpha=0.2,
-                                   sigma_beta=0.2, target_stain_idx=(0, 1),
+                                   sigma_beta=0.2,
+                                   # for two stains (herein, H&E), augment both H and E.
+                                   target_stain_idx=(0, 1),
                                    use_cache=True,
                                    )
 # move augmentor to the device
@@ -142,7 +164,8 @@ st_vahadane.fit(target)
 tiles_np = tiles.permute(0, 2, 3, 1).detach().cpu().contiguous().numpy()
 
 for idx, tile_single in enumerate(tqdm(tiles_np)):
-    tile_single = (tile_single * 255).astype(np.uint8)
+    tile_single: np.ndarray
+    tile_single: np.ndarray = (tile_single * 255).astype(np.uint8)
     test_out = st_vahadane.transform(tile_single)
     plt.imshow(test_out)
     plt.title(f"Vahadane StainTools: {idx}")
@@ -153,10 +176,11 @@ for idx, tile_single in enumerate(tqdm(tiles_np)):
 from staintools.stain_normalizer import StainNormalizer
 st_macenko = StainNormalizer(method='macenko')
 st_macenko.fit(target)
-tiles_np = tiles.permute(0, 2, 3, 1).detach().cpu().contiguous().numpy()
+tiles_np: np.ndarray = tiles.permute(0, 2, 3, 1).detach().cpu().contiguous().numpy()
 # timeit st_macenko.transform(norm)
 for idx, tile_single in enumerate(tqdm(tiles_np)):
-    tile_single = (tile_single * 255).astype(np.uint8)
+    tile_single: np.ndarray
+    tile_single: np.ndarray = (tile_single * 255).astype(np.uint8)
     test_out = st_macenko.transform(tile_single)
     plt.imshow(test_out)
     plt.title(f"Vahadane StainTools: {idx}")
@@ -170,7 +194,8 @@ st_reinhard.fit(target)
 tiles_np = tiles.permute(0, 2, 3, 1).detach().cpu().contiguous().numpy()
 # %timeit st_reinhard.transform(norm)
 for idx, tile_single in enumerate(tqdm(tiles_np)):
-    tile_single = (tile_single * 255).astype(np.uint8)
+    tile_single: np.ndarray
+    tile_single: np.ndarray = (tile_single * 255).astype(np.uint8)
     test_out = st_reinhard.transform(tile_single)
     plt.imshow(test_out)
     plt.title(f"Reinhard ST: {idx}")
@@ -217,7 +242,9 @@ num_repeat = 3
 fig, axs = plt.subplots(2, num_repeat + 1, figsize=(15, 8), dpi=300)
 for i, ax_alg in enumerate(axs):
     alg = algorithms[i].lower()
-    augmentor = AugmentorBuilder.build(alg, concentration_solver='ista',
+    # noinspection PyTypeChecker
+    augmentor = AugmentorBuilder.build(alg,
+                                       concentration_solver='ista',
                                        sigma_alpha=0.5,
                                        sigma_beta=0.5,
                                        luminosity_threshold=0.8,

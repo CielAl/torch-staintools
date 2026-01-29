@@ -11,6 +11,8 @@ class _Config:
     # Whether to Enforce Positive Code / Concentration
     DICT_POSITIVE_CODE: bool = True
 
+    # Whether to enable torch.compile (currently only the dictionary learning is affected)
+    ENABLE_COMPILE: bool = True
 
 CONFIG: _Config = _Config()
 

@@ -4,6 +4,8 @@ code directly adapted from https://github.com/rfeinman/pytorch-lasso
 import torch
 import torch.nn.functional as F
 
+from torch_staintools.functional.compile import lazy_compile
+
 
 def coord_descent(x: torch.Tensor, z0: torch.Tensor, weight: torch.Tensor,
                   alpha: torch.Tensor,
@@ -137,7 +139,9 @@ def fista_step(
 
 
 
-@torch.compile
+# @torch.compile
+# @static_compile
+@lazy_compile
 def ista_loop(z: torch.Tensor, hessian: torch.Tensor, b: torch.Tensor,
               alpha: torch.Tensor, lr: torch.Tensor,
               tol: float, maxiter: int, positive_code: bool):
@@ -153,7 +157,9 @@ def ista_loop(z: torch.Tensor, hessian: torch.Tensor, b: torch.Tensor,
     return z
 
 
-@torch.compile
+# @torch.compile
+# @static_compile
+@lazy_compile
 def fista_loop(
         z: torch.Tensor,
         hessian: torch.Tensor,

@@ -6,11 +6,15 @@ from .sparse_util import METHOD_SPARSE, validate_code, initialize_dict, collate_
 import torch
 import torch.nn.functional as F
 from typing import Optional, cast, Tuple
+
+from ..compile import lazy_compile
 from ..eps import get_eps
 from torch_staintools.constants import CONFIG
 
 
-@torch.compile
+# @torch.compile
+# @static_compile
+@lazy_compile
 def update_dict_cd(dictionary: torch.Tensor, x: torch.Tensor, code: torch.Tensor,
                    positive: bool = True,
                    dead_thresh=1e-7,
@@ -86,11 +90,14 @@ def update_dict_cd(dictionary: torch.Tensor, x: torch.Tensor, code: torch.Tensor
     return dictionary, code
 
 
-@torch.compile
+# @torch.compile
+# @static_compile
+@lazy_compile
 def update_dict_ridge(x: torch.Tensor, code: torch.Tensor, lambd: float) -> Tuple[torch.Tensor, torch.Tensor]:
     """Update an (unconstrained) dictionary with ridge regression
 
-    This is equivalent to a Newton step with the (L2-regularized) squared
+    This is equivalent to a Newton step with the (L2-regularized) squared.
+    May have severe numerical stability issues compared to update_dict_cd.
     error objective:
     f(V) = (1/2N) * ||Vz - x||_2^2 + (lambd/2) * ||V||_2^2
 
