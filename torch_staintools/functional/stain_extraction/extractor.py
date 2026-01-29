@@ -9,6 +9,7 @@ class StainAlg(Protocol):
     """Interface of stain separation algorithms.
 
     """
+    cfg: object
 
     def __init__(self, cfg):
         ...

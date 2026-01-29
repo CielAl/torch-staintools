@@ -4,7 +4,7 @@ import torch
 from .utils import percentile, cov
 from dataclasses import dataclass
 
-@dataclass(frozen=True)
+@dataclass(frozen=False)
 class MckCfg:
     """Configration of Macenko Stain Estimation.
 

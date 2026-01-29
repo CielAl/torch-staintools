@@ -17,7 +17,7 @@ class _Param:
     OPTIM_DEFAULT_SPARSE_LAMBDA: float = 1e-2
     # OPTIM_DEFAULT_SPARSE_CD_LAMBDA: float = 1
     # maxiter for sparse code
-    OPTIM_SPARSE_DEFAULT_MAX_ITER: float = 50
+    OPTIM_SPARSE_DEFAULT_MAX_ITER: int = 50
 
 
 PARAM: _Param = _Param()

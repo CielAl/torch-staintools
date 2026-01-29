@@ -20,7 +20,7 @@ _batch_supported = {
 }
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=False)
 class ConcentCfg:
     algorithm: METHOD_FACTORIZE = 'fista'
     regularizer: float = PARAM.OPTIM_DEFAULT_SPARSE_LAMBDA
@@ -29,6 +29,8 @@ class ConcentCfg:
     lr: Optional[float] = None
     tol: float = PARAM.OPTIM_DEFAULT_TOL
     positive: bool = CONFIG.DICT_POSITIVE_CODE
+
+DEFAULT_CONC_CFG = ConcentCfg()
 
 def get_concentrations_single(od_flatten: torch.Tensor,
                               stain_matrix: torch.Tensor,
@@ -178,7 +180,7 @@ def get_concentrations(image: torch.Tensor,
     return get_concentration_batch(od_flatten, stain_matrix, regularizer, algorithm,
                                    lr=lr, maxiter=maxiter, tol=tol, rng=rng, positive=positive)
 
-class ConcentrateSolver(Callable):
+class ConcentrationSolver(Callable):
     cfg: ConcentCfg
 
     def __init__(self, cfg: ConcentCfg):

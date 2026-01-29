@@ -9,7 +9,7 @@ from ..optimization.sparse_util import METHOD_SPARSE, MODE_INIT
 from ...constants import PARAM
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=False)
 class Vcfg:
     """Configuration for Vahadane stain estimation
 

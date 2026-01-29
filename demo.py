@@ -217,7 +217,7 @@ num_repeat = 3
 fig, axs = plt.subplots(2, num_repeat + 1, figsize=(15, 8), dpi=300)
 for i, ax_alg in enumerate(axs):
     alg = algorithms[i].lower()
-    augmentor = AugmentorBuilder.build(alg, concentration_method='ista',
+    augmentor = AugmentorBuilder.build(alg, concentration_solver='ista',
                                        sigma_alpha=0.5,
                                        sigma_beta=0.5,
                                        luminosity_threshold=0.8,

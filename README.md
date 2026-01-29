@@ -153,7 +153,7 @@ augmentor = AugmentorBuilder.build('vahadane',
                                    # if set to None means all pixels are treated as tissue
                                    luminosity_threshold=0.8,
                                    # herein we use 'ista' to compute the concentration
-                                   concentration_method='ista',
+                                   concentration_solver='ista',
                                    sigma_alpha=0.2,
                                    sigma_beta=0.2, target_stain_idx=(0, 1),
                                    # this allows to cache the stain matrix if it's too time-consuming to recompute.

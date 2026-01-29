@@ -3,7 +3,7 @@ from .base import Normalizer
 from .reinhard import ReinhardNormalizer
 from .separation import StainSeparation
 from ..constants import PARAM, CONFIG
-from ..functional.concentration import ConcentrateSolver, ConcentCfg
+from ..functional.concentration import ConcentrationSolver, ConcentCfg
 from ..functional.optimization.sparse_util import METHOD_FACTORIZE, METHOD_SPARSE, MODE_INIT
 import torch
 
@@ -32,7 +32,6 @@ class NormalizerBuilder:
               luminosity_threshold: float = 0.8,
               perc: int = 1,
               regularizer: float = PARAM.OPTIM_DEFAULT_SPARSE_LAMBDA,  # 1e-2
-              rng: Optional[int | torch.Generator] = None,
               maxiter: int = PARAM.OPTIM_SPARSE_DEFAULT_MAX_ITER,  # 50
               lr: Optional[float] = None,
               tol: float = PARAM.OPTIM_DEFAULT_TOL,  # 1e-5
@@ -40,6 +39,7 @@ class NormalizerBuilder:
               cache_size_limit: int = -1,
               device: Optional[torch.device] = None,
               load_path: Optional[str] = None,
+              rng: Optional[int | torch.Generator] = None,
               ) -> Normalizer:
         """build from specified algorithm name `method`.
 
@@ -72,7 +72,6 @@ class NormalizerBuilder:
             lr: learning rate for ISTA/FISTA-based optimization in code/concentration updating in ISTA/FISTA.
                 If None, the invert of Lipschitz constant of the gradient is used.
             tol: tolerance threshold for early convergence in ISTA/FISTA.
-            rng: seed or torch.Generator for any random initialization may incur.
             use_cache: whether to use cache to save the stain matrix of input image to normalize.  Only applies
                 to `macenko` and 'vahadane'
             cache_size_limit: size limit of the cache. negative means no limits. Only applies
@@ -81,6 +80,7 @@ class NormalizerBuilder:
                 to `macenko` and 'vahadane'
             load_path: If specified, then stain matrix cache will be loaded from the file path. See the `cache`
                 module for more details. Only applies  to `macenko` and 'vahadane'
+            rng: seed or torch.Generator for any random initialization may incur.
 
         Returns:
 
@@ -90,7 +90,7 @@ class NormalizerBuilder:
                            lr=lr,
                            tol=tol,
                            positive=CONFIG.DICT_POSITIVE_CODE)
-        csolver = ConcentrateSolver(c_cfg)
+        csolver = ConcentrationSolver(c_cfg)
 
         match method:
             case 'reinhard':

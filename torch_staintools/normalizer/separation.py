@@ -6,7 +6,7 @@ from functools import partial
 import torch
 from torch_staintools.functional.stain_extraction.extractor import StainExtraction, StainAlg
 from ..functional.optimization.sparse_util import METHOD_FACTORIZE
-from torch_staintools.functional.concentration import ConcentrateSolver
+from torch_staintools.functional.concentration import ConcentrationSolver
 from torch_staintools.functional.stain_extraction.utils import percentile
 from torch_staintools.functional.utility import transpose_trailing, img_from_concentration
 from .base import Normalizer
@@ -29,12 +29,11 @@ class StainSeparation(Normalizer):
     target_concentrations: torch.Tensor
 
     num_stains: int
-    regularizer: float
-    rng: torch.Generator
-    concentration_solver: ConcentrateSolver
+    rng: Optional[torch.Generator]
+    concentration_solver: ConcentrationSolver
 
     def __init__(self, stain_alg: StainAlg,
-                 concentration_solver: ConcentrateSolver,
+                 concentration_solver: ConcentrationSolver,
                  num_stains: int = 2,
                  luminosity_threshold: float = 0.8,
                  rng: Optional[int | torch.Generator] = None,
@@ -118,7 +117,7 @@ class StainSeparation(Normalizer):
             image: Image input must be BxCxHxW cast to torch.float32 and rescaled to [0, 1]
                 Check torchvision.transforms.convert_image_dtype.
             cache_keys: unique keys point the input batch to the cached stain matrices. `None` means no cache.
-            kwargs: For compatibility of parent class signatures.
+            **kwargs: For compatibility of parent class signatures.
 
         Returns:
             torch.Tensor: normalized output in BxCxHxW shape and float32 dtype. Note that some pixel value may exceed
@@ -160,7 +159,7 @@ class StainSeparation(Normalizer):
         Args:
             x: input batch image tensor in shape of BxCxHxW
             cache_keys: unique keys point the input batch to the cached stain matrices. `None` means no cache.
-            kwargs: For compatibility of parent class signatures.
+            **kwargs: For compatibility of parent class signatures.
 
         Returns:
             torch.Tensor: normalized output in BxCxHxW shape and float32 dtype. Note that some pixel value may exceed
@@ -171,7 +170,7 @@ class StainSeparation(Normalizer):
     @classmethod
     def build(cls,
               stain_alg: StainAlg,
-              concentration_solver: ConcentrateSolver,
+              concentration_solver: ConcentrationSolver,
               num_stains: int = 2,
               luminosity_threshold: float = 0.8,
               rng: Optional[int | torch.Generator] = None,
