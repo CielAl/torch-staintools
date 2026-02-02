@@ -12,13 +12,27 @@ def normalize_matrix_rows(a: torch.Tensor) -> torch.Tensor:
     return a / torch.linalg.norm(a, dim=1)[:, None]
 
 
-def cov(x):
+def cov(x: torch.Tensor) -> torch.Tensor:
     """Covariance matrix for eigen decomposition.
     https://en.wikipedia.org/wiki/Covariance_matrix
     """
+    # x: C x num_pixel
     E_x = x.mean(dim=1)
     x = x - E_x[:, None]
     return torch.mm(x, x.T) / (x.size(1) - 1)
+
+
+@torch.no_grad()
+def batch_masked_cov(od_flatten: torch.Tensor, mask_flatten: torch.Tensor) -> torch.Tensor:
+    # mask B x num_pixel x 1
+    # clamp so avoid 0div in mean and cov computation
+    size_masked = mask_flatten.sum(dim=1).clamp_min(2).unsqueeze(-1)
+    # B x C
+    mean = (od_flatten * mask_flatten).sum(dim=1, keepdim=True) / size_masked
+    # B x num_pix x C
+    x = (od_flatten - mean) * mask_flatten
+    return torch.bmm(x.transpose(1, 2), x) / (size_masked - 1)
+
 
 def percentile(t: torch.Tensor, q: float, dim: int) -> torch.Tensor:
     """Author: adapted from https://gist.github.com/spezold/42a451682422beb42bc43ad0c0967a30
@@ -45,3 +59,17 @@ def percentile(t: torch.Tensor, q: float, dim: int) -> torch.Tensor:
     return t.kthvalue(k, dim=dim).values
 
 
+@torch.no_grad()
+def batch_masked_perc(phi: torch.Tensor, mask: torch.Tensor, q: int, dim: int) -> torch.Tensor:
+    # fill nan. use nanquantile to ignore the nans (bg)
+    # mask = mask.squeeze(-1)
+    phi_filled = torch.where(mask.bool(), phi, torch.tensor(torch.inf, device=phi.device))
+    # inf at the end. cut off.
+    phi_sorted, _ = torch.sort(phi_filled, dim=dim)
+    size_masked = mask.sum(dim=dim)
+    q_float = q / 100.0
+    target_indices = (q_float * (size_masked - 1)).long().clamp(min=0)
+
+    # not friendly to torch.compile
+    # torch.nanquantile(phi_masked, q_float, dim=dim, interpolation='nearest')  # B
+    return phi_sorted.gather(dim, target_indices.unsqueeze(dim)).squeeze(dim)

@@ -29,7 +29,7 @@ class NormalizerBuilder:
               dict_init: MODE_INIT = 'transpose',
               concentration_solver: METHOD_FACTORIZE = 'fista',
               num_stains: int = 2,
-              luminosity_threshold: float = 0.8,
+              luminosity_threshold: Optional[float] = 0.8,
               perc: int = 1,
               regularizer: float = PARAM.OPTIM_DEFAULT_SPARSE_LAMBDA,  # 1e-2
               maxiter: int = PARAM.OPTIM_SPARSE_DEFAULT_MAX_ITER,  # 50
