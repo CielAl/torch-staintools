@@ -81,8 +81,8 @@ class MacenkoAlg(Callable):
 
 
     @staticmethod
-    def stain_matrix_helper_original(t_hat: torch.Tensor, perc: int, eig_vecs: torch.Tensor):
-        """Helper function to compute the stain matrix.
+    def stain_matrix_helper_single(t_hat: torch.Tensor, perc: int, eig_vecs: torch.Tensor):
+        """Helper function to compute the stain matrix. (no vectorization)
 
         Separate the projected OD vectors on singular vectors (SVD of OD in Macenko paper, which is also the
         eigen vector of the covariance matrix of the OD)
@@ -188,7 +188,7 @@ class MacenkoAlg(Callable):
             # HW
             # t_hat -> num_pixels x num_stain
             # eig_vecs -> C x num_stain
-            stain_mat = MacenkoAlg.stain_matrix_helper_original(t_hat, perc, eig_vecs)
+            stain_mat = MacenkoAlg.stain_matrix_helper_single(t_hat, perc, eig_vecs)
             stain_mat = stain_mat.T
             stain_mat_list.append(stain_mat)
         return torch.stack(stain_mat_list)
