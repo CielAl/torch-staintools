@@ -202,7 +202,7 @@ def dict_learning(x: torch.Tensor,
     # initialize
     z0 = validate_code(algorithm, init, z0=None, x=x, weight=weight, rng=rng)
     assert z0 is not None
-    lr, alpha, tol = collate_params(z0, x, lr, weight, alpha, tol)
+    lr, alpha, tol = collate_params(x, lr, weight, alpha, tol)
     return dict_learning_loop(x, z0, weight, alpha, algorithm, lambd_ridge=lambd_ridge,
                               steps=steps, rng=rng, init=init, lr=lr, maxiter=maxiter, tol=tol)
 
