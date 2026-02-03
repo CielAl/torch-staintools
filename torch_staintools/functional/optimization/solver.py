@@ -280,15 +280,8 @@ def ista(x: torch.Tensor, z0: torch.Tensor,
     Returns:
 
     """
-    # lr, alpha, tol = collate_params(x, lr, weight, alpha, tol)
-    # z0 = z0.contiguous()
-    # x = x.contiguous()
-    # weight = weight.contiguous()
-    # tol = z0.numel() * tol
     z0, x, weight, lr, alpha, tol = _preprocess_input(z0, x, lr, weight, alpha, tol)
     hessian, b = _grad_precompute(x, weight)
-    # hessian = hessian.contiguous()
-    # b = b.contiguous()
     return ista_loop(z0, hessian, b, alpha, lr, tol, maxiter, positive_code)
 
 
@@ -312,13 +305,6 @@ def fista(x: torch.Tensor, z0: torch.Tensor,
     Returns:
 
     """
-    # lr, alpha, tol = collate_params(x, lr, weight, alpha, tol)
-    # z0 = z0.contiguous()
-    # x = x.contiguous()
-    # weight = weight.contiguous()
-    # tol = z0.numel() * tol
     z0, x, weight, lr, alpha, tol = _preprocess_input(z0, x, lr, weight, alpha, tol)
     hessian, b = _grad_precompute(x, weight)
-    # hessian = hessian.contiguous()
-    # b = b.contiguous()
     return fista_loop(z0, hessian, b, alpha, lr, tol, maxiter, positive_code)

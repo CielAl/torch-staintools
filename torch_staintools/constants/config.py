@@ -14,7 +14,7 @@ class _Config:
     # Whether to enable torch.compile (currently only the dictionary learning is affected)
     ENABLE_COMPILE: bool = True
 
-    STAIN_MAT_BATCHIFY: bool = True
+    ENABLE_VECTORIZE: bool = False
 
 CONFIG: _Config = _Config()
 

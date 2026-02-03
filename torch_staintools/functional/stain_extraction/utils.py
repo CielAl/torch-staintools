@@ -73,3 +73,14 @@ def batch_masked_perc(phi: torch.Tensor, mask: torch.Tensor, q: int, dim: int) -
     # not friendly to torch.compile
     # torch.nanquantile(phi_masked, q_float, dim=dim, interpolation='nearest')  # B
     return phi_sorted.gather(dim, target_indices.unsqueeze(dim)).squeeze(dim)
+
+def validate_shape(od: torch.Tensor, tissue_mask: torch.Tensor):
+    assert isinstance(od, torch.Tensor)
+    assert isinstance(tissue_mask, torch.Tensor)
+    # batch
+    assert tissue_mask.shape[0] == od.shape[0], f"{tissue_mask.shape[0]} vs {od.shape[0]}"
+    # spatial
+    assert tissue_mask.shape[2:] == od.shape[2:], f"{tissue_mask.shape[2:]} vs {od.shape[2:]}"
+    # channel
+    assert tissue_mask.shape[1] == 1 or tissue_mask.shape[1] == od.shape[1], \
+        f"{tissue_mask.shape[1]} vs. {od.shape[1]}"
