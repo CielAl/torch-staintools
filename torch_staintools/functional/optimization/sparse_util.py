@@ -114,8 +114,7 @@ def lipschitz_constant(w: torch.Tensor):
     return L + torch.finfo(L.dtype).eps
 
 
-def collate_params(z0: torch.Tensor,
-                   x: torch.Tensor,
+def collate_params(x: torch.Tensor,
                    lr: Optional[float | torch.Tensor],
                    weight: torch.Tensor,
                    alpha: float | torch.Tensor,
@@ -126,7 +125,8 @@ def collate_params(z0: torch.Tensor,
 
     # if tol is None:
     #     tol = PARAM.OPTIM_DEFAULT_TOL
-    tol = z0.numel() * tol
+    # handle it inside optimization.
+    # tol = z0.numel() * tol
 
     # if alpha is None:
     #     alpha = PARAM.OPTIM_DEFAULT_SPARSE_ISTA_LAMBDA

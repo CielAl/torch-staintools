@@ -1,60 +1,126 @@
 """
 code directly adapted from https://github.com/rfeinman/pytorch-lasso
 """
+from typing import Optional
+
 import torch
-import torch.nn.functional as F
 
 from torch_staintools.functional.compile import lazy_compile
+from torch_staintools.functional.optimization.sparse_util import collate_params
+
+def _preprocess_input(z0: torch.Tensor,
+                      x: torch.Tensor,
+                      lr: Optional[float | torch.Tensor],
+                      weight: torch.Tensor,
+                      alpha: float | torch.Tensor,
+                      tol: float):
+    lr, alpha, tol = collate_params(x, lr, weight, alpha, tol)
+    z0 = z0.contiguous()
+    x = x.contiguous()
+    weight = weight.contiguous()
+    tol = z0.numel() * tol
+    return z0, x, weight, lr, alpha, tol
 
 
-def coord_descent(x: torch.Tensor, z0: torch.Tensor, weight: torch.Tensor,
+def _grad_precompute(x: torch.Tensor, weight: torch.Tensor):
+    # return Hessian and bias
+    return torch.mm(weight.T, weight), torch.mm(x, weight)
+
+def _softshrink(x: torch.Tensor, lambd: torch.Tensor) -> torch.Tensor:
+    lambd = lambd.clamp_min(0)
+    return x.sign() * (x.abs() - lambd).clamp_min(0)
+
+def softshrink(x: torch.Tensor, lambd: torch.Tensor, positive: bool) -> torch.Tensor:
+    if positive:
+        return (x - lambd).clamp_min(0)
+    return _softshrink(x, lambd)
+
+def cd_step(
+    z: torch.Tensor,
+    b: torch.Tensor,
+    s: torch.Tensor,
+    alpha: torch.Tensor,
+    positive_code: bool,
+) -> tuple[torch.Tensor, torch.Tensor]:
+    z = torch.nan_to_num(z, nan=0.0, posinf=0.0, neginf=0.0)
+    b = torch.nan_to_num(b, nan=0.0, posinf=0.0, neginf=0.0)
+    s = torch.nan_to_num(s, nan=0.0, posinf=0.0, neginf=0.0)
+    alpha = torch.nan_to_num(alpha, nan=0.0, posinf=0.0, neginf=0.0)
+
+    z_proposal = softshrink(b, alpha, positive_code)
+
+    z_diff = z_proposal - z
+
+    k = z_diff.abs().argmax(dim=1)
+    kk = k.unsqueeze(1)
+
+    z_diff_selected = z_diff.gather(1, kk)
+
+    one_hot = torch.nn.functional.one_hot(
+        k, num_classes=z.size(1)
+    ).to(dtype=z.dtype)
+    s_col_vec = torch.mm(one_hot, s.T)
+
+    b_next = b + s_col_vec * z_diff_selected
+
+    z_next_selected = z_proposal.gather(1, kk)
+    z_next = z.scatter(1, kk, z_next_selected)
+
+    finite_row = (
+        torch.isfinite(z).all(dim=1) &
+        torch.isfinite(b).all(dim=1) &
+        torch.isfinite(z_next).all(dim=1) &
+        torch.isfinite(b_next).all(dim=1)
+    ).unsqueeze(1)
+    z_next = torch.where(finite_row, z_next, z)
+    b_next = torch.where(finite_row, b_next, b)
+
+    return z_next, b_next
+
+
+@lazy_compile
+def cd_loop(
+    z: torch.Tensor,
+    b: torch.Tensor,
+    s: torch.Tensor,
+    alpha: torch.Tensor,
+    tol: float,
+    maxiter: int,
+    positive_code: bool,
+) -> torch.Tensor:
+
+    is_converged = torch.zeros_like(z[:, 0], dtype=torch.bool)
+    for _ in range(maxiter):
+        z_next, b_next = cd_step(z, b, s, alpha, positive_code)
+
+        update = (z_next - z).abs().sum(dim=1)  # [N]
+        just_finished = update <= tol
+
+        # freeze if converged. can't early break here.
+        cvf_2d = is_converged.unsqueeze(1)
+        z = torch.where(cvf_2d, z, z_next)
+        b = torch.where(cvf_2d, b, b_next)
+
+        is_converged = is_converged | just_finished
+
+    return softshrink(b, alpha, positive=positive_code)
+
+
+def coord_descent(x: torch.Tensor,
+                  z0: torch.Tensor,
+                  weight: torch.Tensor,
                   alpha: torch.Tensor,
                   maxiter: int, tol: float,
                   positive_code: bool):
     """ modified coord_descent"""
-    if isinstance(alpha, torch.Tensor):
-        assert alpha.numel() == 1
-        alpha = alpha.item()
-    input_dim, code_dim = weight.shape  # [D,K]
-    batch_size, input_dim1 = x.shape  # [N,D]
-    assert input_dim1 == input_dim
-    tol = tol * code_dim
-    if z0 is None:
-        z = x.new_zeros(batch_size, code_dim)  # [N,K]
-    else:
-        assert z0.shape == (batch_size, code_dim)
-        z = z0
+    # lr set to one to avoid L computation. Lr is not used in CD
+    z0, x, weight, lr, alpha, tol = _preprocess_input(z0, x, 1, weight, alpha, tol)
 
-    b = torch.mm(x, weight)  # [N,K]
-
-    # precompute S = I - W^T @ W
-    S = - torch.mm(weight.T, weight)  # [K,K]
-    S.diagonal().add_(1.)
-
-
-    def cd_update(z, b):
-        if positive_code:
-            z_next = (b - alpha).clamp_min(0)
-        else:
-            z_next = F.softshrink(b, alpha)  # [N,K]
-        z_diff = z_next - z  # [N,K]
-        k = z_diff.abs().argmax(1)  # [N]
-        kk = k.unsqueeze(1)  # [N,1]
-        b = b + S[:, k].T * z_diff.gather(1, kk)  # [N,K] += [N,K] * [N,1]
-        z = z.scatter(1, kk, z_next.gather(1, kk))
-        return z, b
-
-    active = torch.arange(batch_size, device=weight.device)
-    for i in range(maxiter):
-        if len(active) == 0:
-            break
-        z_old = z[active]
-        z_new, b[active] = cd_update(z_old, b[active])
-        update = (z_new - z_old).abs().sum(1)
-        z[active] = z_new
-        active = active[update > tol]
-
-    z = F.softshrink(b, alpha)
+    hessian, b = _grad_precompute(x, weight)
+    code_dim = weight.size(1)
+    # S = I - H
+    s = torch.eye(code_dim, device=x.device, dtype=x.dtype) - hessian
+    z = cd_loop(z0, b, s, alpha, tol=tol, maxiter=maxiter, positive_code=positive_code)
     return z
 
 def rss_grad(z_k: torch.Tensor, x: torch.Tensor, weight: torch.Tensor):
@@ -64,15 +130,6 @@ def rss_grad(z_k: torch.Tensor, x: torch.Tensor, weight: torch.Tensor):
 
 def rss_grad_fast(z_k: torch.Tensor, hessian: torch.Tensor, b: torch.Tensor):
     return torch.mm(z_k, hessian) - b
-
-def _grad_precompute(x: torch.Tensor, weight: torch.Tensor):
-    # return Hessian and bias
-    return torch.mm(weight.T, weight), torch.mm(x, weight)
-
-def softshrink(x: torch.Tensor, lambd: torch.Tensor) -> torch.Tensor:
-    lambd = lambd.clamp_min(0)
-    return x.sign() * (x.abs() - lambd).clamp_min(0)
-
 
 def ista_step(
     z: torch.Tensor,
@@ -105,13 +162,10 @@ def ista_step(
 
     # guard lr
     lr_safe = torch.nan_to_num(lr, nan=0.0, posinf=0.0, neginf=0.0)
-    z_proposal = z - lr * g_safe
-    threshold = alpha * lr
-    if positive:
-        z_next = (z_proposal - threshold).clamp_min(0)
-    else:
-        # z_next = F.softshrink(z_prev - lr * rss_grad(z_prev, x, weight), alpha * lr)
-        z_next = softshrink(z_k_safe - lr_safe * g_safe, alpha * lr_safe)
+    z_proposal = z - lr_safe * g_safe
+    threshold = alpha * lr_safe
+
+    z_next = softshrink(z_proposal, threshold, positive)
     finite_mask = torch.isfinite(z) & torch.isfinite(g) & torch.isfinite(lr)
     return torch.where(finite_mask, z_next, z)
 
@@ -226,10 +280,12 @@ def ista(x: torch.Tensor, z0: torch.Tensor,
     Returns:
 
     """
-    # lr, alpha, tol = collate_params(z0, x, lr, weight, alpha, tol)
-    z0 = z0.contiguous()
-    x = x.contiguous()
-    weight = weight.contiguous()
+    # lr, alpha, tol = collate_params(x, lr, weight, alpha, tol)
+    # z0 = z0.contiguous()
+    # x = x.contiguous()
+    # weight = weight.contiguous()
+    # tol = z0.numel() * tol
+    z0, x, weight, lr, alpha, tol = _preprocess_input(z0, x, lr, weight, alpha, tol)
     hessian, b = _grad_precompute(x, weight)
     # hessian = hessian.contiguous()
     # b = b.contiguous()
@@ -256,10 +312,12 @@ def fista(x: torch.Tensor, z0: torch.Tensor,
     Returns:
 
     """
-   #  lr, alpha, tol = collate_params(z0, x, lr, weight, alpha, tol)
-    z0 = z0.contiguous()
-    x = x.contiguous()
-    weight = weight.contiguous()
+    # lr, alpha, tol = collate_params(x, lr, weight, alpha, tol)
+    # z0 = z0.contiguous()
+    # x = x.contiguous()
+    # weight = weight.contiguous()
+    # tol = z0.numel() * tol
+    z0, x, weight, lr, alpha, tol = _preprocess_input(z0, x, lr, weight, alpha, tol)
     hessian, b = _grad_precompute(x, weight)
     # hessian = hessian.contiguous()
     # b = b.contiguous()

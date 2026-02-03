@@ -62,7 +62,7 @@ def get_concentrations_single(od_flatten: torch.Tensor,
         computed concentration: num_stains x num_pixel_in_tissue_mask
     """
     z0 = initialize_code(od_flatten, stain_matrix.T, 'zero', rng=rng)
-    lr, regularizer, tol = collate_params(z0, od_flatten, lr, stain_matrix.T, regularizer, tol)
+    lr, regularizer, tol = collate_params(od_flatten, lr, stain_matrix.T, regularizer, tol)
     match algorithm:
         case 'cd':
             return coord_descent(od_flatten, z0, stain_matrix.T,
