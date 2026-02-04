@@ -19,6 +19,8 @@ class _Param:
     # maxiter for sparse code
     OPTIM_SPARSE_DEFAULT_MAX_ITER: int = 50
 
+    OPTIM_MOMEMTUM_RESTART_INTERVAL: int = 10
+
 
 PARAM: _Param = _Param()
 

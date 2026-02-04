@@ -1,8 +1,7 @@
 from typing import Optional, Callable
-
 import torch
 from torch_staintools.functional.optimization.dict_learning import dict_learning
-from .utils import normalize_matrix_rows, validate_shape
+from .utils import validate_shape, post_proc_dict
 from dataclasses import dataclass
 
 from ..optimization.sparse_util import METHOD_SPARSE, MODE_INIT
@@ -76,19 +75,13 @@ def stain_mat_loop(cfg: Vcfg, od: torch.Tensor,
                                    init=init,
                                    rng=rng, maxiter=maxiter, lr=lr,
                                    tol=tol)
-        # H on first row.
-        dictionary = dictionary.T
-        # todo add num_stains here - sort?
-        # if dictionary[0, 0] < dictionary[1, 0]:
-        #     dictionary = dictionary[[1, 0], :]
-        dictionary, _ = torch.sort(dictionary, dim=0, descending=True)
-        out_dict_list.append(normalize_matrix_rows(dictionary))
-    # breakpoint()
-    return torch.stack(out_dict_list)
+        sm = post_proc_dict(dictionary)
+        out_dict_list.append(sm)
+    return torch.cat(out_dict_list, dim=0)
 
 def stain_mat_vectorize(cfg,
-                        od_flatten: torch.Tensor,
-                        tissue_mask_flatten: torch.Tensor,
+                        od: torch.Tensor,
+                        tissue_mask: torch.Tensor,
                         num_stains: int,
                         rng: Optional[torch.Generator]) -> torch.Tensor:
     algorithm = cfg.algorithm
@@ -99,6 +92,21 @@ def stain_mat_vectorize(cfg,
     maxiter = cfg.maxiter
     lr = cfg.lr
     tol = cfg.tol
+    # B x pix x C
+    od_flatten = od.flatten(start_dim=2, end_dim=-1).permute(0, 2, 1)
+    # B x pix x 1
+    tissue_mask_flatten = tissue_mask.flatten(start_dim=2, end_dim=-1).permute(0, 2, 1)
+
+    dictionary = dict_learning(od_flatten,
+                               tissue_mask_flatten=tissue_mask_flatten,
+                               n_components=num_stains, algorithm=algorithm,
+                               alpha=regularizer, lambd_ridge=lambd_ridge,
+                               steps=steps,
+                               init=init,
+                               rng=rng, maxiter=maxiter, lr=lr,
+                               tol=tol)
+
+    return post_proc_dict(dictionary)
 
 
 class VahadaneAlg(Callable):

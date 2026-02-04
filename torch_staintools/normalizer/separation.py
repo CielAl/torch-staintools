@@ -7,7 +7,7 @@ import torch
 from torch_staintools.functional.stain_extraction.extractor import StainExtraction, StainAlg
 from ..functional.optimization.sparse_util import METHOD_FACTORIZE
 from torch_staintools.functional.concentration import ConcentrationSolver
-from torch_staintools.functional.stain_extraction.utils import percentile
+from torch_staintools.functional.stain_extraction.utils import percentile, batch_masked_perc
 from torch_staintools.functional.utility import transpose_trailing, img_from_concentration
 from .base import Normalizer
 from ..cache.tensor_cache import TensorCache
@@ -73,18 +73,21 @@ class StainSeparation(Normalizer):
         Returns:
 
         """
+        # todo multiple target
         assert target.shape[0] == 1
+        # B x num_stain x num_channel (concentration @ stain_mat --> RGB)
         stain_matrix_target = self.get_stain_matrix(target, num_stains=self.num_stains,
                                                     luminosity_threshold=self.luminosity_threshold,
                                                     rng=self.rng)
-
+        # B x num_stain x num_channel
         self.register_buffer('stain_matrix_target', stain_matrix_target)
+        # B x num_stain x num_pix
         target_conc = self.concentration_solver(target, self.stain_matrix_target, rng=self.rng)
         self.register_buffer('target_concentrations', target_conc)
         # B x (HW) x 2
-        conc_transpose = transpose_trailing(self.target_concentrations)
+        # conc_transpose = transpose_trailing(self.target_concentrations)
         # along HW dim
-        max_c_target = percentile(conc_transpose, 99, dim=1)
+        max_c_target = percentile(self.target_concentrations, 99, dim=-2)
         self.register_buffer('maxC_target', max_c_target)
         # self.maxC_target = np.percentile(self.target_concentrations, 99, axis=0).reshape((1, 2))
 
@@ -143,14 +146,14 @@ class StainSeparation(Normalizer):
         # individual shape (2,) (HE)
         # note that c_transposed_src is just a view of source_concentration and therefore any inplace operation on
         # them will be reflected to each other, but this should be avoided for better readability
-        c_transposed_src = transpose_trailing(source_concentration)
-        maxC = percentile(c_transposed_src, 99, dim=1)
-        # 1 x B x 2
-        c_scale = transpose_trailing((self.maxC_target / maxC).unsqueeze(-1))
-
-        c_transposed_src *= c_scale
+        # c_transposed_src = transpose_trailing(source_concentration)
+        maxC = percentile(source_concentration, q=99, dim=-2) + 1e-14
+        # B x 1 x num_stain
+        c_scale = (self.maxC_target / maxC).unsqueeze(-2)
+        # B x num_pix x num_stain
+        source_concentration *= c_scale
         # note this is the reconstruction in B x (HW) x C --> need to shuffle the channel first before reshape
-        return img_from_concentration(c_transposed_src, self.stain_matrix_target, image.shape, (0, 1))
+        return img_from_concentration(source_concentration, self.stain_matrix_target, image.shape, (0, 1))
 
     def forward(self, x: torch.Tensor,
                 cache_keys: Optional[List[Hashable]] = None, **kwargs) -> torch.Tensor:

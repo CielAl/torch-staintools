@@ -45,8 +45,9 @@ def initialize_code(x: torch.Tensor, weight: torch.Tensor, mode: MODE_INIT, rng:
     wherein D is the dictionary and A is the code.
     For ridge initialization, the L2 penalty is customized with constants.INIT_RIDGE_L2
     Args:
-        x: data
-        weight: dictionary
+        x: data. B x num_pixel x num_channel
+        weight: dictionary. B x num_channel x num_stain.
+            Essentially the transposed stain mat
         mode: code initialization method
         rng: torch.Generator for random initialization modes
     Returns:
@@ -123,16 +124,23 @@ def collate_params(x: torch.Tensor,
                    tol: float) -> Tuple[torch.Tensor, torch.Tensor, float]:
     if lr is None:
         L = lipschitz_constant(weight)
-        lr = 1 / L
+        lr = 1. / L
 
+    alpha = to_tensor(alpha, x)
+    assert alpha.ndim == 0, f"alpha must be a scalar. {alpha.shape}"
+    lr = to_tensor(lr, x)
 
-    alpha = as_scalar(alpha, x)
-    lr = as_scalar(lr, x)
+    assert lr.ndim == 0 or (lr.ndim >= 1 and lr.shape[0] == x.shape[0]), f"{lr.shape}. {x.shape}"
+    if lr.ndim == 1:
+        lr = lr[..., None, None]
     return lr, alpha, tol
 
 
-def as_scalar(v: float | torch.Tensor, like: torch.Tensor) -> torch.Tensor:
+def to_tensor(v: float | torch.Tensor, like: torch.Tensor) -> torch.Tensor:
     if isinstance(v, torch.Tensor):
         # will except on non-scalar
-        return v.to(device=like.device, dtype=like.dtype).reshape(())
-    return torch.tensor(v, device=like.device, dtype=like.dtype)
+        dest =  v.to(device=like.device, dtype=like.dtype)
+    else:
+        dest = torch.tensor(v, device=like.device, dtype=like.dtype)
+    assert dest.ndim == 0 or dest.shape[0] == like.shape[0], f"{dest.shape} - {like.shape}"
+    return dest

@@ -1,15 +1,16 @@
 import torch
+from torch.nn import functional as F
 
 
-def normalize_matrix_rows(a: torch.Tensor) -> torch.Tensor:
-    """Normalize the rows of an array.
-    Args:
-        a: An array to normalize
-
-    Returns:
-        Array with rows normalized.
-    """
-    return a / torch.linalg.norm(a, dim=1)[:, None]
+# def normalize_matrix_rows(a: torch.Tensor) -> torch.Tensor:
+#     """Normalize the rows of an array.
+#     Args:
+#         a: An array to normalize
+#
+#     Returns:
+#         Array with rows normalized.
+#     """
+#     return a / torch.linalg.norm(a, dim=1)[:, None]
 
 
 def cov(x: torch.Tensor) -> torch.Tensor:
@@ -59,6 +60,16 @@ def percentile(t: torch.Tensor, q: float, dim: int) -> torch.Tensor:
     return t.kthvalue(k, dim=dim).values
 
 
+# def batch_perc(phi: torch.Tensor, q: int, dim: int) -> torch.Tensor:
+#     phi_sorted, _ = torch.sort(phi, dim=dim)
+#     size_masked = mask.sum(dim=dim)
+#     q_float = q / 100.0
+#     target_indices = (q_float * (size_masked - 1)).long().clamp(min=0)
+#
+#     # not friendly to torch.compile
+#     # torch.nanquantile(phi_masked, q_float, dim=dim, interpolation='nearest')  # B
+#     return phi_sorted.gather(dim, target_indices.unsqueeze(dim)).squeeze(dim)
+
 @torch.no_grad()
 def batch_masked_perc(phi: torch.Tensor, mask: torch.Tensor, q: int, dim: int) -> torch.Tensor:
     # fill nan. use nanquantile to ignore the nans (bg)
@@ -84,3 +95,14 @@ def validate_shape(od: torch.Tensor, tissue_mask: torch.Tensor):
     # channel
     assert tissue_mask.shape[1] == 1 or tissue_mask.shape[1] == od.shape[1], \
         f"{tissue_mask.shape[1]} vs. {od.shape[1]}"
+
+
+def sort_stain(sm: torch.Tensor) -> torch.Tensor:
+    indices = sm[..., 0].argsort(dim=1, descending=True)
+    batch_idx = torch.arange(sm.shape[0], device=sm.device)[:, None]
+    return sm[batch_idx, indices]
+
+def post_proc_dict(dictionary: torch.Tensor):
+    # B x num_stain x num_channel
+    sm = sort_stain(dictionary.mT)
+    return F.normalize(sm, dim=-1, eps=1e-12)

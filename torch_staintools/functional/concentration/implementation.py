@@ -11,13 +11,12 @@ from torch_staintools.functional.utility import transpose_trailing
 from dataclasses import dataclass
 
 
-
-_batch_supported = {
-    get_args(METHOD_ISTA)[0]: False,
-    get_args(METHOD_FISTA)[0]: False,
-    get_args(METHOD_CD)[0]: False,
-    get_args(METHOD_LS)[0]: True,
-}
+# _batch_supported = {
+#     get_args(METHOD_ISTA)[0]: True,
+#     get_args(METHOD_FISTA)[0]: True,
+#     get_args(METHOD_CD)[0]: False,
+#     get_args(METHOD_LS)[0]: True,
+# }
 
 
 @dataclass(frozen=False)
@@ -32,16 +31,16 @@ class ConcentCfg:
 
 DEFAULT_CONC_CFG = ConcentCfg()
 
-def get_concentrations_single(od_flatten: torch.Tensor,
-                              stain_matrix: torch.Tensor,
-                              regularizer: float,
-                              algorithm: METHOD_FACTORIZE,
-                              lr: Optional[float],
-                              maxiter: int,
-                              tol: float,
-                              rng: Optional[torch.Generator],
-                              positive: bool,
-                              ):
+def _get_concentrations(od_flatten: torch.Tensor,
+                        stain_matrix: torch.Tensor,
+                        regularizer: float,
+                        algorithm: METHOD_FACTORIZE,
+                        lr: Optional[float],
+                        maxiter: int,
+                        tol: float,
+                        rng: Optional[torch.Generator],
+                        positive: bool,
+                        ):
     """Helper function to estimate concentration matrix given an image and stain matrix with shape: 2 x (H*W)
 
     For solvers without batch support. Inputs are individual data points from a batch
@@ -59,23 +58,23 @@ def get_concentrations_single(od_flatten: torch.Tensor,
         rng: torch.Generator for random initializations
         positive: enforce positive concentration
     Returns:
-        computed concentration: num_stains x num_pixel_in_tissue_mask
+        computed concentration: B x num_pixel_in_tissue_mask x num_stain
     """
-    z0 = initialize_code(od_flatten, stain_matrix.T, 'zero', rng=rng)
-    lr, regularizer, tol = collate_params(od_flatten, lr, stain_matrix.T, regularizer, tol)
+    z0 = initialize_code(od_flatten, stain_matrix.mT, 'zero', rng=rng)
+    lr, regularizer, tol = collate_params(od_flatten, lr, stain_matrix.mT, regularizer, tol)
     match algorithm:
         case 'cd':
-            return coord_descent(od_flatten, z0, stain_matrix.T,
+            return coord_descent(od_flatten, z0, stain_matrix.mT,
                                  alpha=regularizer, maxiter=maxiter,
-                                 positive_code=positive, tol=tol).T
+                                 positive_code=positive, tol=tol)
         case 'ista':
-            return ista(od_flatten, z0, stain_matrix.T, alpha=regularizer,
-                        positive_code=positive, lr=lr, maxiter=maxiter, tol=tol).T
+            return ista(od_flatten, z0, stain_matrix.mT, alpha=regularizer,
+                        positive_code=positive, lr=lr, maxiter=maxiter, tol=tol)
         case 'fista':
-            return fista(od_flatten, z0, stain_matrix.T, alpha=regularizer,
-                         positive_code=positive, lr=lr, maxiter=maxiter, tol=tol).T
+            return fista(od_flatten, z0, stain_matrix.mT, alpha=regularizer,
+                         positive_code=positive, lr=lr, maxiter=maxiter, tol=tol)
         case 'ls':
-            return torch.linalg.lstsq(stain_matrix.T, od_flatten.T)[0].T
+            return torch.linalg.lstsq(stain_matrix.mT, od_flatten.mT)[0].mT
 
     raise NotImplementedError(f"{algorithm} is not a valid optimizer")
 
@@ -91,13 +90,15 @@ def get_concentration_one_by_one(od_flatten: torch.Tensor,
                                  positive: bool,):
     result = list()
     for od_single, stain_mat_single in zip(od_flatten, stain_matrix):
-        c = get_concentrations_single(od_single, stain_mat_single,
-                                      regularizer, algorithm,
-                                      lr=lr, maxiter=maxiter, tol=tol,
-                                      rng=rng, positive=positive)
+        od_single = od_single[None, ...]
+        stain_mat_single = stain_mat_single[None, ...]
+        c = _get_concentrations(od_single, stain_mat_single,
+                                regularizer, algorithm,
+                                lr=lr, maxiter=maxiter, tol=tol,
+                                rng=rng, positive=positive)
         result.append(c)
     # get_concentrations_helper(od_flatten, stain_matrix, regularizer, method)
-    return torch.stack(result)
+    return torch.cat(result, dim=0)
 
 
 def _ls_batch(od_flatten: torch.Tensor, stain_matrix: torch.Tensor):
@@ -127,18 +128,13 @@ def get_concentration_batch(od_flatten: torch.Tensor,
                             tol: float,
                             rng: Optional[torch.Generator],
                             positive: bool,):
-    assert algorithm in _batch_supported
-    if not _batch_supported[algorithm]:
+    # assert algorithm in _batch_supported
+    if not CONFIG.ENABLE_VECTORIZE:
         return get_concentration_one_by_one(od_flatten, stain_matrix, regularizer, algorithm,
                                             lr=lr, maxiter=maxiter, tol=tol,
                                             rng=rng, positive=positive)
-    match algorithm:
-        case 'ls':
-            return _ls_batch(od_flatten, stain_matrix)
-        case _:
-            ...
-
-    raise NotImplementedError('Currently only least-square (ls) is implemented as batch concentration solver')
+    return _get_concentrations(od_flatten, stain_matrix, regularizer, algorithm, lr=lr,
+                               maxiter=maxiter, tol=tol, rng=rng, positive=positive)
 
 
 def get_concentrations(image: torch.Tensor,

@@ -67,10 +67,11 @@ def update_dict_cd(dictionary: torch.Tensor, x: torch.Tensor, code: torch.Tensor
         is_dead = (d_norm < dead_thresh)
 
         # random reset for dead atoms
-        d_k_random = torch.randn(new_d_k.shape,
-                                 device=new_d_k.device,
-                                 dtype=new_d_k.dtype,
-                                 generator=rng)
+        d_k_random = torch.empty_like(new_d_k).normal_(mean=0.0, std=1.0, generator=rng)
+        # d_k_random = torch.randn(new_d_k.shape,
+        #                          device=new_d_k.device,
+        #                          dtype=new_d_k.dtype,
+        #                          generator=rng)
         if positive:
             d_k_random = torch.abs(d_k_random)
         d_k_random = F.normalize(d_k_random, dim=1, eps=1e-12)
@@ -90,8 +91,6 @@ def update_dict_cd(dictionary: torch.Tensor, x: torch.Tensor, code: torch.Tensor
 
         dictionary[..., k] = d_k_final
         code[..., k] = z_k_final
-
-        #R -= torch.outer(z_k_final, d_k_final)
         R -= r_delta
 
     return dictionary, code
@@ -166,7 +165,6 @@ def dict_learning_loop(x: torch.Tensor,
     for _ in range(steps):
         # infer sparse coefficients and compute loss
 
-        breakpoint()
         z = sparse_code(x, weight, alpha, z0, algorithm=cast(METHOD_SPARSE, algorithm),
                         lr=lr, maxiter=maxiter, tol=tol,
                         positive_code=CONFIG.DICT_POSITIVE_CODE).contiguous()
@@ -183,7 +181,6 @@ def dict_learning_loop(x: torch.Tensor,
             weight, z = update_dict_cd(weight, x, z, positive=True, rng=rng)
         else:
             weight, z = update_dict_ridge(x, z, lambd=lambd_ridge)
-
     return weight
 
 
