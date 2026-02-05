@@ -14,16 +14,16 @@ def _preprocess_input(z0: torch.Tensor,
                       lr: Optional[float | torch.Tensor],
                       weight: torch.Tensor,
                       alpha: float | torch.Tensor,
-                      tol: float):
-    lr, alpha, tol = collate_params(x, lr, weight, alpha, tol)
+                      ):
+    lr, alpha = collate_params(x, lr, weight, alpha)
     z0 = z0.contiguous()
     x = x.contiguous()
     weight = weight.contiguous()
     #
-    num_pix = z0.shape[-2]
-    num_stain = z0.shape[-1]
-    tol = tol * num_pix * num_stain
-    return z0, x, weight, lr, alpha, tol
+    # num_pix = z0.shape[-2]
+    # num_stain = z0.shape[-1]
+    # tol = tol * num_pix * num_stain
+    return z0, x, weight, lr, alpha,
 
 
 def _grad_precompute(x: torch.Tensor, weight: torch.Tensor):
@@ -100,7 +100,6 @@ def cd_loop(
     b: torch.Tensor,
     s: torch.Tensor,
     alpha: torch.Tensor,
-    tol: float,
     maxiter: int,
     positive_code: bool,
 ) -> torch.Tensor:
@@ -128,11 +127,11 @@ def coord_descent(x: torch.Tensor,
                   z0: torch.Tensor,
                   weight: torch.Tensor,
                   alpha: torch.Tensor,
-                  maxiter: int, tol: float,
+                  maxiter: int,
                   positive_code: bool):
     """ modified coord_descent"""
     # lr set to one to avoid L computation. Lr is not used in CD
-    z0, x, weight, lr, alpha, tol = _preprocess_input(z0, x, 1, weight, alpha, tol)
+    z0, x, weight, lr, alpha = _preprocess_input(z0, x, 1, weight, alpha)
 
     hessian, b = _grad_precompute(x, weight)
     code_dim = weight.shape[-1]
@@ -140,7 +139,7 @@ def coord_descent(x: torch.Tensor,
     # S = I - H
     eye = torch.eye(code_dim, device=x.device, dtype=x.dtype)[None, ...].expand(batch_size, -1, -1)
     s = eye - hessian
-    z = cd_loop(z0, b, s, alpha, tol=tol, maxiter=maxiter, positive_code=positive_code)
+    z = cd_loop(z0, b, s, alpha, maxiter=maxiter, positive_code=positive_code)
     return z
 
 
@@ -190,7 +189,7 @@ def ista_step(
 @lazy_compile
 def ista_loop(z: torch.Tensor, hessian: torch.Tensor, b: torch.Tensor, *,
               alpha: torch.Tensor, lr: torch.Tensor,
-              tol: float, maxiter: int, positive_code: bool):
+              maxiter: int, positive_code: bool):
     # may trigger recompile after change of batch size. be aware
     # is_converged = torch.tensor(False, device=z.device, dtype=torch.bool)
     # batch_size = z.shape[0]
@@ -212,7 +211,7 @@ def ista(x: torch.Tensor, z0: torch.Tensor,
          weight: torch.Tensor, alpha: torch.Tensor,
          lr: torch.Tensor,
          maxiter: int,
-         tol: float, positive_code: bool):
+         positive_code: bool):
     """ISTA solver
 
     Args:
@@ -223,14 +222,13 @@ def ista(x: torch.Tensor, z0: torch.Tensor,
         lr: learning rate/step size. If `auto` then it will be specified by
             the Lipschitz constant of f(z) = ||Wz - x||^2
         maxiter: max number of iteration if not converge.
-        tol: tolerance term of convergence test.
         positive_code: whether enforce the positive z constraint
     Returns:
 
     """
-    z0, x, weight, lr, alpha, tol = _preprocess_input(z0, x, lr, weight, alpha, tol)
+    z0, x, weight, lr, alpha = _preprocess_input(z0, x, lr, weight, alpha)
     hessian, b = _grad_precompute(x, weight)
-    return ista_loop(z0, hessian, b, alpha=alpha, lr=lr, tol=tol,
+    return ista_loop(z0, hessian, b, alpha=alpha, lr=lr,
                      maxiter=maxiter, positive_code=positive_code)
 
 
@@ -267,7 +265,6 @@ def fista_loop(
         b: torch.Tensor,
         alpha: torch.Tensor,
         lr: torch.Tensor,
-        tol: float,
         maxiter: int,
         positive_code: bool = True,
 ) -> torch.Tensor:
@@ -282,7 +279,6 @@ def fista_loop(
         alpha: Regularization strength
         lr: Learning rate
         maxiter: Maximum iterations
-        tol: Convergence tolerance
         positive_code:
     """
 
@@ -329,7 +325,7 @@ def fista(x: torch.Tensor, z0: torch.Tensor,
           weight: torch.Tensor,
           alpha: torch.Tensor, lr: torch.Tensor,
           maxiter: int,
-          tol: float, positive_code):
+          positive_code):
     """Fast ISTA solver
 
     Args:
@@ -340,11 +336,10 @@ def fista(x: torch.Tensor, z0: torch.Tensor,
         lr: learning rate/step size. If `auto` then it will be specified by
             the Lipschitz constant of f(z) = ||Wz - x||^2
         maxiter: max number of iteration if not converge.
-        tol: tolerance term of convergence test.
         positive_code: whether enforce the positive z constraint
     Returns:
 
     """
-    z0, x, weight, lr, alpha, tol = _preprocess_input(z0, x, lr, weight, alpha, tol)
+    z0, x, weight, lr, alpha = _preprocess_input(z0, x, lr, weight, alpha)
     hessian, b = _grad_precompute(x, weight)
-    return fista_loop(z0, hessian, b, alpha, lr, tol, maxiter, positive_code)
+    return fista_loop(z0, hessian, b, alpha, lr=lr, maxiter=maxiter, positive_code=positive_code)

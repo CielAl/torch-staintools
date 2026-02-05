@@ -130,7 +130,6 @@ def sparse_code(x: torch.Tensor,
                 algorithm: METHOD_SPARSE,
                 lr: torch.Tensor,
                 maxiter: int,
-                tol: float,
                 positive_code: bool):
     batch_size, n_samples, n_features = x.shape
     n_components = weight.shape[-1]
@@ -139,11 +138,11 @@ def sparse_code(x: torch.Tensor,
     # perform inference
     match algorithm:
         case 'cd':
-            z = coord_descent(x, z0, weight, alpha, maxiter=maxiter, tol=tol, positive_code=positive_code)
+            z = coord_descent(x, z0, weight, alpha, maxiter=maxiter, positive_code=positive_code)
         case 'ista':
-            z = ista(x, z0, weight, alpha, lr=lr, maxiter=maxiter, tol=tol, positive_code=positive_code)
+            z = ista(x, z0, weight, alpha, lr=lr, maxiter=maxiter, positive_code=positive_code)
         case 'fista':
-            z = fista(x, z0, weight, alpha, lr=lr, maxiter=maxiter, tol=tol, positive_code=positive_code)
+            z = fista(x, z0, weight, alpha, lr=lr, maxiter=maxiter, positive_code=positive_code)
         case _:
             raise ValueError("invalid algorithm parameter '{}'.".format(algorithm))
     return z
@@ -160,13 +159,13 @@ def dict_learning_loop(x: torch.Tensor,
                        init: Optional[str],
                        lr: torch.Tensor,
                        maxiter: int,
-                       tol: float, ):
+                       ):
 
     for _ in range(steps):
         # infer sparse coefficients and compute loss
 
         z = sparse_code(x, weight, alpha, z0, algorithm=cast(METHOD_SPARSE, algorithm),
-                        lr=lr, maxiter=maxiter, tol=tol,
+                        lr=lr, maxiter=maxiter,
                         positive_code=CONFIG.DICT_POSITIVE_CODE).contiguous()
         weight = weight.contiguous()
 
@@ -195,7 +194,7 @@ def dict_learning(x: torch.Tensor,
                   init: Optional[str],
                   lr: Optional[float],
                   maxiter: int,
-                  tol: float, ):
+                  ):
     assert x.ndim == 3
     assert tissue_mask_flatten.ndim == 3
     n_features = x.shape[-1]
@@ -221,8 +220,8 @@ def dict_learning(x: torch.Tensor,
         x = x * tissue_mask_flatten
         z0 = z0 * tissue_mask_flatten
     assert z0 is not None
-    lr, alpha, tol = collate_params(x, lr, weight, alpha, tol)
+    lr, alpha = collate_params(x, lr, weight, alpha)
     return dict_learning_loop(x, z0, weight, alpha, algorithm, lambd_ridge=lambd_ridge,
                               steps=steps, rng=rng, init=init, lr=lr,
-                              maxiter=maxiter, tol=tol)
+                              maxiter=maxiter)
 

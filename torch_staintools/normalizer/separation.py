@@ -7,8 +7,8 @@ import torch
 from torch_staintools.functional.stain_extraction.extractor import StainExtraction, StainAlg
 from ..functional.optimization.sparse_util import METHOD_FACTORIZE
 from torch_staintools.functional.concentration import ConcentrationSolver
-from torch_staintools.functional.stain_extraction.utils import percentile, batch_masked_perc
-from torch_staintools.functional.utility import transpose_trailing, img_from_concentration
+from torch_staintools.functional.stain_extraction.utils import percentile
+from torch_staintools.functional.utility import img_from_concentration
 from .base import Normalizer
 from ..cache.tensor_cache import TensorCache
 from typing import Optional, List, Hashable

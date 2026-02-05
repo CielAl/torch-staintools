@@ -32,13 +32,14 @@ class Vcfg:
     init: MODE_INIT  # ridge
     maxiter: int
     lr: Optional[float]
-    tol: float
     lambd_ridge: float  # 1e-2
+    # for compatibility. throw the error if any code still use tol for computation
+    tol: Optional[float] = None
 
 DEFAULT_VAHADANE_CONFIG = Vcfg(regularizer=PARAM.OPTIM_DEFAULT_SPARSE_LAMBDA,
                                algorithm="fista", steps=PARAM.DICT_ITER_STEPS,
                                init='transpose', maxiter=PARAM.OPTIM_SPARSE_DEFAULT_MAX_ITER,
-                               lr=None, tol=PARAM.OPTIM_DEFAULT_TOL, lambd_ridge=PARAM.INIT_RIDGE_L2)
+                               lr=None, tol=None, lambd_ridge=PARAM.INIT_RIDGE_L2)
 
 
 def stain_mat_loop(cfg: Vcfg, od: torch.Tensor,
@@ -51,7 +52,6 @@ def stain_mat_loop(cfg: Vcfg, od: torch.Tensor,
     init = cfg.init
     maxiter = cfg.maxiter
     lr = cfg.lr
-    tol = cfg.tol
     out_dict_list = []
 
     validate_shape(od, tissue_mask)
@@ -74,7 +74,7 @@ def stain_mat_loop(cfg: Vcfg, od: torch.Tensor,
                                    steps=steps,
                                    init=init,
                                    rng=rng, maxiter=maxiter, lr=lr,
-                                   tol=tol)
+                                   )
         sm = post_proc_dict(dictionary)
         out_dict_list.append(sm)
     return torch.cat(out_dict_list, dim=0)
@@ -91,7 +91,6 @@ def stain_mat_vectorize(cfg,
     init = cfg.init
     maxiter = cfg.maxiter
     lr = cfg.lr
-    tol = cfg.tol
     # B x pix x C
     od_flatten = od.flatten(start_dim=2, end_dim=-1).permute(0, 2, 1)
     # B x pix x 1
@@ -104,7 +103,7 @@ def stain_mat_vectorize(cfg,
                                steps=steps,
                                init=init,
                                rng=rng, maxiter=maxiter, lr=lr,
-                               tol=tol)
+                               )
 
     return post_proc_dict(dictionary)
 

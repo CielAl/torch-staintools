@@ -121,7 +121,7 @@ def collate_params(x: torch.Tensor,
                    lr: Optional[float | torch.Tensor],
                    weight: torch.Tensor,
                    alpha: float | torch.Tensor,
-                   tol: float) -> Tuple[torch.Tensor, torch.Tensor, float]:
+                   ) -> Tuple[torch.Tensor, torch.Tensor]:
     if lr is None:
         L = lipschitz_constant(weight)
         lr = 1. / L
@@ -133,7 +133,7 @@ def collate_params(x: torch.Tensor,
     assert lr.ndim == 0 or (lr.ndim >= 1 and lr.shape[0] == x.shape[0]), f"{lr.shape}. {x.shape}"
     if lr.ndim == 1:
         lr = lr[..., None, None]
-    return lr, alpha, tol
+    return lr, alpha
 
 
 def to_tensor(v: float | torch.Tensor, like: torch.Tensor) -> torch.Tensor:

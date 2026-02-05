@@ -17,11 +17,7 @@ class CompiledWrapper(Protocol):
         ...
 
 
-def lazy_compile(func: Optional[Callable] = None,
-                 *,
-                 dynamic: Optional[bool] = None,
-                 fullgraph: bool = False,
-                 backend: Optional[str] = None,) -> CompiledWrapper | Callable[[Callable], CompiledWrapper]:
+def lazy_compile(func: Optional[Callable] = None, ) -> CompiledWrapper | Callable[[Callable], CompiledWrapper]:
     """Enable or disable torch.compile by torch_staintools.constants.CONFIG.ENABLE_COMPILE.
 
     If True, function will be compiled and cached. Otherwise, it will be executed in eager mode.

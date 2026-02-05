@@ -34,7 +34,6 @@ class NormalizerBuilder:
               regularizer: float = PARAM.OPTIM_DEFAULT_SPARSE_LAMBDA,  # 1e-2
               maxiter: int = PARAM.OPTIM_SPARSE_DEFAULT_MAX_ITER,  # 50
               lr: Optional[float] = None,
-              tol: float = PARAM.OPTIM_DEFAULT_TOL,  # 1e-5
               use_cache: bool = False,
               cache_size_limit: int = -1,
               device: Optional[torch.device] = None,
@@ -71,7 +70,6 @@ class NormalizerBuilder:
                 concentration estimation (e.g., ISTA)
             lr: learning rate for ISTA/FISTA-based optimization in code/concentration updating in ISTA/FISTA.
                 If None, the invert of Lipschitz constant of the gradient is used.
-            tol: tolerance threshold for early convergence in ISTA/FISTA.
             use_cache: whether to use cache to save the stain matrix of input image to normalize.  Only applies
                 to `macenko` and 'vahadane'
             cache_size_limit: size limit of the cache. negative means no limits. Only applies
@@ -88,7 +86,6 @@ class NormalizerBuilder:
         c_cfg = ConcentCfg(algorithm=concentration_solver,
                            regularizer=regularizer, rng=rng, maxiter=maxiter,
                            lr=lr,
-                           tol=tol,
                            positive=CONFIG.DICT_POSITIVE_CODE)
         csolver = ConcentrationSolver(c_cfg)
 
@@ -112,7 +109,7 @@ class NormalizerBuilder:
                                algorithm=sparse_stain_solver,
                                steps=sparse_dict_steps,
                                init=dict_init,
-                               maxiter=maxiter, lr=lr, tol=tol, lambd_ridge=PARAM.INIT_RIDGE_L2)
+                               maxiter=maxiter, lr=lr, lambd_ridge=PARAM.INIT_RIDGE_L2)
                 stain_alg = VahadaneAlg(vhd_cfg)
                 return StainSeparation.build(stain_alg=stain_alg,
                                              concentration_solver=csolver,

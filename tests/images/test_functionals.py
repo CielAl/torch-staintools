@@ -5,13 +5,14 @@ from typing import Optional, cast
 
 from tests.util import fix_seed, dummy_from_numpy, psnr
 from torch_staintools.constants import CONFIG
+from torch_staintools.functional.conversion.od import rgb2od
 from torch_staintools.functional.optimization.sparse_util import METHOD_FACTORIZE
 from torch_staintools.functional.stain_extraction.extractor import StainExtraction
 from torch_staintools.functional.stain_extraction.macenko import MacenkoAlg, DEFAULT_MACENKO_CONFIG
 from torch_staintools.functional.stain_extraction.vahadane import VahadaneAlg, DEFAULT_VAHADANE_CONFIG
 from torch_staintools.functional.concentration import ConcentrationSolver, ConcentCfg
 from torch_staintools.functional.tissue_mask import get_tissue_mask, TissueMaskException
-from torch_staintools.functional.utility.implementation import transpose_trailing, img_from_concentration
+from torch_staintools.functional.utility.implementation import img_from_concentration
 from torchvision.transforms.functional import convert_image_dtype
 from torch_staintools.normalizer.reinhard import ReinhardNormalizer
 import torch
@@ -57,9 +58,8 @@ class TestFunctional(unittest.TestCase):
                                      num_stains=num_stains, rng=rng)
 
         concentration = conc_solver(dummy_tensor, stain_matrix, rng=rng)
-        c_transposed_src = transpose_trailing(concentration)
-        reconstructed = img_from_concentration(c_transposed_src, stain_matrix, dummy_tensor.shape, (0, 1))
-        return stain_matrix, concentration, c_transposed_src, reconstructed
+        reconstructed = img_from_concentration(concentration, stain_matrix, dummy_tensor.shape, (0, 1))
+        return stain_matrix, concentration, reconstructed
 
     @staticmethod
     def extract_eval_helper(tester, get_stain_mat: StainExtraction,
@@ -67,15 +67,21 @@ class TestFunctional(unittest.TestCase):
                             luminosity_threshold: Optional[float],
                             num_stains: int, rng: Optional[torch.Generator]):
         device = TestFunctional.device
-        dummy_tensor_ubyte = TestFunctional.new_dummy_img_tensor_ubyte().to(device)
+        dummy_tensor_ubyte_list = [TestFunctional.new_dummy_img_tensor_ubyte().to(device) for _ in range(3)]
         # get_stain_mat = MacenkoExtractor()
+        dummy_tensor_ubyte = torch.cat(dummy_tensor_ubyte_list, dim=0)
         result_tuple = TestFunctional.stain_extract(dummy_tensor_ubyte, get_stain_mat,
                                                     conc_solver=conc_solver,
                                                     luminosity_threshold=luminosity_threshold,
                                                     num_stains=num_stains,
                                                     rng=rng)
 
-        stain_matrix, concentration, c_transposed_src, reconstructed = result_tuple
+        stain_matrix, concentration, reconstructed = result_tuple
+        od_real = rgb2od(dummy_tensor_ubyte).flatten(start_dim=2, end_dim=-1).permute(0, 2, 1)
+        od_test = torch.matmul(concentration, stain_matrix)
+        psnr_stain_separation = psnr(od_real, od_test)
+        tester.assertTrue(psnr_stain_separation > TestFunctional.THRESH_PSNR,
+                          msg=f"{psnr_stain_separation} vs. {TestFunctional.THRESH_PSNR}")
         dummy_scaled = convert_image_dtype(dummy_tensor_ubyte, torch.float32)
         psnr_out = psnr(dummy_scaled, reconstructed).item()
         tester.assertTrue(psnr_out > TestFunctional.THRESH_PSNR,
@@ -87,26 +93,28 @@ class TestFunctional(unittest.TestCase):
         batch_size, channel_size, height, width = dummy_tensor_ubyte.shape
         tester.assertTrue(stain_matrix.shape == (batch_size, num_stains, channel_size))
 
-        # transpose
-        tester.assertTrue((c_transposed_src.permute(0, 2, 1) == concentration).all())
+
 
     def eval_wrapper(self, extractor):
 
         # all pixel
         algorithms = ['ista', 'cd', 'ls', 'fista']
         dict_constraint_flag = [True]
+        vectorize_flag = [True, False]
         for flag in dict_constraint_flag:
             CONFIG.DICT_POSITIVE_DICTIONARY = flag
-            for alg in algorithms:
-                cfg = TestFunctional.POSITIVE_CONC_CFG
-                cfg.algorithm = cast(METHOD_FACTORIZE, alg)
-                cfg.positive = True
-                solver = ConcentrationSolver(cfg)
-                TestFunctional.extract_eval_helper(self, extractor, luminosity_threshold=None,
-                                                   num_stains=2, conc_solver=solver, rng=None)
-                solver.cfg.positive = False
-                TestFunctional.extract_eval_helper(self, extractor, luminosity_threshold=None,
-                                                   num_stains=2, conc_solver=solver, rng=None)
+            for vf in vectorize_flag:
+                CONFIG.ENABLE_VECTORIZE = vf
+                for alg in algorithms:
+                    cfg = TestFunctional.POSITIVE_CONC_CFG
+                    cfg.algorithm = cast(METHOD_FACTORIZE, alg)
+                    cfg.positive = True
+                    solver = ConcentrationSolver(cfg)
+                    TestFunctional.extract_eval_helper(self, extractor, luminosity_threshold=None,
+                                                       num_stains=2, conc_solver=solver, rng=None)
+                    solver.cfg.positive = False
+                    TestFunctional.extract_eval_helper(self, extractor, luminosity_threshold=None,
+                                                       num_stains=2, conc_solver=solver, rng=None)
 
     def test_stains(self):
         macenko = StainExtraction(MacenkoAlg(DEFAULT_MACENKO_CONFIG))

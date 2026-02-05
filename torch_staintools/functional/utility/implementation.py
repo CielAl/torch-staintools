@@ -1,7 +1,7 @@
 import torch
 from typing import Tuple, Optional
 
-from torch_staintools.functional.compile import lazy_compile
+# from torch_staintools.functional.compile import lazy_compile
 
 
 def transpose_trailing(mat: torch.Tensor):
