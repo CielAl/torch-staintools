@@ -11,6 +11,8 @@ class _Param:
     # DICT_WEIGHT_DECAY: float = 10e-10
     DICT_ITER_STEPS: int = 60
 
+    # max concentration perc
+    MAX_CONCENTRATION_PERC: int = 99
     # Optimization convergence tolerance
     OPTIM_DEFAULT_TOL: float = 1e-5
     # Lambda term in ISTA

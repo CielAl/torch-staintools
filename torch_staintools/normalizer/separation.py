@@ -5,6 +5,7 @@ from functools import partial
 
 import torch
 from torch_staintools.functional.stain_extraction.extractor import StainExtraction, StainAlg
+from ..constants import PARAM
 from ..functional.optimization.sparse_util import METHOD_FACTORIZE
 from torch_staintools.functional.concentration import ConcentrationSolver
 from torch_staintools.functional.stain_extraction.utils import percentile
@@ -81,13 +82,13 @@ class StainSeparation(Normalizer):
                                                     rng=self.rng)
         # B x num_stain x num_channel
         self.register_buffer('stain_matrix_target', stain_matrix_target)
-        # B x num_stain x num_pix
+        # B x num_pix x num_stain
         target_conc = self.concentration_solver(target, self.stain_matrix_target, rng=self.rng)
         self.register_buffer('target_concentrations', target_conc)
         # B x (HW) x 2
         # conc_transpose = transpose_trailing(self.target_concentrations)
         # along HW dim
-        max_c_target = percentile(self.target_concentrations, 99, dim=-2)
+        max_c_target = percentile(self.target_concentrations, PARAM.MAX_CONCENTRATION_PERC, dim=-2)
         self.register_buffer('maxC_target', max_c_target)
         # self.maxC_target = np.percentile(self.target_concentrations, 99, axis=0).reshape((1, 2))
 
@@ -140,14 +141,11 @@ class StainSeparation(Normalizer):
         # such that the precomputed stain matrix is squeezed in the cache.
         if stain_matrix_source.shape[0] != image.shape[0] and stain_matrix_source.shape[0] == 1:
             stain_matrix_source = StainSeparation.repeat_stain_mat(stain_matrix_source, image)
-        # B * 2 * (HW)
+        # B x (HW) x 2
         source_concentration = self.concentration_solver(image, stain_matrix_source,
                                                          rng=self.rng)
-        # individual shape (2,) (HE)
-        # note that c_transposed_src is just a view of source_concentration and therefore any inplace operation on
-        # them will be reflected to each other, but this should be avoided for better readability
-        # c_transposed_src = transpose_trailing(source_concentration)
-        maxC = percentile(source_concentration, q=99, dim=-2) + 1e-14
+
+        maxC = percentile(source_concentration, q=PARAM.MAX_CONCENTRATION_PERC, dim=-2) + 1e-14
         # B x 1 x num_stain
         c_scale = (self.maxC_target / maxC).unsqueeze(-2)
         # B x num_pix x num_stain

@@ -1,7 +1,7 @@
 """
 code directly adapted from https://github.com/rfeinman/pytorch-lasso
 """
-from .solver import coord_descent, ista, fista
+from .sparse_solver import coord_descent, ista, fista
 from .sparse_util import METHOD_SPARSE, validate_code, initialize_dict, collate_params, ridge
 import torch
 import torch.nn.functional as F

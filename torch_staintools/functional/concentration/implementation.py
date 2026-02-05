@@ -4,7 +4,7 @@ import torch
 
 from torch_staintools.constants import CONFIG, PARAM
 from torch_staintools.functional.conversion.od import rgb2od
-from torch_staintools.functional.optimization.solver import coord_descent, ista, fista
+from torch_staintools.functional.optimization.sparse_solver import coord_descent, ista, fista
 from torch_staintools.functional.optimization.sparse_util import initialize_code, METHOD_FACTORIZE, collate_params
 from dataclasses import dataclass
 

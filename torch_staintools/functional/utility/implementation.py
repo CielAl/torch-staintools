@@ -4,17 +4,17 @@ from typing import Tuple, Optional
 # from torch_staintools.functional.compile import lazy_compile
 
 
-def transpose_trailing(mat: torch.Tensor):
-    """Helper function to transpose the trailing dimension, since data is batchified.
-
-    Args:
-        mat: input tensor ixjxk
-
-    Returns:
-        output with flipped dimension from ixjxk --> ixkxj
-    """
-    assert mat.ndimension() == 3
-    return torch.einsum("ijk -> ikj", mat)
+# def transpose_trailing(mat: torch.Tensor):
+#     """Helper function to transpose the trailing dimension, since data is batchified.
+#
+#     Args:
+#         mat: input tensor ixjxk
+#
+#     Returns:
+#         output with flipped dimension from ixjxk --> ixkxj
+#     """
+#     assert mat.ndimension() == 3
+#     return torch.einsum("ijk -> ikj", mat)
 
 
 def _from_concentration(concentration: torch.Tensor,
