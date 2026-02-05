@@ -6,7 +6,6 @@ from functools import partial
 import torch
 from torch_staintools.functional.stain_extraction.extractor import StainExtraction, StainAlg
 from ..constants import PARAM
-from ..functional.optimization.sparse_util import METHOD_FACTORIZE
 from torch_staintools.functional.concentration import ConcentrationSolver
 from torch_staintools.functional.stain_extraction.utils import percentile
 from torch_staintools.functional.utility import img_from_concentration
@@ -60,7 +59,7 @@ class StainSeparation(Normalizer):
         self.luminosity_threshold = luminosity_threshold
 
 
-    def fit(self, target, concentration_method: Optional[METHOD_FACTORIZE] = None):
+    def fit(self, target, mask: Optional[torch.Tensor] = None):
         """Fit to a target image.
 
         Note that the stain matrices are registered into buffers so that it's move to specified device
@@ -68,8 +67,7 @@ class StainSeparation(Normalizer):
 
         Args:
             target: BCHW. Assume it's cast to torch.float32 and scaled to [0, 1]
-            concentration_method: method to obtain concentration. Use the `self.concentration_method` if not specified
-                in the signature.
+            mask: Optional masking. If None, will refer to the optional luminosity thresholding.
 
         Returns:
 
@@ -79,7 +77,7 @@ class StainSeparation(Normalizer):
         # B x num_stain x num_channel (concentration @ stain_mat --> RGB)
         stain_matrix_target = self.get_stain_matrix(target, num_stains=self.num_stains,
                                                     luminosity_threshold=self.luminosity_threshold,
-                                                    rng=self.rng)
+                                                    rng=self.rng, mask=mask)
         # B x num_stain x num_channel
         self.register_buffer('stain_matrix_target', stain_matrix_target)
         # B x num_pix x num_stain
@@ -108,8 +106,8 @@ class StainSeparation(Normalizer):
         return stain_mat.repeat(*repeat_dim)
 
     def transform(self, image: torch.Tensor,
-                  cache_keys: Optional[List[Hashable]] = None,
-                  **kwargs) -> torch.Tensor:
+                  mask: Optional[torch.Tensor] = None,
+                  cache_keys: Optional[List[Hashable]] = None) -> torch.Tensor:
         """Transformation operation.
 
         Stain matrix is extracted from source image use specified stain seperator (dict learning or svd)
@@ -120,8 +118,8 @@ class StainSeparation(Normalizer):
         Args:
             image: Image input must be BxCxHxW cast to torch.float32 and rescaled to [0, 1]
                 Check torchvision.transforms.convert_image_dtype.
+            mask: Optional masking. If None, will refer to the optional luminosity thresholding.
             cache_keys: unique keys point the input batch to the cached stain matrices. `None` means no cache.
-            **kwargs: For compatibility of parent class signatures.
 
         Returns:
             torch.Tensor: normalized output in BxCxHxW shape and float32 dtype. Note that some pixel value may exceed
@@ -130,7 +128,8 @@ class StainSeparation(Normalizer):
         # one source matrix - multiple target
         get_stain_partial = partial(self.get_stain_matrix,
                                     luminosity_threshold=self.luminosity_threshold,
-                                    num_stains=self.num_stains, rng=self.rng)
+                                    num_stains=self.num_stains, rng=self.rng,
+                                    mask=mask)
         stain_matrix_source = self.tensor_from_cache(cache_keys=cache_keys, func=get_stain_partial,
                                                      target=image)
 
@@ -154,19 +153,20 @@ class StainSeparation(Normalizer):
         return img_from_concentration(source_concentration, self.stain_matrix_target, image.shape, (0, 1))
 
     def forward(self, x: torch.Tensor,
-                cache_keys: Optional[List[Hashable]] = None, **kwargs) -> torch.Tensor:
+                mask: Optional[torch.Tensor] = None,
+                cache_keys: Optional[List[Hashable]] = None) -> torch.Tensor:
         """
 
         Args:
             x: input batch image tensor in shape of BxCxHxW
+            mask: Optional masking. If None, will refer to the optional luminosity thresholding.
             cache_keys: unique keys point the input batch to the cached stain matrices. `None` means no cache.
-            **kwargs: For compatibility of parent class signatures.
 
         Returns:
             torch.Tensor: normalized output in BxCxHxW shape and float32 dtype. Note that some pixel value may exceed
             [0, 1] and therefore a clipping operation is applied.
         """
-        return self.transform(x, cache_keys)
+        return self.transform(x, mask=mask, cache_keys=cache_keys)
 
     @classmethod
     def build(cls,

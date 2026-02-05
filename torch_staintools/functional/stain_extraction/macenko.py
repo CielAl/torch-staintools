@@ -64,8 +64,7 @@ def stain_mat_loop(od: torch.Tensor, tissue_mask: torch.Tensor,
     # collapse the singleton C dim
 
     # mask: B x 1 x H x W --> need B x (HxW), so in for loop mask_single is (HxW)
-    tissue_mask_flatten = tissue_mask.flatten(start_dim=1, end_dim=-1)
-
+    tissue_mask_flatten = tissue_mask.flatten(start_dim=1, end_dim=-1).bool()
     for od_single, mask_single in zip(od_flatten, tissue_mask_flatten):
         x = od_single[mask_single]
 

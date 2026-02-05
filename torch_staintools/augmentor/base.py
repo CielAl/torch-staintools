@@ -219,11 +219,14 @@ class Augmentor(CachedRNGModule):
                                                                   alpha=alpha, beta=beta)
         return target_concentration
 
-    def forward(self, target: torch.Tensor, cache_keys: Optional[List[Hashable]] = None):
+    def forward(self, target: torch.Tensor,
+                mask: Optional[torch.Tensor] = None,
+                cache_keys: Optional[List[Hashable]] = None):
         """
 
         Args:
             target: input tensor to augment. Shape B x C x H x W and intensity range is [0, 1].
+            mask: Optional custom masking. Overriding the internal luminosity-based tissue masking.
             cache_keys: unique keys point the input batch to the cached stain matrices. `None` means no cache.
 
         Returns:
@@ -242,7 +245,9 @@ class Augmentor(CachedRNGModule):
         #  B x  num_pixel x num_stain
         concentration = self.concentration_solver(target, target_stain_matrix, rng=self.rng)
         try:
-            tissue_mask = get_tissue_mask(target, luminosity_threshold=self.luminosity_threshold, throw_error=True,
+            tissue_mask = mask if mask is not None else get_tissue_mask(target,
+                                          luminosity_threshold=self.luminosity_threshold,
+                                          throw_error=True,
                                           true_when_empty=False)
             concentration_aug = Augmentor.augment(target_concentration=concentration,
                                                   tissue_mask=tissue_mask,
@@ -257,6 +262,9 @@ class Augmentor(CachedRNGModule):
         except TissueMaskException:
             logger.error(f"Empty mask encountered. Dismiss and return the clone of input. Cache Key: {cache_keys}")
             return target.clone()
+        except Exception:
+            return target.clone()
+
 
     @classmethod
     def build(cls,
