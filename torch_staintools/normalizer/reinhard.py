@@ -42,6 +42,7 @@ class ReinhardNormalizer(Normalizer):
         stds = nanstd(image_masked, dim=(2, 3))
         return means, stds
 
+    @torch.inference_mode()
     def fit(self, image: torch.Tensor):
         """Fit - compute the means and stds of template in lab space.
 
@@ -81,6 +82,7 @@ class ReinhardNormalizer(Normalizer):
         means_input, stds_input = ReinhardNormalizer._mean_std_helper(image, mask=mask)
         return (image - means_input) * (target_stds / (stds_input + get_eps(image))) + target_means
 
+    @torch.inference_mode()
     def transform(self, x: torch.Tensor, *args, **kwargs):
         """Normalize by (input-mean_input) * (target_std/input_std) + target_mean
 
@@ -102,6 +104,7 @@ class ReinhardNormalizer(Normalizer):
                                                              mask)
         return lab_to_rgb(normalized_lab).clamp_(0, 1)
 
+    @torch.inference_mode()
     def forward(self, x: torch.Tensor, *args, **kwargs):
         return self.transform(x)
 

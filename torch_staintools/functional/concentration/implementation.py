@@ -158,7 +158,7 @@ def get_concentrations(image: torch.Tensor,
         positive: whether to enforce positive concentration.
             Default: True
     Returns:
-        concentration matrix: B x num_stains x num_pixel_in_tissue_mask
+        concentration matrix: B x num_pixel x num_stains
     """
     device = image.device
     stain_matrix = stain_matrix.to(device)

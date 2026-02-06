@@ -42,7 +42,6 @@ class StainExtraction(Callable):
     def __init__(self, stain_algorithm: StainAlg) -> None:
         self.stain_algorithm = stain_algorithm
 
-
     def __call__(self, image: torch.Tensor,
                  *, luminosity_threshold: Optional[float],
                  mask: Optional[torch.Tensor],

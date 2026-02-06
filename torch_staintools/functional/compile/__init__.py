@@ -17,17 +17,21 @@ class CompiledWrapper(Protocol):
         ...
 
 
-def lazy_compile(func: Optional[Callable] = None, ) -> CompiledWrapper | Callable[[Callable], CompiledWrapper]:
+def lazy_compile(func: Optional[Callable] = None,
+                 *,
+                 dynamic: Optional[bool] = None) -> CompiledWrapper | Callable[[Callable], CompiledWrapper]:
     """Enable or disable torch.compile by torch_staintools.constants.CONFIG.ENABLE_COMPILE.
 
     If True, function will be compiled and cached. Otherwise, it will be executed in eager mode.
 
     Args:
         func: The function to compile.
-
+        dynamic: Whether to enable dynamic shapes in torch.compile.
     Returns:
         CompiledWrapper: The compiled function or the original function.
     """
+    if func is None:
+        return functools.partial(lazy_compile, dynamic=dynamic)
 
     @functools.wraps(func)
     def wrapper(*args, **kwargs) -> Any:
@@ -38,7 +42,7 @@ def lazy_compile(func: Optional[Callable] = None, ) -> CompiledWrapper | Callabl
 
         if not hasattr(wrapper, _FIELD_COMPILED_ATTR) or wrapper.compiled_fn is None:
             try:
-                wrapper.compiled_fn = torch.compile(func, )
+                wrapper.compiled_fn = torch.compile(func, dynamic=dynamic)
             except Exception as e:
                 warnings.warn(f"torch.compile failed for '{func.__name__}': {e}. "
                               f"Falling back to eager execution.")

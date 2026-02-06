@@ -1,6 +1,5 @@
-numpy~=1.26.4
 kornia~=0.8.2
-scipy~=1.10.0
-scikit-image~=0.19.3
+# scipy~=1.10.0
+# scikit-image~=0.19.3
 torchvision
-torch>=2.8.0
+torch>=2.10.0

@@ -219,6 +219,7 @@ class Augmentor(CachedRNGModule):
                                                                   alpha=alpha, beta=beta)
         return target_concentration
 
+    @torch.inference_mode()
     def forward(self, target: torch.Tensor,
                 mask: Optional[torch.Tensor] = None,
                 cache_keys: Optional[List[Hashable]] = None):
@@ -237,6 +238,7 @@ class Augmentor(CachedRNGModule):
 
         get_stain_partial = partial(self.get_stain_matrix,
                                     luminosity_threshold=self.luminosity_threshold,
+                                    mask=mask,
                                     num_stains=self.num_stains, rng=self.rng)
         # B x num_stain x num_channels
         target_stain_matrix = self.tensor_from_cache(cache_keys=cache_keys, func=get_stain_partial,

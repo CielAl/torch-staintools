@@ -1,11 +1,15 @@
 from .base import Cache
-from typing import Dict, Hashable, Optional
+from typing import Dict, Hashable, Optional, TYPE_CHECKING, Union
 import torch
-import numpy as np
 from ..functional.utility.implementation import default_device
 from ..loggers import GlobalLoggers
 logger = GlobalLoggers.instance().get_logger(__name__)
 
+if TYPE_CHECKING:
+    # noinspection PyUnresolvedReferences
+    from numpy import ndarray
+
+TYPE_ARRAY = Union["ndarray", torch.Tensor]
 
 class TensorCache(Cache[Dict[Hashable, torch.Tensor], torch.Tensor]):
     """An implementation of Cache specifically for tensor using a built-in dict.
@@ -51,7 +55,7 @@ class TensorCache(Cache[Dict[Hashable, torch.Tensor], torch.Tensor]):
         return key in self.data_cache
 
     @staticmethod
-    def validate_value_type(value: torch.Tensor | np.ndarray):
+    def validate_value_type(value: TYPE_ARRAY):
         """Helper function to validate the input.
 
          Must be a torch.Tensor. If it is a numpy ndarray, it will be converted to tensor.
@@ -65,7 +69,7 @@ class TensorCache(Cache[Dict[Hashable, torch.Tensor], torch.Tensor]):
         Raises:
             AssertionError if the output is not a torch.Tensor
         """
-        if isinstance(value, np.ndarray):
+        if not isinstance(value, torch.Tensor):
             value = torch.from_numpy(value)
 
         assert isinstance(value, torch.Tensor), f"Expect tensor, got: {type(value)}"

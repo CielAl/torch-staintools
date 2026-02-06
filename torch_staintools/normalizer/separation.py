@@ -58,7 +58,7 @@ class StainSeparation(Normalizer):
         self.num_stains = num_stains
         self.luminosity_threshold = luminosity_threshold
 
-
+    @torch.inference_mode()
     def fit(self, target, mask: Optional[torch.Tensor] = None):
         """Fit to a target image.
 
@@ -105,6 +105,7 @@ class StainSeparation(Normalizer):
         repeat_dim = (image.shape[0],) + (1,) * (stain_mat.ndimension() - 1)
         return stain_mat.repeat(*repeat_dim)
 
+    @torch.inference_mode()
     def transform(self, image: torch.Tensor,
                   mask: Optional[torch.Tensor] = None,
                   cache_keys: Optional[List[Hashable]] = None) -> torch.Tensor:
@@ -152,6 +153,7 @@ class StainSeparation(Normalizer):
         # note this is the reconstruction in B x (HW) x C --> need to shuffle the channel first before reshape
         return img_from_concentration(source_concentration, self.stain_matrix_target, image.shape, (0, 1))
 
+    @torch.inference_mode()
     def forward(self, x: torch.Tensor,
                 mask: Optional[torch.Tensor] = None,
                 cache_keys: Optional[List[Hashable]] = None) -> torch.Tensor:

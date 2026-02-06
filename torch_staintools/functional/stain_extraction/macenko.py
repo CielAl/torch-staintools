@@ -128,7 +128,6 @@ def stain_matrix_helper(t_hat: torch.Tensor, mask_flatten: torch.Tensor,
     return stain_mat
 
 
-@lazy_compile
 def stain_mat_vectorize_body(od_flatten: torch.Tensor,
                              tissue_mask_flatten: torch.Tensor,
                              num_stains: int, perc: int, ):
@@ -169,7 +168,6 @@ class MacenkoAlg(Callable):
     def angular_helper(t_hat, ):
         # todo deal with multi-dimensional scenario
         raise NotImplementedError
-
 
     def __call__(self, od: torch.Tensor,
                  tissue_mask: torch.Tensor,

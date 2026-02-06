@@ -23,7 +23,7 @@ def cov(x: torch.Tensor) -> torch.Tensor:
     return torch.mm(x, x.T) / (x.size(1) - 1)
 
 
-@torch.no_grad()
+
 def batch_masked_cov(od_flatten: torch.Tensor, mask_flatten: torch.Tensor) -> torch.Tensor:
     # mask B x num_pixel x 1
     # clamp so avoid 0div in mean and cov computation
@@ -70,7 +70,7 @@ def percentile(t: torch.Tensor, q: float, dim: int) -> torch.Tensor:
 #     # torch.nanquantile(phi_masked, q_float, dim=dim, interpolation='nearest')  # B
 #     return phi_sorted.gather(dim, target_indices.unsqueeze(dim)).squeeze(dim)
 
-@torch.no_grad()
+
 def batch_masked_perc(phi: torch.Tensor, mask: torch.Tensor, q: int, dim: int) -> torch.Tensor:
     # fill nan. use nanquantile to ignore the nans (bg)
     # mask = mask.squeeze(-1)

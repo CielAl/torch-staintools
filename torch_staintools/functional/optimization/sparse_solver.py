@@ -2,10 +2,10 @@
 code directly adapted from https://github.com/rfeinman/pytorch-lasso
 """
 from typing import Optional
-
 import torch
 
-from torch_staintools.constants import PARAM
+from torch_staintools.constants import PARAM, CONFIG
+# from torch_staintools.functional.dynamo_wrapper import mark_dynamic_
 from torch_staintools.functional.compile import lazy_compile
 from torch_staintools.functional.optimization.sparse_util import collate_params
 
@@ -94,7 +94,7 @@ def cd_step(
     return z_next, b_next
 
 
-@lazy_compile
+@lazy_compile(dynamic=CONFIG.ENABLE_DYNAMIC_SHAPE)
 def cd_loop(
     z: torch.Tensor,
     b: torch.Tensor,
@@ -135,9 +135,8 @@ def coord_descent(x: torch.Tensor,
 
     hessian, b = _grad_precompute(x, weight)
     code_dim = weight.shape[-1]
-    batch_size = x.shape[0]
     # S = I - H
-    eye = torch.eye(code_dim, device=x.device, dtype=x.dtype)[None, ...].expand(batch_size, -1, -1)
+    eye = torch.eye(code_dim, device=x.device, dtype=x.dtype)[None, ...].expand(x.size(0), -1, -1)
     s = eye - hessian
     z = cd_loop(z0, b, s, alpha, maxiter=maxiter, positive_code=positive_code)
     return z
@@ -186,7 +185,7 @@ def ista_step(
 
 # @torch.compile
 # @static_compile
-@lazy_compile
+@lazy_compile(dynamic=CONFIG.ENABLE_DYNAMIC_SHAPE)
 def ista_loop(z: torch.Tensor, hessian: torch.Tensor, b: torch.Tensor, *,
               alpha: torch.Tensor, lr: torch.Tensor,
               maxiter: int, positive_code: bool):
@@ -258,7 +257,7 @@ def fista_step(
 
 # @torch.compile
 # @static_compile
-@lazy_compile
+@lazy_compile(dynamic=CONFIG.ENABLE_DYNAMIC_SHAPE)
 def fista_loop(
         z: torch.Tensor,
         hessian: torch.Tensor,
@@ -286,10 +285,10 @@ def fista_loop(
     y = z.clone()
     # step size for the momentum
     # B x num_pixel x num_stain
-    batch_size = z.shape[0]
+    # batch_size = z.shape[0]
     # momentum
     # t = torch.tensor(1, dtype=z.dtype).to(z.device)
-    t = torch.ones((batch_size, 1, 1), dtype=z.dtype, device=z.device)
+    t = z.new_ones((z.size(0), 1, 1))
 
     # is_converged = torch.tensor(False, device=z.device, dtype=torch.bool)
     # is_converged = torch.zeros(batch_size, device=z.device, dtype=torch.bool)
@@ -341,5 +340,10 @@ def fista(x: torch.Tensor, z0: torch.Tensor,
 
     """
     z0, x, weight, lr, alpha = _preprocess_input(z0, x, lr, weight, alpha)
+
     hessian, b = _grad_precompute(x, weight)
+    # mark_dynamic_(z0, 0)
+    # mark_dynamic_(b, 0)
+    # mark_dynamic_(lr, 0)
+    # mark_dynamic_(hessian, 0)
     return fista_loop(z0, hessian, b, alpha, lr=lr, maxiter=maxiter, positive_code=positive_code)
