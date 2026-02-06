@@ -1,11 +1,13 @@
 import torch
 
 from torch_staintools.constants import PARAM
+from torch_staintools.functional.compile import lazy_compile
 
 
 def _positive_c(c: torch.Tensor, positive: bool) -> torch.Tensor:
     cond = torch.tensor(positive, device=c.device)
     return torch.where(cond, c.clamp_min(0), c)
+
 
 def lstsq_solver(od_flatten: torch.Tensor,
                  dictionary: torch.Tensor, positive: bool):
@@ -27,6 +29,7 @@ def lstsq_solver(od_flatten: torch.Tensor,
 
     c = torch.linalg.lstsq(dictionary, od_flatten.mT)[0].mT
     return _positive_c(c, positive)
+
 
 def pinv_solver(od_flatten: torch.Tensor,
                 dictionary: torch.Tensor,
@@ -51,8 +54,13 @@ def pinv_solver(od_flatten: torch.Tensor,
     return _positive_c(c, positive)
 
 
-def qr_solver(od_flatten, dictionary, positive: bool):
+@lazy_compile(dynamic=True)
+def qr_solver_generic(od_flatten, dictionary, positive: bool):
     """QR solver for concentration.
+
+    Warnings:
+        This is not scalable against the size of individual images compared to the 2-stain
+        unrolled version ```qr_solver_two_stain```.
 
     Args:
         od_flatten: B x num_pixels x C
@@ -65,13 +73,39 @@ def qr_solver(od_flatten, dictionary, positive: bool):
     A = dictionary
     Q, R = torch.linalg.qr(A, mode="reduced")
 
-    rhs = Q.mT @ od_flatten.mT
-    # add diagonal eps to avoid 0-div issue
-    # somehow this is essential to give numerically stable output.
+    rhs = od_flatten @ Q
+
+    diag = R.diagonal(dim1=-2, dim2=-1)
     eps = torch.finfo(R.dtype).eps
-    R = R + eps * torch.eye(R.size(-1), device=R.device, dtype=R.dtype)[None, ...]
-    c = torch.linalg.solve_triangular(R, rhs, upper=True).mT
+    diag_eps = eps * diag.abs().amax(dim=-1,)
+
+    c = torch.zeros_like(rhs)
+    num_stains = rhs.size(-1)
+
+    # manual backsub.
+    # somehow solve_triangular with left=True path is way too slow with larger images.
+    # if optimize it use left=False it gives completely distorted output.
+    for k in range(num_stains - 1, -1, -1):
+
+        term = (c[..., k+1:] * R[:, k, k+1:][:, None, :]).sum(dim=-1)
+
+        denom = (R[:, k, k] + diag_eps)[:, None]
+        c[..., k] = (rhs[..., k] - term) / denom
+
     return _positive_c(c, positive)
+
+
+def _qr2_helper(q: torch.Tensor, r: torch.Tensor, od_flatten: torch.Tensor):
+    rhs = torch.matmul(q.mT, od_flatten.mT)
+    eps = torch.finfo(r.dtype).eps
+    r00 = r[:, 0:1, 0:1] + eps
+    r01 = r[:, 0:1, 1:2]
+    r11 = r[:, 1:2, 1:2] + eps
+    z0 = rhs[:, 0:1, :]
+    z1 = rhs[:, 1:2, :]
+    x1 = z1 / r11
+    x0 = (z0 - r01 * x1) / r00
+    return x0, x1
 
 
 def qr_solver_two_stain(od_flatten, dictionary, positive: bool):
@@ -87,12 +121,22 @@ def qr_solver_two_stain(od_flatten, dictionary, positive: bool):
     """
     A = dictionary
     Q, R = torch.linalg.qr(A, mode='reduced')
-    rhs = torch.matmul(Q.mT, od_flatten.mT)
-    r00 = R[:, 0:1, 0:1] + torch.finfo(R.dtype).eps
-    r01 = R[:, 0:1, 1:2]
-    r11 = R[:, 1:2, 1:2] + torch.finfo(R.dtype).eps
-    z0 = rhs[:, 0:1, :]
-    z1 = rhs[:, 1:2, :]
-    x1 = z1 / r11
-    x0 = (z0 - r01 * x1) / r00
-    return torch.cat([x0, x1], dim=1).mT
+    x0, x1 = _qr2_helper(Q, R, od_flatten)
+    return _positive_c(torch.cat([x0, x1], dim=1).mT, positive)
+
+
+def qr_solver(od_flatten, dictionary, positive: bool):
+    """QR solver for concentration.
+
+    Args:
+        od_flatten: B x num_pixels x C
+        dictionary: Transpose of stain matrix. B x C x num_stains
+        positive: enforce positive concentration
+
+    Returns:
+        concentration (flattened):  B x num_pixels x num_stains
+    """
+    if dictionary.size(-1) == 2:
+        return qr_solver_two_stain(od_flatten, dictionary, positive)
+    return qr_solver_generic(od_flatten, dictionary, positive)
+

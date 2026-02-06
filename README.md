@@ -14,7 +14,7 @@
 `pip install torch-staintools`
 
 ## What's New
-* Version 1.0.6: full vectorization support and dynamic shape tracking from Dynamo.
+* **Version 1.0.6**: full vectorization support and dynamic shape tracking from **Dynamo**.
 * Alternative linear concentration solvers: ```'qr'``` (QR Decomposition) and ```'pinv'``` (Moore-Penrose inverse)
 ## Documentation
 Detail documentation regarding the code base can be found in the [GitPages](https://cielal.github.io/torch-staintools/).
@@ -35,8 +35,8 @@ If this toolkit helps you in your publication, please feel free to cite with the
 ```
 
 ## Description
-* ```torch.compile```-powered acceleration.
-* Stain Normalization (Reinhard, Macenko, and Vahadane) for pytorch. Input tensors (fit and transform) must be in shape of `NxCxHxW`, with value scaled to [0, 1] in format of torch.float32.
+* **Dynamo** (```torch.compile```)-powered acceleration.
+* Stain Normalization (Reinhard, Macenko, and Vahadane) for pytorch with efficient vectorization.
 * Stain Augmentation using Macenko and Vahadane as stain extraction.
 * Fast normalization/augmentation on GPU with stain matrices caching.
 * No SPAMS requirement (which is a dependency in StainTools).
@@ -59,8 +59,9 @@ If this toolkit helps you in your publication, please feel free to cite with the
 * Use the sample images under ./test_images (size `2500x2500x3`). Mean was computed from 7 runs (1 loop per run) using
 timeit. Comparison between torch_stain_tools in CPU/GPU mode, as well as that of the StainTools Implementation.
 * For consistency, use ISTA to compute the concentration.
-* v1.0.5 speedup, in part from ```torch.compile```.
-### Transformation
+* v1.0.5+ speedup, in part from ```torch.compile```.
+### Transformation 
+
 *```torch.compile``` enabled.
 
 | Method   | CPU[s] | GPU[s]       | StainTool[s] |
@@ -81,15 +82,18 @@ timeit. Comparison between torch_stain_tools in CPU/GPU mode, as well as that of
 ### Batchified Concentration Computation
 * Split the sample images under ./test_images (size `2500x2500x3`) into 81 non-overlapping `256x256x3` tiles as a batch.
 * For the StainTools baseline, a for-loop is implemented to get the individual concentration of each of the numpy array of the 81 tiles.
-* ```torch.compile``` enabled.
+* ```torch.compile``` enabled. ```cuSolver``` backend is applied.
+* * v1.0.6: vectorization support.
 * 
-| Method                                 | CPU[s] | GPU[s]        | 
-|:---------------------------------------|:-------|:--------------| 
-| FISTA (`concentration_solver='fista'`) | 1.47   | ~~1.24~~ 0.24 |  
-| ISTA (`concentration_solver='ista'`)   | 3.12   | ~~1.24~~ 0.31 |  
-| CD   (`concentration_solver='cd'`)     | 29.30s | 4.87          | 
-| LS   (`concentration_solver='ls'`)     | 0.22   | **0.097**     |
-| StainTools (SPAMS)                     | 16.60  | N/A           |
+| Method                                 | CPU[s] | GPU[s]         | 
+|:---------------------------------------|:-------|:---------------| 
+| FISTA (`concentration_solver='fista'`) | 1.47   | ~~0.24~~ 0.093 |  
+| ISTA (`concentration_solver='ista'`)   | 3.12   | ~~0.31~~ 0.088 |  
+| CD   (`concentration_solver='cd'`)     | 29.30s | ~~4.87~~ 0.158 | 
+| LS   (`concentration_solver='ls'`)     | 0.22   | **0.097**      |
+| QR   (`concentration_solver='qr'`)     | 0.08   | **0.007**      |
+| PINV   (`concentration_solver='pinv'`) | 0.08   | **0.004**      |
+| StainTools (SPAMS)                     | 16.60  | N/A            |
 
 
 ## Use Cases and Tips
