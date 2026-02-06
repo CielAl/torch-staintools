@@ -43,7 +43,7 @@ class ReinhardNormalizer(Normalizer):
         return means, stds
 
     @torch.inference_mode()
-    def fit(self, image: torch.Tensor):
+    def fit(self, image: torch.Tensor, mask: Optional[torch.Tensor] = None):
         """Fit - compute the means and stds of template in lab space.
 
         Statistics are computed within tissue regions if a luminosity threshold is given to the normalizer upon
@@ -51,14 +51,15 @@ class ReinhardNormalizer(Normalizer):
 
         Args:
             image: template. BCHW. [0, 1] torch.float32.
-
+            mask: custom mask to override internal tissue masking
         Returns:
 
         """
         # BCHW
         img_lab: torch.Tensor = rgb_to_lab(image)
         assert img_lab.ndimension() == 4 and img_lab.shape[1] == 3, f"{img_lab.shape}"
-        mask = get_tissue_mask(image, luminosity_threshold=self.luminosity_threshold)
+        mask = get_tissue_mask(image, mask=mask,
+                               luminosity_threshold=self.luminosity_threshold)
         # B1HW
         # 1, C, 1, 1
         means, stds = ReinhardNormalizer._mean_std_helper(img_lab, mask=mask)
@@ -83,30 +84,31 @@ class ReinhardNormalizer(Normalizer):
         return (image - means_input) * (target_stds / (stds_input + get_eps(image))) + target_means
 
     @torch.inference_mode()
-    def transform(self, x: torch.Tensor, *args, **kwargs):
+    def transform(self, x: torch.Tensor, mask: Optional[torch.Tensor] = None) -> torch.Tensor:
         """Normalize by (input-mean_input) * (target_std/input_std) + target_mean
 
         Performed in LAB space. Output is convert back to RGB
 
         Args:
             x: input tensor
-            *args: for compatibility of interface.
-            **kwargs: for compatibility of interface.
+            mask: custom mask to override internal tissue masking
 
         Returns:
             output torch.float32 RGB in range [0, 1] and shape BCHW
         """
         # 1 C 1 1
         lab_input = rgb_to_lab(x)
-        mask = get_tissue_mask(x, luminosity_threshold=self.luminosity_threshold, throw_error=False,
+        mask = get_tissue_mask(x, mask=mask,
+                               luminosity_threshold=self.luminosity_threshold,
+                               throw_error=False,
                                true_when_empty=True)
         normalized_lab = ReinhardNormalizer.normalize_helper(lab_input, self.target_means, self.target_stds,
                                                              mask)
         return lab_to_rgb(normalized_lab).clamp_(0, 1)
 
     @torch.inference_mode()
-    def forward(self, x: torch.Tensor, *args, **kwargs):
-        return self.transform(x)
+    def forward(self, x: torch.Tensor, mask: Optional[torch.Tensor] = None) -> torch.Tensor:
+        return self.transform(x, mask=mask)
 
     @classmethod
     def build(cls, luminosity_threshold: Optional[float] = None, **kwargs):
