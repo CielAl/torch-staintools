@@ -4,6 +4,7 @@ import torch
 
 from torch_staintools.constants import CONFIG, PARAM
 from torch_staintools.functional.conversion.od import rgb2od
+from torch_staintools.functional.optimization.linear_solver import lstsq_solver, pinv_solver, qr_solver
 from torch_staintools.functional.optimization.sparse_solver import coord_descent, ista, fista
 from torch_staintools.functional.optimization.sparse_util import initialize_code, METHOD_FACTORIZE, collate_params
 from dataclasses import dataclass
@@ -44,8 +45,8 @@ def _get_concentrations(od_flatten: torch.Tensor,
     For solvers without batch support. Inputs are individual data points from a batch
 
     Args:
-        od_flatten: Flattened optical density vectors in shape of (H*W) x C (H and W dimensions flattened).
-        stain_matrix: the computed stain matrices in shape of num_stain x input channel
+        od_flatten: Flattened optical density vectors in shape of B x(H*W) x C (H and W dimensions flattened).
+        stain_matrix: the computed stain matrices in shape of B x num_stain x input channel
         regularizer: regularization term if ISTA algorithm is used
         algorithm: which method to compute the concentration: coordinate descent ('cd') or iterative-shrinkage soft
             thresholding algorithm ('ista')
@@ -55,7 +56,7 @@ def _get_concentrations(od_flatten: torch.Tensor,
         rng: torch.Generator for random initializations
         positive: enforce positive concentration
     Returns:
-        computed concentration: B x num_pixel_in_tissue_mask x num_stain
+        computed concentration: B x (H*W) x num_stain
     """
     z0 = initialize_code(od_flatten, stain_matrix.mT, 'zero', rng=rng)
     lr, regularizer = collate_params(od_flatten, lr, stain_matrix.mT, regularizer)
@@ -71,7 +72,14 @@ def _get_concentrations(od_flatten: torch.Tensor,
             return fista(od_flatten, z0, stain_matrix.mT, alpha=regularizer,
                          positive_code=positive, lr=lr, maxiter=maxiter)
         case 'ls':
-            return torch.linalg.lstsq(stain_matrix.mT, od_flatten.mT)[0].mT
+            # consider using magma
+            # torch.backends.cuda.preferred_linalg_library('magma')
+            # torch.linalg.lstsq(stain_matrix.mT, od_flatten.mT)[0].mT
+            return lstsq_solver(od_flatten, stain_matrix.mT, positive=positive)
+        case 'pinv':
+            return pinv_solver(od_flatten, stain_matrix.mT, positive=positive)
+        case 'qr':
+            return qr_solver(od_flatten, stain_matrix.mT, positive=positive)
 
     raise NotImplementedError(f"{algorithm} is not a valid optimizer")
 
@@ -143,8 +151,10 @@ def get_concentrations(image: torch.Tensor,
     """Estimate concentration matrix given an image and stain matrix.
 
     Warnings:
-        algorithm = 'ls' May fail on GPU for individual large input (e.g., 1000 x 1000), regardless of batch size.
-        Better for multiple small inputs in terms of H and W.
+        for cusolver backend, algorithm = 'ls' May fail on GPU for individual large input (e.g., 1000 x 1000),
+        regardless of batch size. To use 'ls' on large image, consider using magma backend:
+        ```torch.backends.cuda.preferred_linalg_library('magma')```
+
     Args:
         image: batched image(s) in shape of BxCxHxW
         stain_matrix: B x num_stain x input channel

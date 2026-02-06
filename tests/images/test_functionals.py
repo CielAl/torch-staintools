@@ -86,7 +86,8 @@ class TestFunctional(unittest.TestCase):
         od_test = torch.matmul(concentration, stain_matrix)
         psnr_stain_separation = psnr(od_real, od_test)
         tester.assertTrue(psnr_stain_separation > TestFunctional.THRESH_PSNR,
-                          msg=f"{psnr_stain_separation} vs. {TestFunctional.THRESH_PSNR}")
+                          msg=f"{psnr_stain_separation} vs. {TestFunctional.THRESH_PSNR} \n"
+                              f"{conc_solver.cfg}")
         dummy_scaled = convert_image_dtype(dummy_tensor_ubyte, torch.float32)
         psnr_out = psnr(dummy_scaled, reconstructed).item()
         tester.assertTrue(psnr_out > TestFunctional.THRESH_PSNR,
@@ -106,7 +107,8 @@ class TestFunctional(unittest.TestCase):
         dummy_tensor_ubyte = torch.cat(dummy_tensor_ubyte_list, dim=0)
         masks = [torch.ones_like(dummy_tensor_ubyte)[:, 0:1, ...]]
         # all pixel
-        algorithms = ['ista', 'cd', 'ls', 'fista']
+        # 'ista', 'cd', 'ls', 'fista',
+        algorithms = ['ista', 'cd', 'ls', 'fista', 'pinv', 'qr']
         dict_constraint_flag = [True]
         vectorize_flag = [True, False]
         for flag in dict_constraint_flag:

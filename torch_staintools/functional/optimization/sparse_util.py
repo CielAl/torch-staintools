@@ -7,8 +7,10 @@ METHOD_ISTA = Literal['ista']
 METHOD_FISTA = Literal['fista']
 METHOD_CD = Literal['cd']
 METHOD_LS = Literal['ls']
+METHOD_PINV = Literal['pinv']
+METHOD_QR = Literal['qr']
 METHOD_SPARSE = Literal[METHOD_ISTA, METHOD_CD, METHOD_FISTA]
-METHOD_NON_SPARSE = Literal[METHOD_LS]
+METHOD_NON_SPARSE = Literal[METHOD_LS, METHOD_PINV, METHOD_QR]
 METHOD_FACTORIZE = Literal[METHOD_SPARSE, METHOD_NON_SPARSE]
 
 _init_defaults = {

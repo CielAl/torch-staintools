@@ -13,6 +13,9 @@
 
 `pip install torch-staintools`
 
+## What's New
+* Version 1.0.6: full vectorization support and dynamic shape tracking from Dynamo.
+* Alternative linear concentration solvers: ```'qr'``` (QR Decomposition) and ```'pinv'``` (Moore-Penrose inverse)
 ## Documentation
 Detail documentation regarding the code base can be found in the [GitPages](https://cielal.github.io/torch-staintools/).
 
@@ -211,7 +214,7 @@ torch.backends.cuda.preferred_linalg_library('magma')
 normalizer_macenko = NormalizerBuilder.build('macenko', use_cache=True,
                                              # use least square solver, along with cache, to perform
                                              # normalization on-the-fly
-                                             concentration_solver='ls')
+                                             concentration_solver='qr')
 normalizer_macenko = normalizer_macenko.to(device)
 normalizer_macenko.fit(target_tensor)
 normalizer_macenko(tiles)
@@ -233,5 +236,5 @@ The next time `Normalizer` or `Augmentor` process the images, the corresponding 
 
 
 ## Acknowledgments
-* Some codes are derived from [torchvahadane](https://github.com/cwlkr/torchvahadane), [torchstain](https://github.com/EIDOSLAB/torchstain), and [StainTools](https://github.com/Peter554/StainTools)
+* Some codes are inspired from [torchvahadane](https://github.com/cwlkr/torchvahadane), [torchstain](https://github.com/EIDOSLAB/torchstain), and [StainTools](https://github.com/Peter554/StainTools)
 * Sample images in the demo and ReadMe.md are selected from [The Cancer Genome Atlas Program(TCGA)](https://www.cancer.gov/ccg/research/genome-sequencing/tcga) dataset.

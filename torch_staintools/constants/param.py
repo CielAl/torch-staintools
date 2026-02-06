@@ -12,7 +12,7 @@ class _Param:
     DICT_ITER_STEPS: int = 60
 
     # max concentration perc
-    MAX_CONCENTRATION_PERC: int = 99
+    MAX_CONCENTRATION_PERC: int = 95
     # Optimization convergence tolerance
     OPTIM_DEFAULT_TOL: float = 1e-5
     # Lambda term in ISTA
@@ -23,6 +23,10 @@ class _Param:
 
     OPTIM_MOMEMTUM_RESTART_INTERVAL: int = 10
 
+    # dict_magnitude = SOLVER_PINV_RTOL_SCALE * stain_mat.abs().amax(dim=(-1, -2))
+    # atol = scale * quantile(dict_mag, q)
+    SOLVER_PINV_ATOL_SCALE: float = 1e-2
+    SOLVER_PINV_ATOL_QUANTILE: float = 0.25
 
 PARAM: _Param = _Param()
 

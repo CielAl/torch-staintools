@@ -114,9 +114,11 @@ plot(vahadane_out, title="Vahadane")
 # if using cusolver, 'ls' (least square) will fail on single large images.
 # try magma backend if 'ls' is still preferred as the concentration estimator (see below)
 # torch.backends.cuda.preferred_linalg_library('magma')
+# supported concentration solvers: 'qr', 'pinv', 'fista', 'ista', 'ls'
 normalizer_macenko = NormalizerBuilder.build('macenko',
                                              use_cache=True,
-                                             concentration_solver='fista')  # 'ls'
+                                             maxiter=30,
+                                             concentration_solver='qr')  # 'ls'
 normalizer_macenko = normalizer_macenko.to(device)
 normalizer_macenko.fit(target_tensor)
 
