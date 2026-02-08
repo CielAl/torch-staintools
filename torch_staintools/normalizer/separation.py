@@ -14,6 +14,7 @@ from .base import Normalizer
 from ..cache.tensor_cache import TensorCache
 from typing import Optional, List, Hashable
 
+from ..functional.conversion.od import rgb2od
 from ..functional.tissue_mask import TissueMaskException, get_tissue_mask
 from ..loggers import GlobalLoggers
 
@@ -81,12 +82,13 @@ class StainSeparation(Normalizer):
         assert target.shape[0] == 1
         # B x num_stain x num_channel (concentration @ stain_mat --> RGB)
         mask = get_tissue_mask(target, self.luminosity_threshold, mask, ).contiguous()
-        stain_matrix_target = self.get_stain_matrix(target, num_stains=self.num_stains,
+        target_od = rgb2od(target)
+        stain_matrix_target = self.get_stain_matrix(target_od, num_stains=self.num_stains,
                                                     rng=self.rng, mask=mask)
         # B x num_stain x num_channel
         self.register_buffer('stain_matrix_target', stain_matrix_target)
         # B x num_pix x num_stain
-        target_conc = self.concentration_solver(target, self.stain_matrix_target, rng=self.rng)
+        target_conc = self.concentration_solver(target_od, self.stain_matrix_target, rng=self.rng)
         self.register_buffer('target_concentrations', target_conc)
         # B x (HW) x 2
         # conc_transpose = transpose_trailing(self.target_concentrations)
@@ -111,7 +113,8 @@ class StainSeparation(Normalizer):
         return stain_mat.repeat(*repeat_dim)
 
     @torch.inference_mode()
-    def transform(self, image: torch.Tensor,
+    def transform(self,
+                  image: torch.Tensor,
                   mask: Optional[torch.Tensor] = None,
                   cache_keys: Optional[List[Hashable]] = None) -> torch.Tensor:
         """Transformation operation.
@@ -134,21 +137,20 @@ class StainSeparation(Normalizer):
         # one source matrix - multiple target
         # todo mask
         mask = get_tissue_mask(image, self.luminosity_threshold, mask).contiguous()
+        image_od = rgb2od(image)
         get_stain_partial = partial(self.get_stain_matrix,
                                     num_stains=self.num_stains, rng=self.rng,
                                     mask=mask)
         stain_matrix_source = self.tensor_from_cache(cache_keys=cache_keys, func=get_stain_partial,
-                                                     target=image)
+                                                     target=image_od)
 
         # stain_matrix_source -- B x 2 x 3 wherein B is 1. Note that the input batch size is independent of how many
-        # template were used and for now we only accept one template a time. todo - multiple template for sampling later
+        # template were used and for now we only accept one template a time.
+        # todo - multiple template for sampling later
         stain_matrix_source: torch.Tensor = torch.atleast_3d(stain_matrix_source)
-        # not necessary here since stain_matrix source is computed from image. Only check potential edge case
-        # such that the precomputed stain matrix is squeezed in the cache.
-        if stain_matrix_source.shape[0] != image.shape[0] and stain_matrix_source.shape[0] == 1:
-            stain_matrix_source = StainSeparation.repeat_stain_mat(stain_matrix_source, image)
+
         # B x (HW) x 2
-        source_concentration = self.concentration_solver(image, stain_matrix_source,
+        source_concentration = self.concentration_solver(image_od, stain_matrix_source,
                                                          rng=self.rng)
 
         maxC = percentile(source_concentration, q=PARAM.MAX_CONCENTRATION_PERC, dim=-2) + 1e-14
@@ -157,7 +159,7 @@ class StainSeparation(Normalizer):
         # B x num_pix x num_stain
         source_concentration *= c_scale
         # note this is the reconstruction in B x (HW) x C --> need to shuffle the channel first before reshape
-        return img_from_concentration(source_concentration, self.stain_matrix_target, image.shape, (0, 1))
+        return img_from_concentration(source_concentration, self.stain_matrix_target, image_od.shape, (0, 1))
 
     @torch.inference_mode()
     def forward(self, x: torch.Tensor,

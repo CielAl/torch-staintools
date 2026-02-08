@@ -55,13 +55,13 @@ class TestFunctional(unittest.TestCase):
                       num_stains: int, rng: Optional[torch.Generator]):
 
         # lab_tensor = rgb_to_lab(convert_image_dtype(dummy_tensor))
-
-        stain_matrix = get_stain_mat(image=dummy_tensor,
-                                     luminosity_threshold=luminosity_threshold,
+        mask = get_tissue_mask(dummy_tensor, luminosity_threshold, mask)
+        od_dummy = rgb2od(dummy_tensor)
+        stain_matrix = get_stain_mat(od=od_dummy,
                                      mask=mask,
                                      num_stains=num_stains, rng=rng)
 
-        concentration = conc_solver(dummy_tensor, stain_matrix, rng=rng)
+        concentration = conc_solver(od_dummy, stain_matrix, rng=rng)
         reconstructed = img_from_concentration(concentration, stain_matrix, dummy_tensor.shape, (0, 1))
         return stain_matrix, concentration, reconstructed
 

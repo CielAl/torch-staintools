@@ -104,7 +104,7 @@ def od_angle_hash64(
     Returns:
         torch.Tensor: the hash
     """
-    od = od.to(torch.float32) # f32 may be more robust
+    # od = od.to(torch.float32) # f32 may be more robust
     assert od.ndim == 4 and od.shape[1] >= 3
     # assert k_bins <= 64
     # k_bins: number of bins. Must be <=64 for 64bit output.

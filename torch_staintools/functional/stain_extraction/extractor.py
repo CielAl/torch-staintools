@@ -42,7 +42,7 @@ class StainExtraction(Callable):
     def __init__(self, stain_algorithm: StainAlg) -> None:
         self.stain_algorithm = stain_algorithm
 
-    def __call__(self, image: torch.Tensor,
+    def __call__(self, od: torch.Tensor,
                  *,
                  mask: torch.Tensor,
                  num_stains: int,
@@ -51,7 +51,7 @@ class StainExtraction(Callable):
         """Interface of stain extractor.  Adapted from StainTools.
 
         Args:
-            image: input image in batch of shape - BxCxHxW
+            od: input image in batch of shape - BxCxHxW
             mask: mask the background by 0, foreground by 1.
             num_stains: number of stains to separate. For Macenko, only 2 is supported.
             rng: torch.Generator. If None, no specific generator is used and randomness can be controlled somewhere
@@ -64,9 +64,8 @@ class StainExtraction(Callable):
         """
         # device = image.device
         # B x 1 x H x W
-
-        # tissue_mask = get_tissue_mask(image, mask=mask,
-        #                               luminosity_threshold=luminosity_threshold).contiguous()
-        od = rgb2od(image).contiguous()
+        # now directly using od and a defined mask
+        # tissue_mask = get_tissue_mask(image, mask=mask, luminosity_threshold=luminosity_threshold).contiguous()
+        # od = rgb2od(od).contiguous()
         assert mask is not None
         return self.stain_algorithm(od, mask, num_stains, rng)

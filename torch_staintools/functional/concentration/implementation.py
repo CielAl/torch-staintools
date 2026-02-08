@@ -140,14 +140,14 @@ def get_concentration_batch(od_flatten: torch.Tensor,
                                maxiter=maxiter, rng=rng, positive=positive)
 
 
-def get_concentrations(image: torch.Tensor,
+def get_concentrations(od: torch.Tensor,
                        stain_matrix: torch.Tensor,
                        regularizer: float,
                        algorithm: METHOD_FACTORIZE,
                        lr: Optional[float],
                        maxiter: int,
                        rng: Optional[torch.Generator],
-                       positive: bool,):
+                       positive: bool, ):
     """Estimate concentration matrix given an image and stain matrix.
 
     Warnings:
@@ -156,7 +156,7 @@ def get_concentrations(image: torch.Tensor,
         ```torch.backends.cuda.preferred_linalg_library('magma')```
 
     Args:
-        image: batched image(s) in shape of BxCxHxW
+        od: batched optical density image(s) in shape of BxCxHxW
         stain_matrix: B x num_stain x input channel
         regularizer: regularization term if ISTA algorithm is used
         algorithm: which method to compute the concentration: Solve min||HExC - OD||p
@@ -170,10 +170,10 @@ def get_concentrations(image: torch.Tensor,
     Returns:
         concentration matrix: B x num_pixel x num_stains
     """
-    device = image.device
+    device = od.device
     stain_matrix = stain_matrix.to(device)
     # BCHW
-    od = rgb2od(image).to(device)
+    # od = rgb2od(od).to(device)
     # B (H*W) C
     od_flatten = od.flatten(start_dim=2, end_dim=-1).permute(0, 2, 1)
     return get_concentration_batch(od_flatten, stain_matrix, regularizer, algorithm,
@@ -185,8 +185,8 @@ class ConcentrationSolver(Callable):
     def __init__(self, cfg: ConcentCfg):
         self.cfg = cfg
 
-    def __call__(self, image: torch.Tensor, stain_matrix, rng: Optional[torch.Generator]) -> torch.Tensor:
-        return get_concentrations(image, stain_matrix,
+    def __call__(self, od: torch.Tensor, stain_matrix, rng: Optional[torch.Generator]) -> torch.Tensor:
+        return get_concentrations(od, stain_matrix,
                                   regularizer=self.cfg.regularizer,
                                   algorithm=self.cfg.algorithm,
                                   lr=self.cfg.lr,

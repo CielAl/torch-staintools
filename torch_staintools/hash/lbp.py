@@ -180,7 +180,7 @@ def _od_lbp_hist_quantize_levels(
 
 
     h_float = hist.float()
-    eps = torch.finfo(h_float.dtype).eps
+    eps = torch.finfo(torch.float32).eps
     density = h_float.sum(dim=-1, keepdim=True).clamp_min(eps)
     freq = h_float / density
 
@@ -221,7 +221,7 @@ def od_lbp8_hash(
             D = 256 -> original LBP (8bits)
             D = 59 -> Uniform Pattern
     """
-    od = od.to(torch.float32)
+    # od = od.to(torch.float32)
     code = _od_lbp8_code(od, thumb_size=thumb_size)
     _, _, code_h, code_w = code.shape
 
