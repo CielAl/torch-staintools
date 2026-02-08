@@ -2,6 +2,8 @@
 from typing import Optional
 
 import torch
+
+from torch_staintools.constants import PARAM
 from torch_staintools.functional.conversion.lab import rgb_to_lab
 from torchvision.transforms.functional import convert_image_dtype
 # from skimage.util import img_as_ubyte
@@ -52,6 +54,13 @@ def get_tissue_mask(image: torch.Tensor,
             results or even crash if the nearly entire input image is background.
     Returns:
         mask (B1HW)
+
+    Raises:
+        TissueMaskException: Raised if the entire batch is empty. Handle it to
+            bypass the batch. If part of the batch is empty (no tissue) it will go
+            through and handled by solvers differently. Macenko may return an all black/white tensor
+            depending on the concentration solvers. Vahadane may return the empty patch with color distorted.
+            Overall it is recommended to clean the data first as background patches result in unstable numerical solution.
     """
     mask = mask if mask is not None else _luminosity_mask(image, luminosity_threshold)
     # Check it's not empty
@@ -62,9 +71,13 @@ def get_tissue_mask(image: torch.Tensor,
     assert mask.shape[1] == 1
     assert mask.shape[2] == image.shape[2]
     assert mask.shape[3] == image.shape[3]
-    sum_pixel = mask.sum()
-    if throw_error and sum_pixel == 0:
+    # sum_pixel = mask.sum()  # (dim=(-3, -2, -1), )
+    # all_zero = (sum_pixel == 0).all()
+    invalid = (1.0 * mask).mean() < PARAM.MASK_BATCH_THRESHOLD
+    # can allow some data input with 0. let the solver handles 0 cases.
+    # od = od * mask so masked regions won't be affected by sparse solvers in vahadane anyway.
+    if throw_error and invalid:
         raise TissueMaskException("Empty tissue mask computed")
-    if true_when_empty and sum_pixel == 0:
+    if true_when_empty and invalid:
         mask = torch.ones_like(mask, dtype=torch.bool).contiguous()
     return mask.contiguous()

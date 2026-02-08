@@ -7,6 +7,9 @@ class _Param:
     # L2 penalty for ridge initialization of codes Z
     INIT_RIDGE_L2: float = 1e-4
 
+    # if the ratio of foreground pixel in the batch < threshold --> empty
+    MASK_BATCH_THRESHOLD = 0.05
+
     # L2 weight decay term of dictionary W in the lasso loss of dictionary learning
     # DICT_WEIGHT_DECAY: float = 10e-10
     DICT_ITER_STEPS: int = 60
@@ -27,6 +30,12 @@ class _Param:
     # atol = scale * quantile(dict_mag, q)
     SOLVER_PINV_ATOL_SCALE: float = 1e-2
     SOLVER_PINV_ATOL_QUANTILE: float = 0.25
+
+    HASH_LBP_THUMB: int = 32
+    HASH_LBP_GRID: int = 1
+    HASH_LBP_QUANTIZE: int = 16
+    HASH_LBP_SQRT: bool = True
+    HASH_DHASH_SIZE: int = 8
 
 PARAM: _Param = _Param()
 

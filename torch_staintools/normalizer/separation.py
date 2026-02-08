@@ -1,6 +1,7 @@
 """Note that some of the codes are derived from torchvahadane and staintools
 
 """
+import traceback
 from functools import partial
 
 import torch
@@ -13,6 +14,10 @@ from .base import Normalizer
 from ..cache.tensor_cache import TensorCache
 from typing import Optional, List, Hashable
 
+from ..functional.tissue_mask import TissueMaskException
+from ..loggers import GlobalLoggers
+
+logger = GlobalLoggers.instance().get_logger(__name__)
 
 class StainSeparation(Normalizer):
     """Stain Separation-based normalizer's interface: Macenko and Vahadane
@@ -168,7 +173,18 @@ class StainSeparation(Normalizer):
             torch.Tensor: normalized output in BxCxHxW shape and float32 dtype. Note that some pixel value may exceed
             [0, 1] and therefore a clipping operation is applied.
         """
-        return self.transform(x, mask=mask, cache_keys=cache_keys)
+        try:
+            return self.transform(x, mask=mask, cache_keys=cache_keys)
+        except TissueMaskException:
+            logger.warning(f"Empty mask. Skip. Cache Key: {cache_keys}")
+            return x.clone()
+        except Exception as e:
+            trace = traceback.format_exc()
+            msg = str(e)
+            logger.error(f"Other Error. Dismiss and return the clone of input. Cache Key: {cache_keys} \n"
+                         f"Trace: {trace} \n"
+                         f"Message: {msg}")
+            return x.clone()
 
     @classmethod
     def build(cls,

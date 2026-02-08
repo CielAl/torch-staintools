@@ -1,5 +1,5 @@
 from functools import partial
-
+import traceback
 import torch
 from typing import Optional, Sequence, Tuple, Hashable, List
 from torch_staintools.functional.concentration import ConcentrationSolver
@@ -262,9 +262,14 @@ class Augmentor(CachedRNGModule):
             return img_from_concentration(concentration_aug, target_stain_matrix,
                                           img_shape=target.shape, out_range=(0, 1))
         except TissueMaskException:
-            logger.error(f"Empty mask encountered. Dismiss and return the clone of input. Cache Key: {cache_keys}")
+            logger.warning(f"Empty mask encountered. Dismiss and return the clone of input. Cache Key: {cache_keys}")
             return target.clone()
-        except Exception:
+        except Exception as e:
+            trace = traceback.format_exc()
+            msg = str(e)
+            logger.error(f"Other Error. Dismiss and return the clone of input. Cache Key: {cache_keys} \n"
+                         f"Trace: {trace} \n"
+                         f"Message: {msg}")
             return target.clone()
 
 
