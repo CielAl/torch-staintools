@@ -1,8 +1,16 @@
 import torch
 from torchvision.transforms.functional import convert_image_dtype
 
+from torch_staintools.functional.compile import lazy_compile
 
 _eps_val = torch.finfo(torch.float32).eps
+
+
+@lazy_compile(dynamic=True)
+def _to_od(image: torch.Tensor) -> torch.Tensor:
+    eps = 1. / 255.
+    image = image.clamp_min(eps)
+    return -torch.log(image)
 
 
 def rgb2od(image: torch.Tensor):
@@ -19,11 +27,13 @@ def rgb2od(image: torch.Tensor):
     """
     # to [0, 255]
     image = convert_image_dtype(image, torch.float32)
-    # device = image.device
-    # eps = torch.tensor(_eps_val).to(device)
-    eps = 1. / 255.
-    image = image.clamp_min(eps)
-    return -torch.log(image)
+    return _to_od(image)
+
+
+@lazy_compile(dynamic=True)
+def _to_rgb(od: torch.Tensor) -> torch.Tensor:
+    od = od.clamp_min(0)
+    return torch.exp(-od).clamp(0, 1)
 
 
 def od2rgb(od: torch.Tensor):
@@ -42,5 +52,5 @@ def od2rgb(od: torch.Tensor):
     # od_max = torch.maximum(OD, eps)
     # eps = torch.finfo(torch.float32).eps
     # ignore negative OD
-    od = od.clamp_min(0)
-    return torch.exp(-od).clamp(0, 1)
+    return _to_rgb(od)
+
