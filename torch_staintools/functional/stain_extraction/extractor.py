@@ -43,8 +43,8 @@ class StainExtraction(Callable):
         self.stain_algorithm = stain_algorithm
 
     def __call__(self, image: torch.Tensor,
-                 *, luminosity_threshold: Optional[float],
-                 mask: Optional[torch.Tensor],
+                 *,
+                 mask: torch.Tensor,
                  num_stains: int,
                  rng: Optional[torch.Generator],
                  ) -> torch.Tensor:
@@ -52,12 +52,10 @@ class StainExtraction(Callable):
 
         Args:
             image: input image in batch of shape - BxCxHxW
-            luminosity_threshold: luminosity threshold to discard background from stain computation.
-                scale of threshold are within (0, 1). Pixels with intensity in the interval (0, threshold) are
-                considered as tissue. If None then all pixels are considered as tissue.
-                Ignored if ```mask``` is present.
+            mask: mask the background by 0, foreground by 1.
             num_stains: number of stains to separate. For Macenko, only 2 is supported.
-
+            rng: torch.Generator. If None, no specific generator is used and randomness can be controlled somewhere
+                outside, globally.
 
         Returns:
             Stain Matrices in shape of B x num_stains x num_input_color_channel. For H&E stain estimation, if the
@@ -67,7 +65,8 @@ class StainExtraction(Callable):
         # device = image.device
         # B x 1 x H x W
 
-        tissue_mask = get_tissue_mask(image, mask=mask,
-                                      luminosity_threshold=luminosity_threshold).contiguous()
+        # tissue_mask = get_tissue_mask(image, mask=mask,
+        #                               luminosity_threshold=luminosity_threshold).contiguous()
         od = rgb2od(image).contiguous()
-        return self.stain_algorithm(od, tissue_mask, num_stains, rng)
+        assert mask is not None
+        return self.stain_algorithm(od, mask, num_stains, rng)

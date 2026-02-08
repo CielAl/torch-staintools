@@ -233,20 +233,22 @@ class Augmentor(CachedRNGModule):
         Returns:
             Augmented output.
         """
-        # stain_matrix_target -- B x num_stain x num_input_color_channel
+
         # todo cache
-
-        get_stain_partial = partial(self.get_stain_matrix,
-                                    luminosity_threshold=self.luminosity_threshold,
-                                    mask=mask,
-                                    num_stains=self.num_stains, rng=self.rng)
-        # B x num_stain x num_channels
-        target_stain_matrix = self.tensor_from_cache(cache_keys=cache_keys, func=get_stain_partial,
-                                                     target=target)
-
-        #  B x  num_pixel x num_stain
-        concentration = self.concentration_solver(target, target_stain_matrix, rng=self.rng)
         try:
+            # stain_matrix_target -- B x num_stain x num_input_color_channel
+            mask = get_tissue_mask(target, self.luminosity_threshold, mask, ).contiguous()
+            get_stain_partial = partial(self.get_stain_matrix,
+                                        mask=mask,
+                                        num_stains=self.num_stains, rng=self.rng)
+            # B x num_stain x num_channels
+            # todo
+            target_stain_matrix = self.tensor_from_cache(cache_keys=cache_keys, func=get_stain_partial,
+                                                         target=target)
+
+            #  B x  num_pixel x num_stain
+            concentration = self.concentration_solver(target, target_stain_matrix, rng=self.rng)
+
             tissue_mask = mask if mask is not None else get_tissue_mask(target,
                                           luminosity_threshold=self.luminosity_threshold,
                                           throw_error=True,

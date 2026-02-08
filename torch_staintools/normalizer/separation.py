@@ -14,7 +14,7 @@ from .base import Normalizer
 from ..cache.tensor_cache import TensorCache
 from typing import Optional, List, Hashable
 
-from ..functional.tissue_mask import TissueMaskException
+from ..functional.tissue_mask import TissueMaskException, get_tissue_mask
 from ..loggers import GlobalLoggers
 
 logger = GlobalLoggers.instance().get_logger(__name__)
@@ -80,8 +80,8 @@ class StainSeparation(Normalizer):
         # todo multiple target
         assert target.shape[0] == 1
         # B x num_stain x num_channel (concentration @ stain_mat --> RGB)
+        mask = get_tissue_mask(target, self.luminosity_threshold, mask, ).contiguous()
         stain_matrix_target = self.get_stain_matrix(target, num_stains=self.num_stains,
-                                                    luminosity_threshold=self.luminosity_threshold,
                                                     rng=self.rng, mask=mask)
         # B x num_stain x num_channel
         self.register_buffer('stain_matrix_target', stain_matrix_target)
@@ -132,8 +132,9 @@ class StainSeparation(Normalizer):
             [0, 1] and therefore a clipping operation is applied.
         """
         # one source matrix - multiple target
+        # todo mask
+        mask = get_tissue_mask(image, self.luminosity_threshold, mask).contiguous()
         get_stain_partial = partial(self.get_stain_matrix,
-                                    luminosity_threshold=self.luminosity_threshold,
                                     num_stains=self.num_stains, rng=self.rng,
                                     mask=mask)
         stain_matrix_source = self.tensor_from_cache(cache_keys=cache_keys, func=get_stain_partial,
