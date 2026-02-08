@@ -1,6 +1,6 @@
 import torch
 from torchvision.transforms.functional import convert_image_dtype
-from ..eps import get_eps
+
 
 _eps_val = torch.finfo(torch.float32).eps
 
@@ -40,5 +40,7 @@ def od2rgb(od: torch.Tensor):
     assert od.min() >= 0, "Negative optical density."
     # eps = get_eps(OD)
     # od_max = torch.maximum(OD, eps)
-    eps = torch.finfo(torch.float32).eps
-    return torch.exp(-od.clamp_min(eps))
+    # eps = torch.finfo(torch.float32).eps
+    # ignore negative OD
+    od = od.clamp_min(0)
+    return torch.exp(-od).clamp(0, 1)
