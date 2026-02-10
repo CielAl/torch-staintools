@@ -14,7 +14,16 @@ class Cache(ABC, Generic[C, V]):
     """
 
     __size_limit: int
-    data_cache: C
+    _data_cache: C
+
+    def is_cache_valid(self):
+        return hasattr(self, '_data_cache') and not self._data_cache is None
+
+    @property
+    def data_cache(self):
+        if not self.is_cache_valid():
+            self._data_cache = self._new_cache()
+        return self._data_cache
 
     @abstractmethod
     def __len__(self):
@@ -29,15 +38,20 @@ class Cache(ABC, Generic[C, V]):
     def size_limit(self):
         return self.__size_limit
 
+    @size_limit.setter
+    def size_limit(self, size_limit: int):
+        assert isinstance(size_limit, int)
+        self.__size_limit = size_limit
+
     def __init__(self, size_limit: int):
         """
 
         Args:
-            size_limit: limit of cache size by number of entries (no greater than). If negative then no size limit is
-                enforced.
+            size_limit: limit of cache size by number of entries (no greater than). If zero or negative then no size
+            limit is enforced.
         """
         self.__size_limit = size_limit
-        self.data_cache = self._new_cache()
+        self._data_cache = self._new_cache()
 
     @abstractmethod
     def query(self, key: Hashable):
@@ -127,6 +141,28 @@ class Cache(ABC, Generic[C, V]):
         self.write_to_cache(key, value)
         return value
 
+    @abstractmethod
+    def write_batch(self, keys: List[Hashable], batch: V | List[V]):
+        """Write a batch of data to the cache.
+
+        Args:
+            keys: list of keys corresponding to individual data points in the batch.
+            batch: batch data to cache.
+
+        Returns:
+
+        """
+        raise NotImplementedError
+
+
+    @abstractmethod
+    def get_batch_hit(self, keys: List[Hashable]) -> V | List[V]:
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_batch_miss(self, keys: List[Hashable], func: Callable[..., V], *args, **kwargs) -> V | List[V]:
+        raise NotImplementedError
+
     def dump(self, path: str, force_overwrite: bool = False):
         """ Dump the cached data to the local file system.
 
@@ -164,21 +200,7 @@ class Cache(ABC, Generic[C, V]):
         """
         raise NotImplementedError
 
-    def write_batch(self, keys: List[Hashable], batch: V):
-        """Write a batch of data to the cache.
 
-        Args:
-            keys: list of keys corresponding to individual data points in the batch.
-            batch: batch data to cache.
-
-        Returns:
-
-        """
-        # if not Cache.size_in_bound(len(self), len(keys), self.size_limit):
-        #     return
-        logger.debug(f'{len(self)} - add new cache to {keys[0:3]}...')
-        for k, b in zip(keys, batch):
-            self.write_to_cache(k, b)
 
     @staticmethod
     def size_in_bound(current_size, in_data_size, limit_size):
@@ -187,48 +209,18 @@ class Cache(ABC, Generic[C, V]):
         Args:
             current_size: current size of cache
             in_data_size: size of new data
-            limit_size: current size limit (no greater than). If negative then no size limit is enforced.
+            limit_size: current size limit (no greater than). If zero or negative then no size limit is enforced.
 
         Returns:
             bool. If the size is still in-bound with new data loaded into the cache.
         """
-        if limit_size < 0:
+        if limit_size <= 0:
             return True
         # logger.debug(f"check: {current_size} + {in_data_size} <= {limit_size}")
         return current_size + in_data_size <= limit_size
 
-    def get_batch(self, keys: List[Hashable], func: Optional[Callable], *func_args, **func_kwargs) -> List[V]:
-        """Batchified `get`
-
-        The method assumes that the func callable would generate a whole batch of data each time.
-        Might be useful if batchified processing is much faster than individually process all inputs
-        (e.g., cuda tensors processed by nn.Module)
-
-        It is a hit only if all keys are cached.
-
-        Args:
-            keys: list of keys corresponding to the batch input.
-            func: function to generate the data if the corresponding entry is not cached.
-            *func_args: positional args for the func.
-            **func_kwargs: keyword args for the func.
-
-        Returns:
-            List of queried results.
-        """
-        hit = all([k in self for k in keys])
-        if hit:
-            logger.debug('hit')
-            return [self.get(k, func=None) for k in keys]
-        assert func is not None
-        logger.debug('miss - evaluate function to get value')
-        batch = func(*func_args, **func_kwargs)
-        assert len(keys) == len(batch)
-
-        self.write_batch(keys, batch)
-        return batch
-
     @abstractmethod
-    def _new_cache(self):
+    def _new_cache(self) -> C:
         raise NotImplementedError
 
     @classmethod

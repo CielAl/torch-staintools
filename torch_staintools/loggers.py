@@ -1,6 +1,6 @@
 import logging
 from typing import *
-DEFAULT_LEVEL = logging.INFO
+DEFAULT_LEVEL = logging.WARNING
 
 
 class GlobalLoggers:

@@ -1,11 +1,15 @@
 from .base import Cache
-from typing import Dict, Hashable, Optional
+from typing import Dict, Hashable, Optional, TYPE_CHECKING, Union, List, Callable
 import torch
-import numpy as np
 from ..functional.utility.implementation import default_device
 from ..loggers import GlobalLoggers
 logger = GlobalLoggers.instance().get_logger(__name__)
 
+if TYPE_CHECKING:
+    # noinspection PyUnresolvedReferences
+    from numpy import ndarray
+
+TYPE_ARRAY = Union["ndarray", torch.Tensor]
 
 class TensorCache(Cache[Dict[Hashable, torch.Tensor], torch.Tensor]):
     """An implementation of Cache specifically for tensor using a built-in dict.
@@ -18,9 +22,19 @@ class TensorCache(Cache[Dict[Hashable, torch.Tensor], torch.Tensor]):
 
     """
     # perhaps tensordict can be used in future
-    data_cache: Dict[Hashable, torch.Tensor]
+    _data_cache: Dict[Hashable, torch.Tensor]
     __size_limit: int
     device: torch.device
+
+    @classmethod
+    def collect(cls, tensor_batch_list: List[torch.Tensor]) -> torch.Tensor:
+        batch_size = len(tensor_batch_list)
+        assert batch_size > 0
+        out = torch.empty((batch_size, *tensor_batch_list[0].shape),
+                          device=tensor_batch_list[0].device, dtype=tensor_batch_list[0].dtype)
+        for i, m in enumerate(tensor_batch_list):
+            out[i].copy_(m)
+        return out
 
     def __len__(self):
         """Size of cache given by number of entries stored.
@@ -51,7 +65,7 @@ class TensorCache(Cache[Dict[Hashable, torch.Tensor], torch.Tensor]):
         return key in self.data_cache
 
     @staticmethod
-    def validate_value_type(value: torch.Tensor | np.ndarray):
+    def validate_value_type(value: TYPE_ARRAY):
         """Helper function to validate the input.
 
          Must be a torch.Tensor. If it is a numpy ndarray, it will be converted to tensor.
@@ -65,7 +79,7 @@ class TensorCache(Cache[Dict[Hashable, torch.Tensor], torch.Tensor]):
         Raises:
             AssertionError if the output is not a torch.Tensor
         """
-        if isinstance(value, np.ndarray):
+        if not isinstance(value, torch.Tensor):
             value = torch.from_numpy(value)
 
         assert isinstance(value, torch.Tensor), f"Expect tensor, got: {type(value)}"
@@ -84,6 +98,32 @@ class TensorCache(Cache[Dict[Hashable, torch.Tensor], torch.Tensor]):
         value = TensorCache.validate_value_type(value)
         # logger.debug(f"key={key} - write")
         self.data_cache[key] = value.to(self.device)
+
+    def write_batch(self, keys: List[Hashable], batch: torch.Tensor):
+        """Write a batch of data to the cache.
+
+        Args:
+            keys: list of keys corresponding to individual data points in the batch.
+            batch: batch data to cache.
+
+        Returns:
+
+        """
+        # if not Cache.size_in_bound(len(self), len(keys), self.size_limit):
+        #     return
+        logger.debug(f'{len(self)} - add new cache to {keys[0:3]}...')
+        for k, b in zip(keys, batch):
+            self.write_to_cache(k, b)
+
+
+    def get_batch_hit(self, keys: List[Hashable]) -> torch.Tensor:
+        return TensorCache.collect([self.get(k, func=None) for k in keys])
+
+    def get_batch_miss(self, keys: List[Hashable], func: Callable[..., torch.Tensor], *args, **kwargs) -> torch.Tensor:
+        batch_out = func(*args, **kwargs)
+        assert len(keys) == len(batch_out)
+        self.write_batch(keys, batch_out)
+        return batch_out
 
     @staticmethod
     def _to_device(data_cache: Dict[Hashable, torch.Tensor], device: torch.device, dict_inplace: bool = True):
@@ -135,7 +175,13 @@ class TensorCache(Cache[Dict[Hashable, torch.Tensor], torch.Tensor]):
         data_dict = torch.load(path)
         data_dict = TensorCache._to_device(data_dict, self.device, dict_inplace=True)
         self.data_cache.update(data_dict)
-        self.__size_limit = len(self.data_cache)
+        new_data_size = len(self.data_cache)
+        if self.size_limit <= 0:
+            return
+        assert self.size_limit > 0
+        # update
+        self.size_limit = max(self.size_limit, new_data_size)
+
 
     def _new_cache(self) -> Dict:
         """Implementation of creating new cache - built-in dict.
@@ -155,7 +201,7 @@ class TensorCache(Cache[Dict[Hashable, torch.Tensor], torch.Tensor]):
 
         Args:
             size_limit: limit of the cache size by number of entries (no greater than number of keys). Negative value
-                means no limit will be enforced.
+                or zero means no limit will be enforced.
             device: which device (CPU or GPUs) to store the tensor. If None then by default it will be set as
                 torch.device('cpu').
             path: If specified, previously dumped cache file will be loaded from the path.
@@ -182,6 +228,6 @@ class TensorCache(Cache[Dict[Hashable, torch.Tensor], torch.Tensor]):
         """
         if self.device == device:
             return
-        self.data_cache = TensorCache._to_device(self.data_cache, device, dict_inplace=True)
+        self.__data_cache = TensorCache._to_device(self.data_cache, device, dict_inplace=True)
         self.device = device
         return self

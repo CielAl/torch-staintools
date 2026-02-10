@@ -3,10 +3,12 @@
     staintools (for comparison)
     cv2 (read and process images)
 """
+import math
 import cv2
 import torch
 from torchvision.transforms import ToTensor
 from torchvision.transforms.functional import convert_image_dtype
+from torchvision.utils import make_grid
 from torch_staintools.normalizer import NormalizerBuilder
 from torch_staintools.augmentor import AugmentorBuilder
 from torch_staintools.constants import CONFIG
@@ -42,7 +44,7 @@ norm_tensor = ToTensor()(norm).unsqueeze(0).to(device)
 
 
 # test with multiple smaller regions from the sample image
-tile_size = 1024
+tile_size = 256
 # split the sample images into a batch of patches.
 tiles: torch.Tensor = norm_tensor.unfold(2, tile_size, tile_size)\
     .unfold(3, tile_size, tile_size).reshape(1, 3, -1, tile_size, tile_size).squeeze(0).permute(1, 0, 2, 3).contiguous()
@@ -57,8 +59,21 @@ plt.show()
 
 
 # helper function to convert tensor back to numpy arrays for visualization purposes.
-def postprocess(image_tensor): return convert_image_dtype(image_tensor, torch.uint8)\
+def postprocess(image_tensor):
+    return convert_image_dtype(image_tensor, torch.uint8)\
     .squeeze().detach().cpu().permute(1, 2, 0).numpy()
+
+def plot(tiles_to_plot: torch.Tensor, title: str = ""):
+    nrow = max(int(math.sqrt(tiles_to_plot.shape[0])), 1)
+    grid_np = postprocess(make_grid(tiles_to_plot,
+                                    padding = 32,
+                                    nrow=nrow, pad_value=1))
+    plt.figure(dpi=300, figsize=(8, 8))
+    plt.imshow(grid_np)
+    plt.title(title)
+    plt.axis("off")
+    plt.tight_layout()
+    plt.show()
 
 # We enable the torch.compile (note this is True by default)
 CONFIG.ENABLE_COMPILE = True
@@ -71,26 +86,27 @@ normalizer_vahadane = NormalizerBuilder.build('vahadane',
                                               # 'ista' (iterative shrinkage-thresholding algorithm)
                                               sparse_stain_solver='fista',
                                               concentration_solver='fista',
+                                              # use a smaller max iteration limit for code-step and
+                                              # concentration computation since it typically converges early
+                                              # but different maxiter will trigger recompilation
+                                              maxiter=30,
                                               # whether to cache the stain matrix.
                                               # must pair the input with an identifier (e.g. filename)
                                               # otherwise cache will be ignored.
-                                              use_cache=True
+                                              use_cache=True,
+                                              # luminosity threshold for tissue masking.
+                                              # bypass by set to None
+                                              luminosity_threshold=0.8,
                                               )
 normalizer_vahadane = normalizer_vahadane.to(device)
+# fit with a single reference image --> will always trigger a recompilation for batch = 1
 normalizer_vahadane.fit(target_tensor)
-# the normalizer has no parameters so torch.no_grad() has no effect. Leave it here for future demo of models
-# that may enclose parameters.
-with torch.no_grad():
-    for idx, tile_single in enumerate(tqdm(tiles, disable=False)):
-        tile_single: torch.Tensor
-        tile_single = tile_single.unsqueeze(0)
-        # BCHW - scaled to [0 1] torch.float32
-        # cache key herein is the index of data points.
-        test_out = normalizer_vahadane(tile_single, cache_keys=[idx])
-        test_out = postprocess(test_out)
-        plt.imshow(test_out)
-        plt.title(f"Vahadane: {idx}")
-        plt.show()
+
+# fully vectorized for batchified inputs.
+vahadane_out = normalizer_vahadane(tiles)
+
+# plot the output
+plot(vahadane_out, title="Vahadane")
 
 # %timeit normalizer_vahadane(norm_tensor, positive_dict=True)
 
@@ -98,20 +114,17 @@ with torch.no_grad():
 # if using cusolver, 'ls' (least square) will fail on single large images.
 # try magma backend if 'ls' is still preferred as the concentration estimator (see below)
 # torch.backends.cuda.preferred_linalg_library('magma')
-normalizer_macenko = NormalizerBuilder.build('macenko', use_cache=True,
-                                             concentration_solver='fista')  # 'ls'
+# supported concentration solvers: 'qr', 'pinv', 'fista', 'ista', 'ls'
+normalizer_macenko = NormalizerBuilder.build('macenko',
+                                             use_cache=True,
+                                             maxiter=30,
+                                             concentration_solver='qr')  # 'ls'
 normalizer_macenko = normalizer_macenko.to(device)
 normalizer_macenko.fit(target_tensor)
 
-with torch.no_grad():
-    for idx, tile_single in enumerate(tqdm(tiles)):
-        tile_single = tile_single.unsqueeze(0).contiguous()
-        # BCHW - scaled to [0 1] torch.float32
-        test_out = normalizer_macenko(tile_single)
-        test_out = postprocess(test_out)
-        plt.imshow(test_out)
-        plt.title(f"Macenko: {idx}")
-        plt.show()
+# can pass a custom mask here to override the internal tissue masking
+macenko_out = normalizer_macenko(tiles)
+plot(macenko_out, title="Macenko")
 # # %timeit normalizer_macenko(norm_tensor, algorithm='ista', positive_dict=True,)
 
 # ###################### Reinhard
@@ -119,16 +132,9 @@ with torch.no_grad():
 normalizer_reinhard = NormalizerBuilder.build('reinhard')
 normalizer_reinhard = normalizer_reinhard.to(device)
 normalizer_reinhard.fit(target_tensor)
+reinhard_out = normalizer_reinhard(tiles)
+plot(reinhard_out, title="Reinhard")
 
-with torch.no_grad():
-    for idx, tile_single in enumerate(tqdm(tiles)):
-        tile_single = tile_single.unsqueeze(0).contiguous()
-        # BCHW - scaled to [0 1] torch.float32
-        test_out = normalizer_reinhard(tile_single)
-        test_out = postprocess(test_out)
-        plt.imshow(test_out)
-        plt.title(f"Reinhard: {idx}")
-        plt.show()
 # %timeit normalizer_reinhard(norm_tensor)
 
 # Augmentation
@@ -146,15 +152,8 @@ augmentor = AugmentorBuilder.build('vahadane',
                                    )
 # move augmentor to the device
 augmentor.to(device)
-with torch.no_grad():
-    for idx, tile_single in enumerate(tqdm(tiles)):
-        tile_single = tile_single.unsqueeze(0).contiguous()
-        # BCHW - scaled to [0 1] torch.float32
-        test_out_tensor = augmentor(tile_single, cache_keys=[idx])
-        test_out = postprocess(test_out_tensor)
-        plt.imshow(test_out)
-        plt.title(f"Augmented: {idx}")
-        plt.show()
+aug_out = augmentor(tiles)
+plot(aug_out, title="Augmentation")
 
 # ##################### StainTool Comparison #####################
 # ########## Staintools Vahadane

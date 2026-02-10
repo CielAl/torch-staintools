@@ -1,18 +1,29 @@
 import torch
 from typing import Tuple, Optional
 
+# from torch_staintools.functional.compile import lazy_compile
 
-def transpose_trailing(mat: torch.Tensor):
-    """Helper function to transpose the trailing dimension, since data is batchified.
 
-    Args:
-        mat: input tensor ixjxk
+# def transpose_trailing(mat: torch.Tensor):
+#     """Helper function to transpose the trailing dimension, since data is batchified.
+#
+#     Args:
+#         mat: input tensor ixjxk
+#
+#     Returns:
+#         output with flipped dimension from ixjxk --> ixkxj
+#     """
+#     assert mat.ndimension() == 3
+#     return torch.einsum("ijk -> ikj", mat)
 
-    Returns:
-        output with flipped dimension from ixjxk --> ixkxj
-    """
-    assert mat.ndimension() == 3
-    return torch.einsum("ijk -> ikj", mat)
+
+def _from_concentration(concentration: torch.Tensor,
+                        stain_matrix: torch.Tensor,):
+    concentration = concentration.contiguous()
+    stain_matrix = stain_matrix.contiguous()
+    out = torch.exp(-1 * torch.matmul(concentration, stain_matrix))
+    out = out.mT
+    return out
 
 
 def img_from_concentration(concentration: torch.Tensor,
@@ -29,8 +40,7 @@ def img_from_concentration(concentration: torch.Tensor,
     Returns:
 
     """
-    out = torch.exp(-1 * torch.matmul(concentration, stain_matrix))
-    out = transpose_trailing(out)
+    out = _from_concentration(concentration, stain_matrix)
     return out.reshape(img_shape).clamp_(*out_range)
 
 

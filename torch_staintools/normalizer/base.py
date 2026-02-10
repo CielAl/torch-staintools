@@ -1,13 +1,18 @@
 from __future__ import annotations
-from typing import TypedDict, Union, Optional
+from typing import TypedDict, Union, Optional, TYPE_CHECKING
 from abc import abstractmethod
 import torch
-import numpy as np
 from ..base_module.base import CachedRNGModule
 from ..cache.tensor_cache import TensorCache
 
+if TYPE_CHECKING:
+    # noinspection PyUnresolvedReferences
+    from PIL.Image import Image
+    # noinspection PyUnresolvedReferences
+    from numpy import ndarray
 
-TYPE_IMAGE = Union[np.ndarray, torch.Tensor, "Image.Image"]
+
+TYPE_IMAGE = Union["ndarray", torch.Tensor, "Image"]
 
 
 class DataInput(TypedDict):

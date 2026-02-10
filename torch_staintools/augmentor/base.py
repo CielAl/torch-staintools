@@ -1,10 +1,12 @@
-from functools import partial
-
+import traceback
 import torch
 from typing import Optional, Sequence, Tuple, Hashable, List
 from torch_staintools.functional.concentration import ConcentrationSolver
+from ..constants import CONFIG
+from ..functional.conversion.od import rgb2od
 from ..functional.stain_extraction.extractor import StainExtraction, StainAlg
-from ..functional.utility.implementation import transpose_trailing, img_from_concentration
+from ..functional.stain_extraction.utils import percentile
+from ..functional.utility.implementation import img_from_concentration
 from ..functional.tissue_mask import get_tissue_mask, TissueMaskException
 from ..cache.tensor_cache import TensorCache
 from ..base_module.base import CachedRNGModule
@@ -59,7 +61,8 @@ class Augmentor(CachedRNGModule):
             concentration_solver:  How to get stain concentration from stain matrix
             rng: the specified torch.Generator or int (as seed) for reproducing the results
             sigma_alpha: bound of alpha (mean 1). Sampled from (1-sigma, 1+sigma)
-            sigma_beta: bound of beta (mean 0). Sampled from (-sigma, sigma)
+            sigma_beta: bound of beta (mean 0).
+                Sampled from (-sigma * 99 perc of concentration, sigma * 99 perc of concentration)
             num_stains: number of stains to separate. 2 Recommended.
             luminosity_threshold: luminosity threshold to obtain tissue region and ignore brighter backgrounds.
                 If None, all image pixels will be considered as tissue for stain matrix/concentration computation.
@@ -68,14 +71,13 @@ class Augmentor(CachedRNGModule):
         """
         super().__init__(cache, device, rng)
         self.concentration_solver = concentration_solver
-        self.get_stain_matrix = StainExtraction(stain_alg)
-
         self.target_stain_idx = target_stain_idx
         self.sigma_alpha = sigma_alpha
         self.sigma_beta = sigma_beta
 
         self.num_stains = num_stains
         self.luminosity_threshold = luminosity_threshold
+        self.get_stain_matrix = StainExtraction(stain_alg, self.num_stains, self.rng)
 
     @staticmethod
     def __concentration_selected(target_concentration: torch.Tensor,
@@ -84,7 +86,7 @@ class Augmentor(CachedRNGModule):
         """Return concentration of selected stain channels
 
         Args:
-            target_concentration: B x num_stains x num_pixel_in_mask
+            target_concentration: B x num_pixel_in_mask * num_stains
             target_stain_idx: Basic indices of the selected stains. If None then returns all stain.
 
         Returns:
@@ -92,7 +94,7 @@ class Augmentor(CachedRNGModule):
         """
         if target_stain_idx is None:
             return target_concentration
-        return target_concentration[:, target_stain_idx, :]
+        return target_concentration[..., target_stain_idx]
 
     @staticmethod
     def __inplace_augment_helper(target_concentration: torch.Tensor, *,
@@ -101,7 +103,7 @@ class Augmentor(CachedRNGModule):
         """Helper function to augment a given row(s) of stain concentration: alpha * concentration + beta
 
         Args:
-            target_concentration: B x num_stains x num_pixel
+            target_concentration: B x num_pixel x num_stains
             tissue_mask: mask of tissue regions. only augment concentration within the mask
             alpha: alpha value for augmentation
             beta: beta value for augmentation
@@ -110,16 +112,15 @@ class Augmentor(CachedRNGModule):
             augmented concentration. The result is in-place (as for the target_concentration here). It might be
             cloned beforehand in prior.
         """
+        # concentration: B x num_pix x num_stain
+        # B x 1 x num_stain
         alpha = alpha.to(target_concentration.device)
         beta = beta.to(target_concentration.device)
-
-        tissue_mask_flattened = tissue_mask.flatten(start_dim=-2, end_dim=-1).expand(target_concentration.shape)
-        alpha_expanded = alpha.expand(target_concentration.shape)
-        target_concentration[..., tissue_mask_flattened] *= alpha_expanded[..., tissue_mask_flattened]
-
-        beta_expanded = beta.expand(target_concentration.shape)
-        target_concentration[..., tissue_mask_flattened] += beta_expanded[..., tissue_mask_flattened]
-        return target_concentration
+        tissue_mask = tissue_mask.to(target_concentration.device)
+        mask = tissue_mask.flatten(start_dim=-2, end_dim=-1).mT.to(target_concentration.dtype)
+        scale =  (1 + mask * (alpha - 1))
+        bias = mask * beta
+        return scale * target_concentration + bias
 
     @staticmethod
     def randn_range(*size, low, high, device: torch.device, rng: torch.Generator):
@@ -150,17 +151,21 @@ class Augmentor(CachedRNGModule):
                 matrix)
             rng: torch.Generator object
             sigma_alpha: sample alpha values in range (1-sigma, 1+ sigma)
-            sigma_beta: sample beta values in range (-sigma, sigma)
+            sigma_beta: sample beta values in range (-sigma * perc99_concentration, sigma *  * perc99_concentration)
 
         Returns:
             sampled alpha and beta as a tuple
         """
         assert target_concentration_selected.ndimension() == 3
-        b, num_stain, _ = target_concentration_selected.shape
-        size = (b, num_stain, 1)  # torch.randn(b, num_stain, 1, generator=rng)
+        b, _, num_stain = target_concentration_selected.shape
+        size = (b, 1, num_stain)  # torch.randn(b, num_stain, 1, generator=rng)
         device = target_concentration_selected.device
+        # B x 1 x num_stain
         alpha = Augmentor.randn_range(*size, low=1 - sigma_alpha, high=1 + sigma_alpha, device=device, rng=rng)
-        beta = Augmentor.randn_range(*size, low=-sigma_beta, high=sigma_beta, device=device, rng=rng)
+        maxC = percentile(target_concentration_selected, q=99, dim=-2).clamp_min(0)
+        maxC = maxC.unsqueeze(-2)
+        radius = maxC * sigma_beta
+        beta = Augmentor.randn_range(*size, low=-radius, high=radius, device=device, rng=rng)
 
         return alpha, beta
 
@@ -203,6 +208,7 @@ class Augmentor(CachedRNGModule):
         Returns:
 
         """
+        # B x num_pixel x num_stain
         target_concentration = Augmentor.__inplace_tensor(target_concentration, inplace)
 
         target_concentration_selected = Augmentor.__concentration_selected(target_concentration, target_stain_idx)
@@ -212,43 +218,60 @@ class Augmentor(CachedRNGModule):
                                                                   alpha=alpha, beta=beta)
         return target_concentration
 
-    def forward(self, target: torch.Tensor, cache_keys: Optional[List[Hashable]] = None):
+    @torch.inference_mode()
+    def forward(self, target: torch.Tensor,
+                mask: Optional[torch.Tensor] = None,
+                cache_keys: Optional[List[Hashable]] = None):
         """
 
         Args:
             target: input tensor to augment. Shape B x C x H x W and intensity range is [0, 1].
+            mask: Optional custom masking. Overriding the internal luminosity-based tissue masking.
             cache_keys: unique keys point the input batch to the cached stain matrices. `None` means no cache.
 
         Returns:
             Augmented output.
         """
-        # stain_matrix_target -- B x num_stain x num_input_color_channel
+
         # todo cache
-        get_stain_partial = partial(self.get_stain_matrix,
-                                    luminosity_threshold=self.luminosity_threshold,
-                                    num_stains=self.num_stains, rng=self.rng)
-
-        target_stain_matrix = self.tensor_from_cache(cache_keys=cache_keys, func=get_stain_partial,
-                                                     target=target)
-
-        #  B x num_stains x num_pixel_in_mask
-        concentration = self.concentration_solver(target, target_stain_matrix, rng=self.rng)
         try:
-            tissue_mask = get_tissue_mask(target, luminosity_threshold=self.luminosity_threshold, throw_error=True,
-                                          true_when_empty=False)
+            # stain_matrix_target -- B x num_stain x num_input_color_channel
+            mask = get_tissue_mask(target, self.luminosity_threshold, mask, ).contiguous()
+            target_od = rgb2od(target)
+
+            # B x num_stain x num_channels
+            # todo
+            target_stain_matrix = self.stain_mat_cached(cache_keys=cache_keys, get_stain_mat=self.get_stain_matrix,
+                                                        target=target_od, mask=mask)
+
+            #  B x  num_pixel x num_stain
+            concentration = self.concentration_solver(target_od, target_stain_matrix, rng=self.rng)
+
+            # tissue_mask = mask if mask is not None else get_tissue_mask(target,
+            #                               luminosity_threshold=self.luminosity_threshold,
+            #                               throw_error=True,
+            #                               true_when_empty=False)
             concentration_aug = Augmentor.augment(target_concentration=concentration,
-                                                  tissue_mask=tissue_mask,
+                                                  tissue_mask=mask,
                                                   target_stain_idx=self.target_stain_idx,
                                                   inplace=False, rng=self.rng, sigma_alpha=self.sigma_alpha,
                                                   sigma_beta=self.sigma_beta)
+            if CONFIG.AUG_POSITIVE_CONCENTRATION:
+                concentration_aug = concentration_aug.clamp_min(0)
             # transpose to B x num_pixel x num_stains
-
-            concentration_aug = transpose_trailing(concentration_aug)
             return img_from_concentration(concentration_aug, target_stain_matrix,
-                                          img_shape=target.shape, out_range=(0, 1))
+                                          img_shape=target_od.shape, out_range=(0, 1))
         except TissueMaskException:
-            logger.error(f"Empty mask encountered. Dismiss and return the clone of input. Cache Key: {cache_keys}")
+            logger.warning(f"Empty mask encountered. Dismiss and return the clone of input. Cache Key: {cache_keys}")
             return target.clone()
+        except Exception as e:
+            trace = traceback.format_exc()
+            msg = str(e)
+            logger.error(f"Other Error. Dismiss and return the clone of input. Cache Key: {cache_keys} \n"
+                         f"Trace: {trace} \n"
+                         f"Message: {msg}")
+            return target.clone()
+
 
     @classmethod
     def build(cls,
@@ -281,7 +304,8 @@ class Augmentor(CachedRNGModule):
             luminosity_threshold: luminosity threshold to find tissue regions (smaller than but positive)
                 a pixel is considered as being tissue if the intensity falls in the open interval of (0, threshold).
             use_cache: whether to use cache to save the stain matrix to avoid re-computation
-            cache_size_limit: size limit of the cache. negative means no limits.
+            cache_size_limit: size limit of the cache. non-positive means no limits. If ```load_path``` is also
+                specified the cache size limit is at least the size of the existing cached data.
             device: what device to hold the cache.
             load_path: If specified, then stain matrix cache will be loaded from the file path. See the `cache`
                 module for more details.

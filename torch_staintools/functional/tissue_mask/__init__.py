@@ -1,5 +1,9 @@
 # import numpy as np
+from typing import Optional
+
 import torch
+
+from torch_staintools.constants import PARAM
 from torch_staintools.functional.conversion.lab import rgb_to_lab
 from torchvision.transforms.functional import convert_image_dtype
 # from skimage.util import img_as_ubyte
@@ -9,26 +13,8 @@ from torchvision.transforms.functional import convert_image_dtype
 class TissueMaskException(Exception):
     ...
 
-
-def get_tissue_mask(image: torch.Tensor, luminosity_threshold=0.8,
-                    throw_error: bool = True,
-                    true_when_empty: bool = False) -> torch.Tensor:
-    """Get a binary mask where true denotes pixels with a luminosity less than the specified threshold.
-
-    Typically, we use to identify tissue in the image and exclude the bright white background.
-    If `luminosity_threshold` is None then entire image region is considered as tissue
-
-    Args:
-        image: RGB [0, 1]. -> BCHW
-        luminosity_threshold: threshold of luminosity in range of [0, 1].  Pixels with intensity within (0, threshold)
-            are considered as tissue. If None then all pixels are considered as tissue, effectively bypass this step.
-        throw_error: whether to throw error
-        true_when_empty: if True, then return an all-True mask if no tissue are detected. Effectively bypass the
-            tissue detection. Note that in certain cases, both Vahadane and Macenko may either obtain low quality
-            results or even crash if the nearly entire input image is background.
-    Returns:
-        mask (B1HW)
-    """
+def _luminosity_mask(image: torch.Tensor,
+                     luminosity_threshold: Optional[float]) -> torch.Tensor:
     image = convert_image_dtype(image, torch.float32)
 
     img_lab: torch.Tensor = rgb_to_lab(image)
@@ -44,10 +30,54 @@ def get_tissue_mask(image: torch.Tensor, luminosity_threshold=0.8,
 
     mask = (L < luminosity_threshold) & (
                 L > 0)  # fix bug in original stain tools code where black background is not ignored.
-    # Check it's not empty
-    sum_pixel = mask.sum()
-    if throw_error and sum_pixel == 0:
-        raise TissueMaskException("Empty tissue mask computed")
-    if true_when_empty and sum_pixel == 0:
-        mask = torch.ones_like(L, dtype=torch.bool)
     return mask
+
+def get_tissue_mask(image: torch.Tensor,
+                    luminosity_threshold=0.8,
+                    mask: Optional[torch.Tensor] = None,
+                    throw_error: bool = True,
+                    true_when_empty: bool = False) -> torch.Tensor:
+    """Get a binary mask where true denotes pixels with a luminosity less than the specified threshold.
+
+    Typically, we use to identify tissue in the image and exclude the bright white background.
+    If `luminosity_threshold` is None then entire image region is considered as tissue
+
+    Args:
+        image: RGB [0, 1]. -> BCHW
+        luminosity_threshold: threshold of luminosity in range of [0, 1].  Pixels with intensity within (0, threshold)
+            are considered as tissue. If None then all pixels are considered as tissue, effectively bypass this step.
+        mask: An optional custom mask to override the luminosity-based tissue masking, if present.
+            [B x 1 x H x W]
+        throw_error: whether to throw error
+        true_when_empty: if True, then return an all-True mask if no tissue are detected. Effectively bypass the
+            tissue detection. Note that in certain cases, both Vahadane and Macenko may either obtain low quality
+            results or even crash if the nearly entire input image is background.
+    Returns:
+        mask (B1HW)
+
+    Raises:
+        TissueMaskException: Raised if the entire batch is empty. Handle it to
+            bypass the batch. If part of the batch is empty (no tissue) it will go
+            through and handled by solvers differently. Macenko may return an all black/white tensor
+            depending on the concentration solvers. Vahadane may return the empty patch with color distorted.
+            Overall it is recommended to clean the data first as background patches result in unstable numerical solution.
+    """
+    mask = mask if mask is not None else _luminosity_mask(image, luminosity_threshold)
+    # Check it's not empty
+
+    assert mask is not None
+    assert isinstance(mask, torch.Tensor)
+    assert mask.shape[0] == image.shape[0]
+    assert mask.shape[1] == 1
+    assert mask.shape[2] == image.shape[2]
+    assert mask.shape[3] == image.shape[3]
+    # sum_pixel = mask.sum()  # (dim=(-3, -2, -1), )
+    # all_zero = (sum_pixel == 0).all()
+    invalid = (1.0 * mask).mean() < PARAM.MASK_BATCH_THRESHOLD
+    # can allow some data input with 0. let the solver handles 0 cases.
+    # od = od * mask so masked regions won't be affected by sparse solvers in vahadane anyway.
+    if throw_error and invalid:
+        raise TissueMaskException("Empty tissue mask computed")
+    if true_when_empty and invalid:
+        mask = torch.ones_like(mask, dtype=torch.bool).contiguous()
+    return mask.contiguous()

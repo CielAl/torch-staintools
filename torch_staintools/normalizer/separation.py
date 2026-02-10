@@ -1,18 +1,22 @@
 """Note that some of the codes are derived from torchvahadane and staintools
 
 """
-from functools import partial
-
+import traceback
 import torch
 from torch_staintools.functional.stain_extraction.extractor import StainExtraction, StainAlg
-from ..functional.optimization.sparse_util import METHOD_FACTORIZE
+from ..constants import PARAM
 from torch_staintools.functional.concentration import ConcentrationSolver
 from torch_staintools.functional.stain_extraction.utils import percentile
-from torch_staintools.functional.utility import transpose_trailing, img_from_concentration
+from torch_staintools.functional.utility import img_from_concentration
 from .base import Normalizer
 from ..cache.tensor_cache import TensorCache
 from typing import Optional, List, Hashable
 
+from ..functional.conversion.od import rgb2od
+from ..functional.tissue_mask import TissueMaskException, get_tissue_mask
+from ..loggers import GlobalLoggers
+
+logger = GlobalLoggers.instance().get_logger(__name__)
 
 class StainSeparation(Normalizer):
     """Stain Separation-based normalizer's interface: Macenko and Vahadane
@@ -54,12 +58,12 @@ class StainSeparation(Normalizer):
         """
         super().__init__(cache=cache, device=device, rng=rng)
         self.concentration_solver = concentration_solver
-        self.get_stain_matrix = StainExtraction(stain_alg)
         self.num_stains = num_stains
         self.luminosity_threshold = luminosity_threshold
+        self.get_stain_matrix = StainExtraction(stain_alg, self.num_stains, self.rng)
 
-
-    def fit(self, target, concentration_method: Optional[METHOD_FACTORIZE] = None):
+    @torch.inference_mode()
+    def fit(self, target, mask: Optional[torch.Tensor] = None, cache_keys: Optional[List[Hashable]] = None):
         """Fit to a target image.
 
         Note that the stain matrices are registered into buffers so that it's move to specified device
@@ -67,24 +71,30 @@ class StainSeparation(Normalizer):
 
         Args:
             target: BCHW. Assume it's cast to torch.float32 and scaled to [0, 1]
-            concentration_method: method to obtain concentration. Use the `self.concentration_method` if not specified
-                in the signature.
+            mask: Optional masking. If None, will refer to the optional luminosity thresholding.
+            cache_keys: unique keys point the input batch to the cached stain matrices. `None` means no cache.
 
         Returns:
 
         """
+        # todo multiple target
         assert target.shape[0] == 1
-        stain_matrix_target = self.get_stain_matrix(target, num_stains=self.num_stains,
-                                                    luminosity_threshold=self.luminosity_threshold,
-                                                    rng=self.rng)
+        # B x num_stain x num_channel (concentration @ stain_mat --> RGB)
+        mask = get_tissue_mask(target, self.luminosity_threshold, mask, ).contiguous()
+        target_od = rgb2od(target)
+        # stain_matrix_target = self.get_stain_matrix(target_od, mask)
 
+        stain_matrix_target = self.stain_mat_cached(cache_keys=cache_keys, get_stain_mat=self.get_stain_matrix,
+                                                    target=target_od, mask=mask)
+        # B x num_stain x num_channel
         self.register_buffer('stain_matrix_target', stain_matrix_target)
-        target_conc = self.concentration_solver(target, self.stain_matrix_target, rng=self.rng)
+        # B x num_pix x num_stain
+        target_conc = self.concentration_solver(target_od, self.stain_matrix_target, rng=self.rng)
         self.register_buffer('target_concentrations', target_conc)
         # B x (HW) x 2
-        conc_transpose = transpose_trailing(self.target_concentrations)
+        # conc_transpose = transpose_trailing(self.target_concentrations)
         # along HW dim
-        max_c_target = percentile(conc_transpose, 99, dim=1)
+        max_c_target = percentile(self.target_concentrations, PARAM.MAX_CONCENTRATION_PERC, dim=-2)
         self.register_buffer('maxC_target', max_c_target)
         # self.maxC_target = np.percentile(self.target_concentrations, 99, axis=0).reshape((1, 2))
 
@@ -103,9 +113,11 @@ class StainSeparation(Normalizer):
         repeat_dim = (image.shape[0],) + (1,) * (stain_mat.ndimension() - 1)
         return stain_mat.repeat(*repeat_dim)
 
-    def transform(self, image: torch.Tensor,
-                  cache_keys: Optional[List[Hashable]] = None,
-                  **kwargs) -> torch.Tensor:
+    @torch.inference_mode()
+    def transform(self,
+                  image: torch.Tensor,
+                  mask: Optional[torch.Tensor] = None,
+                  cache_keys: Optional[List[Hashable]] = None) -> torch.Tensor:
         """Transformation operation.
 
         Stain matrix is extracted from source image use specified stain seperator (dict learning or svd)
@@ -116,56 +128,65 @@ class StainSeparation(Normalizer):
         Args:
             image: Image input must be BxCxHxW cast to torch.float32 and rescaled to [0, 1]
                 Check torchvision.transforms.convert_image_dtype.
+            mask: Optional masking. If None, will refer to the optional luminosity thresholding.
             cache_keys: unique keys point the input batch to the cached stain matrices. `None` means no cache.
-            **kwargs: For compatibility of parent class signatures.
 
         Returns:
             torch.Tensor: normalized output in BxCxHxW shape and float32 dtype. Note that some pixel value may exceed
             [0, 1] and therefore a clipping operation is applied.
         """
         # one source matrix - multiple target
-        get_stain_partial = partial(self.get_stain_matrix,
-                                    luminosity_threshold=self.luminosity_threshold,
-                                    num_stains=self.num_stains, rng=self.rng)
-        stain_matrix_source = self.tensor_from_cache(cache_keys=cache_keys, func=get_stain_partial,
-                                                     target=image)
+        # todo mask
+        mask = get_tissue_mask(image, self.luminosity_threshold, mask).contiguous()
+        image_od = rgb2od(image)
+        # todo
+        stain_matrix_source = self.stain_mat_cached(cache_keys=cache_keys, get_stain_mat=self.get_stain_matrix,
+                                                    target=image_od, mask=mask)
 
         # stain_matrix_source -- B x 2 x 3 wherein B is 1. Note that the input batch size is independent of how many
-        # template were used and for now we only accept one template a time. todo - multiple template for sampling later
+        # template were used and for now we only accept one template a time.
+        # todo - multiple template for sampling later
         stain_matrix_source: torch.Tensor = torch.atleast_3d(stain_matrix_source)
-        # not necessary here since stain_matrix source is computed from image. Only check potential edge case
-        # such that the precomputed stain matrix is squeezed in the cache.
-        if stain_matrix_source.shape[0] != image.shape[0] and stain_matrix_source.shape[0] == 1:
-            stain_matrix_source = StainSeparation.repeat_stain_mat(stain_matrix_source, image)
-        # B * 2 * (HW)
-        source_concentration = self.concentration_solver(image, stain_matrix_source,
+
+        # B x (HW) x 2
+        source_concentration = self.concentration_solver(image_od, stain_matrix_source,
                                                          rng=self.rng)
-        # individual shape (2,) (HE)
-        # note that c_transposed_src is just a view of source_concentration and therefore any inplace operation on
-        # them will be reflected to each other, but this should be avoided for better readability
-        c_transposed_src = transpose_trailing(source_concentration)
-        maxC = percentile(c_transposed_src, 99, dim=1)
-        # 1 x B x 2
-        c_scale = transpose_trailing((self.maxC_target / maxC).unsqueeze(-1))
 
-        c_transposed_src *= c_scale
+        maxC = percentile(source_concentration, q=PARAM.MAX_CONCENTRATION_PERC, dim=-2) + 1e-14
+        # B x 1 x num_stain
+        c_scale = (self.maxC_target / maxC).unsqueeze(-2)
+        # B x num_pix x num_stain
+        source_concentration *= c_scale
         # note this is the reconstruction in B x (HW) x C --> need to shuffle the channel first before reshape
-        return img_from_concentration(c_transposed_src, self.stain_matrix_target, image.shape, (0, 1))
+        return img_from_concentration(source_concentration, self.stain_matrix_target, image_od.shape, (0, 1))
 
+    @torch.inference_mode()
     def forward(self, x: torch.Tensor,
-                cache_keys: Optional[List[Hashable]] = None, **kwargs) -> torch.Tensor:
+                mask: Optional[torch.Tensor] = None,
+                cache_keys: Optional[List[Hashable]] = None) -> torch.Tensor:
         """
 
         Args:
             x: input batch image tensor in shape of BxCxHxW
+            mask: Optional masking. If None, will refer to the optional luminosity thresholding.
             cache_keys: unique keys point the input batch to the cached stain matrices. `None` means no cache.
-            **kwargs: For compatibility of parent class signatures.
 
         Returns:
             torch.Tensor: normalized output in BxCxHxW shape and float32 dtype. Note that some pixel value may exceed
             [0, 1] and therefore a clipping operation is applied.
         """
-        return self.transform(x, cache_keys)
+        try:
+            return self.transform(x, mask=mask, cache_keys=cache_keys)
+        except TissueMaskException:
+            logger.warning(f"Empty mask. Skip. Cache Key: {cache_keys}")
+            return x.clone()
+        except Exception as e:
+            trace = traceback.format_exc()
+            msg = str(e)
+            logger.error(f"Other Error. Dismiss and return the clone of input. Cache Key: {cache_keys} \n"
+                         f"Trace: {trace} \n"
+                         f"Message: {msg}")
+            return x.clone()
 
     @classmethod
     def build(cls,

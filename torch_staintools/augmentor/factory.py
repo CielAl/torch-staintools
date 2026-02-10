@@ -32,7 +32,6 @@ class AugmentorBuilder:
               regularizer: float = PARAM.OPTIM_DEFAULT_SPARSE_LAMBDA,  # 1e-2
               maxiter: int = PARAM.OPTIM_SPARSE_DEFAULT_MAX_ITER,  # 50
               lr: Optional[float] = None,
-              tol: float = PARAM.OPTIM_DEFAULT_TOL,  # 1e-5
               target_stain_idx: Optional[Sequence[int]] = (0, 1),
               sigma_alpha: float = 0.2,
               sigma_beta: float = 0.2,
@@ -66,7 +65,6 @@ class AugmentorBuilder:
                 concentration estimation (e.g., ISTA)
             lr: learning rate for ISTA/FISTA-based optimization in code/concentration updating in ISTA/FISTA.
                 If None, the invert of Lipschitz constant of the gradient is used.
-            tol: tolerance threshold for early convergence in ISTA/FISTA.
             target_stain_idx: which stain to augment
             sigma_alpha: alpha sampled from (1-sigma_alpha, 1+sigma_alpha)
             sigma_beta: beta sampled from (-sigma_beta, sigma_beta)
@@ -82,7 +80,6 @@ class AugmentorBuilder:
         c_cfg = ConcentCfg(algorithm=concentration_solver,
                            regularizer=regularizer, rng=rng, maxiter=maxiter,
                            lr=lr,
-                           tol=tol,
                            positive=CONFIG.DICT_POSITIVE_CODE)
         csolver = ConcentrationSolver(c_cfg)
 
@@ -95,7 +92,7 @@ class AugmentorBuilder:
                                algorithm=sparse_stain_solver,
                                steps=sparse_dict_steps,
                                init=dict_init,
-                               maxiter=maxiter, lr=lr, tol=tol, lambd_ridge=PARAM.INIT_RIDGE_L2)
+                               maxiter=maxiter, lr=lr, lambd_ridge=PARAM.INIT_RIDGE_L2)
                 stain_alg = VahadaneAlg(vhd_cfg)
             case _:
                 raise NotImplementedError(f"{method} not implemented.")

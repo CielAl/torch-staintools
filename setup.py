@@ -1,7 +1,20 @@
 from setuptools import setup, find_packages
-from pkg_resources import parse_requirements
-with open('requirements.txt') as root:
-    requirements = [str(req) for req in parse_requirements(root)]
+# List[str]
+def read_requirements(path="requirements.txt"):
+    reqs = []
+    with open(path, encoding="utf-8") as req_file:
+        for line in req_file:
+            line = line.strip()
+            if not line or line.startswith("#"):
+                continue
+
+            if line.startswith(("-r", "--requirement", "--index-url", "--extra-index-url",
+                               "--find-links", "--trusted-host")):
+                continue
+            reqs.append(line)
+    return reqs
+
+requirements = read_requirements("requirements.txt")
 
 version_dict = {}
 with open("./torch_staintools/version.py") as fp:
@@ -16,8 +29,8 @@ setup(
     version=version,
     packages=find_packages(exclude=["tests*", "tests.*"]),
     url='https://github.com/CielAl/torch-staintools',
-    license='MIT',
-    author='Y Z',
+    license='Non-Commercial Academic License (Apache 2.0-based)',
+    author='Y Zhou',
     author_email='cielmercy@gmail.com',
     description='GPU-accelerated stain normalization and augmentation',
     install_requires=requirements,

@@ -1,12 +1,11 @@
 from typing import Optional, Callable
-
 import torch
 from torch_staintools.functional.optimization.dict_learning import dict_learning
-from .utils import normalize_matrix_rows
+from .utils import validate_shape, post_proc_dict
 from dataclasses import dataclass
 
 from ..optimization.sparse_util import METHOD_SPARSE, MODE_INIT
-from ...constants import PARAM
+from ...constants import PARAM, CONFIG
 
 
 @dataclass(frozen=False)
@@ -33,13 +32,80 @@ class Vcfg:
     init: MODE_INIT  # ridge
     maxiter: int
     lr: Optional[float]
-    tol: float
     lambd_ridge: float  # 1e-2
+    # for compatibility. throw the error if any code still use tol for computation
+    tol: Optional[float] = None
 
 DEFAULT_VAHADANE_CONFIG = Vcfg(regularizer=PARAM.OPTIM_DEFAULT_SPARSE_LAMBDA,
                                algorithm="fista", steps=PARAM.DICT_ITER_STEPS,
                                init='transpose', maxiter=PARAM.OPTIM_SPARSE_DEFAULT_MAX_ITER,
-                               lr=None, tol=PARAM.OPTIM_DEFAULT_TOL, lambd_ridge=PARAM.INIT_RIDGE_L2)
+                               lr=None, tol=None, lambd_ridge=PARAM.INIT_RIDGE_L2)
+
+
+def stain_mat_loop(cfg: Vcfg, od: torch.Tensor,
+                   tissue_mask: torch.Tensor,
+                   num_stains: int, rng: Optional[torch.Generator]) -> torch.Tensor:
+    algorithm = cfg.algorithm
+    regularizer = cfg.regularizer
+    lambd_ridge = cfg.lambd_ridge
+    steps = cfg.steps
+    init = cfg.init
+    maxiter = cfg.maxiter
+    lr = cfg.lr
+    out_dict_list = []
+
+    validate_shape(od, tissue_mask)
+
+    # B x (H*W) x C
+    od_flatten = od.flatten(start_dim=2, end_dim=-1).permute(0, 2, 1)
+    tissue_mask_flatten = tissue_mask.flatten(start_dim=2, end_dim=-1).permute(0, 2, 1)
+
+    for od_single, mask_single in zip(od_flatten, tissue_mask_flatten):
+        # 1 x num_pix x C
+        x = od_single[None, ...]
+        # 1 x num_pix x 1
+        mask_single = mask_single[None, ...]
+        # leave masking to dict_learning
+        # todo add num_stains here
+        dictionary = dict_learning(x,
+                                   tissue_mask_flatten=mask_single,
+                                   n_components=num_stains, algorithm=algorithm,
+                                   alpha=regularizer, lambd_ridge=lambd_ridge,
+                                   steps=steps,
+                                   init=init,
+                                   rng=rng, maxiter=maxiter, lr=lr,
+                                   )
+        sm = post_proc_dict(dictionary)
+        out_dict_list.append(sm)
+    return torch.cat(out_dict_list, dim=0)
+
+def stain_mat_vectorize(cfg,
+                        od: torch.Tensor,
+                        tissue_mask: torch.Tensor,
+                        num_stains: int,
+                        rng: Optional[torch.Generator]) -> torch.Tensor:
+    algorithm = cfg.algorithm
+    regularizer = cfg.regularizer
+    lambd_ridge = cfg.lambd_ridge
+    steps = cfg.steps
+    init = cfg.init
+    maxiter = cfg.maxiter
+    lr = cfg.lr
+    # B x pix x C
+    od_flatten = od.flatten(start_dim=2, end_dim=-1).permute(0, 2, 1)
+    # B x pix x 1
+    tissue_mask_flatten = tissue_mask.flatten(start_dim=2, end_dim=-1).permute(0, 2, 1)
+
+    dictionary = dict_learning(od_flatten,
+                               tissue_mask_flatten=tissue_mask_flatten,
+                               n_components=num_stains, algorithm=algorithm,
+                               alpha=regularizer, lambd_ridge=lambd_ridge,
+                               steps=steps,
+                               init=init,
+                               rng=rng, maxiter=maxiter, lr=lr,
+                               )
+
+    return post_proc_dict(dictionary)
 
 
 class VahadaneAlg(Callable):
@@ -73,35 +139,7 @@ class VahadaneAlg(Callable):
         device = od.device
         #  B x (HxWx1)
         tissue_mask = tissue_mask.to(device)
-        tissue_mask_flatten = tissue_mask.flatten(start_dim=1, end_dim=-1)
-        # B x (H*W) x C
-        od_flatten = od.flatten(start_dim=2, end_dim=-1).permute(0, 2, 1)
+        if not CONFIG.ENABLE_VECTORIZE:
+            return stain_mat_loop(self.cfg, od, tissue_mask, num_stains, rng)
+        return stain_mat_vectorize(self.cfg, od, tissue_mask, num_stains, rng)
 
-        out_dict_list = list()
-        algorithm = self.cfg.algorithm
-        regularizer = self.cfg.regularizer
-        lambd_ridge = self.cfg.lambd_ridge
-        steps = self.cfg.steps
-        init = self.cfg.init
-        maxiter = self.cfg.maxiter
-        lr = self.cfg.lr
-        tol = self.cfg.tol
-
-        for od_single, mask_single in zip(od_flatten, tissue_mask_flatten):
-            x = od_single[mask_single]
-            # todo add num_stains here
-            dictionary  = dict_learning(x, n_components=num_stains, algorithm=algorithm,
-                                           alpha=regularizer, lambd_ridge=lambd_ridge,
-                                           steps=steps,
-                                           init=init,
-                                           rng=rng, maxiter=maxiter, lr=lr,
-                                           tol=tol)
-        # H on first row.
-            dictionary = dictionary.T
-            # todo add num_stains here - sort?
-            # if dictionary[0, 0] < dictionary[1, 0]:
-            #     dictionary = dictionary[[1, 0], :]
-            dictionary, _ = torch.sort(dictionary, dim=0, descending=True)
-            out_dict_list.append(normalize_matrix_rows(dictionary))
-        # breakpoint()
-        return torch.stack(out_dict_list)
