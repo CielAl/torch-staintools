@@ -63,7 +63,7 @@ class StainSeparation(Normalizer):
         self.get_stain_matrix = StainExtraction(stain_alg, self.num_stains, self.rng)
 
     @torch.inference_mode()
-    def fit(self, target, mask: Optional[torch.Tensor] = None):
+    def fit(self, target, mask: Optional[torch.Tensor] = None, cache_keys: Optional[List[Hashable]] = None):
         """Fit to a target image.
 
         Note that the stain matrices are registered into buffers so that it's move to specified device
@@ -72,6 +72,7 @@ class StainSeparation(Normalizer):
         Args:
             target: BCHW. Assume it's cast to torch.float32 and scaled to [0, 1]
             mask: Optional masking. If None, will refer to the optional luminosity thresholding.
+            cache_keys: unique keys point the input batch to the cached stain matrices. `None` means no cache.
 
         Returns:
 
@@ -81,7 +82,10 @@ class StainSeparation(Normalizer):
         # B x num_stain x num_channel (concentration @ stain_mat --> RGB)
         mask = get_tissue_mask(target, self.luminosity_threshold, mask, ).contiguous()
         target_od = rgb2od(target)
-        stain_matrix_target = self.get_stain_matrix(target_od, mask)
+        # stain_matrix_target = self.get_stain_matrix(target_od, mask)
+
+        stain_matrix_target = self.stain_mat_cached(cache_keys=cache_keys, get_stain_mat=self.get_stain_matrix,
+                                                    target=target_od, mask=mask)
         # B x num_stain x num_channel
         self.register_buffer('stain_matrix_target', stain_matrix_target)
         # B x num_pix x num_stain
