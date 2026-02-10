@@ -9,7 +9,7 @@
 [![DOI](https://zenodo.org/badge/679661478.svg)](https://zenodo.org/doi/10.5281/zenodo.10453806)
 
 ## What's New (~ 1.0.7)
-- [x] **Version **: full vectorization support and dynamic shape tracking from **Dynamo**.
+- [x] **1.0.7**: full vectorization support and dynamic shape tracking from **Dynamo**.
 
 - [x] Alternative linear concentration solvers: ```'qr'``` (QR Decomposition) and ```'pinv'``` (Moore-Penrose inverse)
 
@@ -36,15 +36,15 @@
 ## Citation
 If this toolkit helps you in your publication, please feel free to cite with the following bibtex entry:
 ```bibtex
-@software{zhou_2024_10496083,
+@software{zhou_2024_10453806,
   author       = {Zhou, Yufei},
   title        = {CielAl/torch-staintools: V1.0.4 Release},
   month        = jan,
   year         = 2024,
   publisher    = {Zenodo},
   version      = {v1.0.4},
-  doi          = {10.5281/zenodo.10496083},
-  url          = {https://doi.org/10.5281/zenodo.10496083}
+  doi          = {10.5281/zenodo.10453806},
+  url          = {https://doi.org/10.5281/zenodo.10453806}
 }
 ```
 
@@ -63,6 +63,7 @@ If this toolkit helps you in your publication, please feel free to cite with the
 
 #### Comparison: StainTools
 ![Screenshot](https://raw.githubusercontent.com/CielAl/torch-staintools/main/showcases/sample_out_augmentation_staintools.png)
+
 <br />
 
 
