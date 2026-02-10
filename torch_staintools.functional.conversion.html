@@ -19,7 +19,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="torch_staintools.functional.optimization package" href="torch_staintools.functional.optimization.html" />
+    <link rel="next" title="torch_staintools.functional.dynamo_wrapper package" href="torch_staintools.functional.dynamo_wrapper.html" />
     <link rel="prev" title="torch_staintools.functional.concentration package" href="torch_staintools.functional.concentration.html" /> 
 </head>
 
@@ -52,6 +52,7 @@
 <li class="toctree-l4"><a class="reference internal" href="torch_staintools.cache.html">torch_staintools.cache package</a></li>
 <li class="toctree-l4"><a class="reference internal" href="torch_staintools.constants.html">torch_staintools.constants package</a></li>
 <li class="toctree-l4 current"><a class="reference internal" href="torch_staintools.functional.html">torch_staintools.functional package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="torch_staintools.hash.html">torch_staintools.hash package</a></li>
 <li class="toctree-l4"><a class="reference internal" href="torch_staintools.normalizer.html">torch_staintools.normalizer package</a></li>
 </ul>
 </li>
@@ -132,13 +133,13 @@
 <span id="torch-staintools-functional-conversion-od-module"></span><h2>torch_staintools.functional.conversion.od module<a class="headerlink" href="#module-torch_staintools.functional.conversion.od" title="Link to this heading"></a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="torch_staintools.functional.conversion.od.od2rgb">
-<span class="sig-prename descclassname"><span class="pre">torch_staintools.functional.conversion.od.</span></span><span class="sig-name descname"><span class="pre">od2rgb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">OD</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torch_staintools.functional.conversion.od.od2rgb" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">torch_staintools.functional.conversion.od.</span></span><span class="sig-name descname"><span class="pre">od2rgb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">od</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torch_staintools.functional.conversion.od.od2rgb" title="Link to this definition"></a></dt>
 <dd><p>Convert Optical Density to RGB space</p>
 <p>Cedric Walker’s adaptation from torchvahadane
 RGB = 255 * exp(-1*OD_RGB)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>OD</strong> – OD</p>
+<dd class="field-odd"><p><strong>od</strong> – OD</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>RGB.</p>
@@ -154,7 +155,7 @@ RGB = 255 * exp(-1*OD_RGB)</p>
 RGB = 255 * exp(-1*OD_RGB) –&gt; od_rgb = -1 * log(RGB / 255)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>image</strong> – Image RGB. Input scale does not matter.</p>
+<dd class="field-odd"><p><strong>image</strong> – Image RGB. Either float image in [0, 1] or ubyte image in [0, 255]</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Optical density RGB image.</p>
@@ -173,7 +174,7 @@ RGB = 255 * exp(-1*OD_RGB) –&gt; od_rgb = -1 * log(RGB / 255)</p>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="torch_staintools.functional.concentration.html" class="btn btn-neutral float-left" title="torch_staintools.functional.concentration package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="torch_staintools.functional.optimization.html" class="btn btn-neutral float-right" title="torch_staintools.functional.optimization package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="torch_staintools.functional.dynamo_wrapper.html" class="btn btn-neutral float-right" title="torch_staintools.functional.dynamo_wrapper package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

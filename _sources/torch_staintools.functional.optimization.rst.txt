@@ -12,10 +12,18 @@ torch\_staintools.functional.optimization.dict\_learning module
    :undoc-members:
    :show-inheritance:
 
-torch\_staintools.functional.optimization.solver module
--------------------------------------------------------
+torch\_staintools.functional.optimization.linear\_solver module
+---------------------------------------------------------------
 
-.. automodule:: torch_staintools.functional.optimization.solver
+.. automodule:: torch_staintools.functional.optimization.linear_solver
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+torch\_staintools.functional.optimization.sparse\_solver module
+---------------------------------------------------------------
+
+.. automodule:: torch_staintools.functional.optimization.sparse_solver
    :members:
    :undoc-members:
    :show-inheritance:

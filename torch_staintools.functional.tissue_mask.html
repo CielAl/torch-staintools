@@ -52,6 +52,7 @@
 <li class="toctree-l4"><a class="reference internal" href="torch_staintools.cache.html">torch_staintools.cache package</a></li>
 <li class="toctree-l4"><a class="reference internal" href="torch_staintools.constants.html">torch_staintools.constants package</a></li>
 <li class="toctree-l4 current"><a class="reference internal" href="torch_staintools.functional.html">torch_staintools.functional package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="torch_staintools.hash.html">torch_staintools.hash package</a></li>
 <li class="toctree-l4"><a class="reference internal" href="torch_staintools.normalizer.html">torch_staintools.normalizer package</a></li>
 </ul>
 </li>
@@ -103,7 +104,7 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="torch_staintools.functional.tissue_mask.get_tissue_mask">
-<span class="sig-prename descclassname"><span class="pre">torch_staintools.functional.tissue_mask.</span></span><span class="sig-name descname"><span class="pre">get_tissue_mask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">luminosity_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throw_error</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">true_when_empty</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#torch_staintools.functional.tissue_mask.get_tissue_mask" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">torch_staintools.functional.tissue_mask.</span></span><span class="sig-name descname"><span class="pre">get_tissue_mask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">luminosity_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throw_error</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">true_when_empty</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#torch_staintools.functional.tissue_mask.get_tissue_mask" title="Link to this definition"></a></dt>
 <dd><p>Get a binary mask where true denotes pixels with a luminosity less than the specified threshold.</p>
 <p>Typically, we use to identify tissue in the image and exclude the bright white background.
 If <cite>luminosity_threshold</cite> is None then entire image region is considered as tissue</p>
@@ -113,6 +114,8 @@ If <cite>luminosity_threshold</cite> is None then entire image region is conside
 <li><p><strong>image</strong> – RGB [0, 1]. -&gt; BCHW</p></li>
 <li><p><strong>luminosity_threshold</strong> – threshold of luminosity in range of [0, 1].  Pixels with intensity within (0, threshold)
 are considered as tissue. If None then all pixels are considered as tissue, effectively bypass this step.</p></li>
+<li><p><strong>mask</strong> – An optional custom mask to override the luminosity-based tissue masking, if present.
+[B x 1 x H x W]</p></li>
 <li><p><strong>throw_error</strong> – whether to throw error</p></li>
 <li><p><strong>true_when_empty</strong> – if True, then return an all-True mask if no tissue are detected. Effectively bypass the
 tissue detection. Note that in certain cases, both Vahadane and Macenko may either obtain low quality
@@ -121,6 +124,13 @@ results or even crash if the nearly entire input image is background.</p></li>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>mask (B1HW)</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#torch_staintools.functional.tissue_mask.TissueMaskException" title="torch_staintools.functional.tissue_mask.TissueMaskException"><strong>TissueMaskException</strong></a> – Raised if the entire batch is empty. Handle it to
+    bypass the batch. If part of the batch is empty (no tissue) it will go
+    through and handled by solvers differently. Macenko may return an all black/white tensor
+    depending on the concentration solvers. Vahadane may return the empty patch with color distorted.
+    Overall it is recommended to clean the data first as background patches result in unstable numerical solution.</p>
 </dd>
 </dl>
 </dd></dl>

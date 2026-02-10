@@ -52,6 +52,7 @@
 <li class="toctree-l4"><a class="reference internal" href="torch_staintools.cache.html">torch_staintools.cache package</a></li>
 <li class="toctree-l4"><a class="reference internal" href="torch_staintools.constants.html">torch_staintools.constants package</a></li>
 <li class="toctree-l4"><a class="reference internal" href="torch_staintools.functional.html">torch_staintools.functional package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="torch_staintools.hash.html">torch_staintools.hash package</a></li>
 <li class="toctree-l4"><a class="reference internal" href="torch_staintools.normalizer.html">torch_staintools.normalizer package</a></li>
 </ul>
 </li>
@@ -136,12 +137,15 @@
 <li class="toctree-l4"><a class="reference internal" href="torch_staintools.base_module.html#torch_staintools.base_module.base.CachedRNGModule.build"><code class="docutils literal notranslate"><span class="pre">CachedRNGModule.build()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="torch_staintools.base_module.html#torch_staintools.base_module.base.CachedRNGModule.cache_initialized"><code class="docutils literal notranslate"><span class="pre">CachedRNGModule.cache_initialized()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="torch_staintools.base_module.html#torch_staintools.base_module.base.CachedRNGModule.cache_size_limit"><code class="docutils literal notranslate"><span class="pre">CachedRNGModule.cache_size_limit</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="torch_staintools.base_module.html#torch_staintools.base_module.base.CachedRNGModule.default_hash"><code class="docutils literal notranslate"><span class="pre">CachedRNGModule.default_hash()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="torch_staintools.base_module.html#torch_staintools.base_module.base.CachedRNGModule.device"><code class="docutils literal notranslate"><span class="pre">CachedRNGModule.device</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="torch_staintools.base_module.html#torch_staintools.base_module.base.CachedRNGModule.dump_cache"><code class="docutils literal notranslate"><span class="pre">CachedRNGModule.dump_cache()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="torch_staintools.base_module.html#torch_staintools.base_module.base.CachedRNGModule.get_batch"><code class="docutils literal notranslate"><span class="pre">CachedRNGModule.get_batch()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="torch_staintools.base_module.html#torch_staintools.base_module.base.CachedRNGModule.load_cache"><code class="docutils literal notranslate"><span class="pre">CachedRNGModule.load_cache()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="torch_staintools.base_module.html#torch_staintools.base_module.base.CachedRNGModule.rng"><code class="docutils literal notranslate"><span class="pre">CachedRNGModule.rng</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="torch_staintools.base_module.html#torch_staintools.base_module.base.CachedRNGModule.stain_mat_cached"><code class="docutils literal notranslate"><span class="pre">CachedRNGModule.stain_mat_cached()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="torch_staintools.base_module.html#torch_staintools.base_module.base.CachedRNGModule.stain_mat_cached_helper"><code class="docutils literal notranslate"><span class="pre">CachedRNGModule.stain_mat_cached_helper()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="torch_staintools.base_module.html#torch_staintools.base_module.base.CachedRNGModule.tensor_cache"><code class="docutils literal notranslate"><span class="pre">CachedRNGModule.tensor_cache</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="torch_staintools.base_module.html#torch_staintools.base_module.base.CachedRNGModule.tensor_from_cache"><code class="docutils literal notranslate"><span class="pre">CachedRNGModule.tensor_from_cache()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="torch_staintools.base_module.html#torch_staintools.base_module.base.CachedRNGModule.tensor_from_cache_helper"><code class="docutils literal notranslate"><span class="pre">CachedRNGModule.tensor_from_cache_helper()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="torch_staintools.base_module.html#torch_staintools.base_module.base.CachedRNGModule.to"><code class="docutils literal notranslate"><span class="pre">CachedRNGModule.to()</span></code></a></li>
 </ul>
 </li>
@@ -158,7 +162,9 @@
 <li class="toctree-l4"><a class="reference internal" href="torch_staintools.cache.html#torch_staintools.cache.base.Cache.data_cache"><code class="docutils literal notranslate"><span class="pre">Cache.data_cache</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="torch_staintools.cache.html#torch_staintools.cache.base.Cache.dump"><code class="docutils literal notranslate"><span class="pre">Cache.dump()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="torch_staintools.cache.html#torch_staintools.cache.base.Cache.get"><code class="docutils literal notranslate"><span class="pre">Cache.get()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="torch_staintools.cache.html#torch_staintools.cache.base.Cache.get_batch"><code class="docutils literal notranslate"><span class="pre">Cache.get_batch()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="torch_staintools.cache.html#torch_staintools.cache.base.Cache.get_batch_hit"><code class="docutils literal notranslate"><span class="pre">Cache.get_batch_hit()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="torch_staintools.cache.html#torch_staintools.cache.base.Cache.get_batch_miss"><code class="docutils literal notranslate"><span class="pre">Cache.get_batch_miss()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="torch_staintools.cache.html#torch_staintools.cache.base.Cache.is_cache_valid"><code class="docutils literal notranslate"><span class="pre">Cache.is_cache_valid()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="torch_staintools.cache.html#torch_staintools.cache.base.Cache.is_cached"><code class="docutils literal notranslate"><span class="pre">Cache.is_cached()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="torch_staintools.cache.html#torch_staintools.cache.base.Cache.load"><code class="docutils literal notranslate"><span class="pre">Cache.load()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="torch_staintools.cache.html#torch_staintools.cache.base.Cache.query"><code class="docutils literal notranslate"><span class="pre">Cache.query()</span></code></a></li>
@@ -173,13 +179,16 @@
 <li class="toctree-l2"><a class="reference internal" href="torch_staintools.cache.html#module-torch_staintools.cache.tensor_cache">torch_staintools.cache.tensor_cache module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="torch_staintools.cache.html#torch_staintools.cache.tensor_cache.TensorCache"><code class="docutils literal notranslate"><span class="pre">TensorCache</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="torch_staintools.cache.html#torch_staintools.cache.tensor_cache.TensorCache.build"><code class="docutils literal notranslate"><span class="pre">TensorCache.build()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="torch_staintools.cache.html#torch_staintools.cache.tensor_cache.TensorCache.data_cache"><code class="docutils literal notranslate"><span class="pre">TensorCache.data_cache</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="torch_staintools.cache.html#torch_staintools.cache.tensor_cache.TensorCache.collect"><code class="docutils literal notranslate"><span class="pre">TensorCache.collect()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="torch_staintools.cache.html#torch_staintools.cache.tensor_cache.TensorCache.device"><code class="docutils literal notranslate"><span class="pre">TensorCache.device</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="torch_staintools.cache.html#torch_staintools.cache.tensor_cache.TensorCache.get_batch_hit"><code class="docutils literal notranslate"><span class="pre">TensorCache.get_batch_hit()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="torch_staintools.cache.html#torch_staintools.cache.tensor_cache.TensorCache.get_batch_miss"><code class="docutils literal notranslate"><span class="pre">TensorCache.get_batch_miss()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="torch_staintools.cache.html#torch_staintools.cache.tensor_cache.TensorCache.is_cached"><code class="docutils literal notranslate"><span class="pre">TensorCache.is_cached()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="torch_staintools.cache.html#torch_staintools.cache.tensor_cache.TensorCache.load"><code class="docutils literal notranslate"><span class="pre">TensorCache.load()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="torch_staintools.cache.html#torch_staintools.cache.tensor_cache.TensorCache.query"><code class="docutils literal notranslate"><span class="pre">TensorCache.query()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="torch_staintools.cache.html#torch_staintools.cache.tensor_cache.TensorCache.to"><code class="docutils literal notranslate"><span class="pre">TensorCache.to()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="torch_staintools.cache.html#torch_staintools.cache.tensor_cache.TensorCache.validate_value_type"><code class="docutils literal notranslate"><span class="pre">TensorCache.validate_value_type()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="torch_staintools.cache.html#torch_staintools.cache.tensor_cache.TensorCache.write_batch"><code class="docutils literal notranslate"><span class="pre">TensorCache.write_batch()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -213,10 +222,15 @@
 <li class="toctree-l4"><a class="reference internal" href="torch_staintools.functional.conversion.html#module-torch_staintools.functional.conversion">Module contents</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="torch_staintools.functional.dynamo_wrapper.html">torch_staintools.functional.dynamo_wrapper package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="torch_staintools.functional.dynamo_wrapper.html#module-torch_staintools.functional.dynamo_wrapper">Module contents</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="torch_staintools.functional.optimization.html">torch_staintools.functional.optimization package</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="torch_staintools.functional.optimization.html#submodules">Submodules</a></li>
 <li class="toctree-l4"><a class="reference internal" href="torch_staintools.functional.optimization.html#module-torch_staintools.functional.optimization.dict_learning">torch_staintools.functional.optimization.dict_learning module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="torch_staintools.functional.optimization.html#module-torch_staintools.functional.optimization.solver">torch_staintools.functional.optimization.solver module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="torch_staintools.functional.optimization.html#module-torch_staintools.functional.optimization.linear_solver">torch_staintools.functional.optimization.linear_solver module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="torch_staintools.functional.optimization.html#module-torch_staintools.functional.optimization.sparse_solver">torch_staintools.functional.optimization.sparse_solver module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="torch_staintools.functional.optimization.html#module-torch_staintools.functional.optimization.sparse_util">torch_staintools.functional.optimization.sparse_util module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="torch_staintools.functional.optimization.html#module-torch_staintools.functional.optimization">Module contents</a></li>
 </ul>
@@ -246,6 +260,35 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="torch_staintools.functional.html#module-torch_staintools.functional">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="torch_staintools.hash.html">torch_staintools.hash package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="torch_staintools.hash.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torch_staintools.hash.html#module-torch_staintools.hash.color">torch_staintools.hash.color module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="torch_staintools.hash.html#torch_staintools.hash.color.od_angle_hash64"><code class="docutils literal notranslate"><span class="pre">od_angle_hash64()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="torch_staintools.hash.html#module-torch_staintools.hash.dhash">torch_staintools.hash.dhash module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="torch_staintools.hash.html#torch_staintools.hash.dhash.od_dhash"><code class="docutils literal notranslate"><span class="pre">od_dhash()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="torch_staintools.hash.html#module-torch_staintools.hash.hash_util">torch_staintools.hash.hash_util module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="torch_staintools.hash.html#torch_staintools.hash.hash_util.pack_bits_u64"><code class="docutils literal notranslate"><span class="pre">pack_bits_u64()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="torch_staintools.hash.html#module-torch_staintools.hash.key">torch_staintools.hash.key module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="torch_staintools.hash.html#torch_staintools.hash.key.key_from_od"><code class="docutils literal notranslate"><span class="pre">key_from_od()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="torch_staintools.hash.html#torch_staintools.hash.key.lbp_code_to_bytes"><code class="docutils literal notranslate"><span class="pre">lbp_code_to_bytes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="torch_staintools.hash.html#torch_staintools.hash.key.to_uint"><code class="docutils literal notranslate"><span class="pre">to_uint()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="torch_staintools.hash.html#module-torch_staintools.hash.lbp">torch_staintools.hash.lbp module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="torch_staintools.hash.html#torch_staintools.hash.lbp.hist_lbp8_256_to_59"><code class="docutils literal notranslate"><span class="pre">hist_lbp8_256_to_59()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="torch_staintools.hash.html#torch_staintools.hash.lbp.od_lbp8_hash"><code class="docutils literal notranslate"><span class="pre">od_lbp8_hash()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="torch_staintools.hash.html#torch_staintools.hash.lbp.u2_hist59_to_riu2_hist10"><code class="docutils literal notranslate"><span class="pre">u2_hist59_to_riu2_hist10()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="torch_staintools.hash.html#module-torch_staintools.hash">Module contents</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="torch_staintools.normalizer.html">torch_staintools.normalizer package</a><ul>

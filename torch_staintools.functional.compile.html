@@ -52,6 +52,7 @@
 <li class="toctree-l4"><a class="reference internal" href="torch_staintools.cache.html">torch_staintools.cache package</a></li>
 <li class="toctree-l4"><a class="reference internal" href="torch_staintools.constants.html">torch_staintools.constants package</a></li>
 <li class="toctree-l4 current"><a class="reference internal" href="torch_staintools.functional.html">torch_staintools.functional package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="torch_staintools.hash.html">torch_staintools.hash package</a></li>
 <li class="toctree-l4"><a class="reference internal" href="torch_staintools.normalizer.html">torch_staintools.normalizer package</a></li>
 </ul>
 </li>
@@ -113,12 +114,15 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="torch_staintools.functional.compile.lazy_compile">
-<span class="sig-prename descclassname"><span class="pre">torch_staintools.functional.compile.</span></span><span class="sig-name descname"><span class="pre">lazy_compile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#torch_staintools.functional.compile.CompiledWrapper" title="torch_staintools.functional.compile.CompiledWrapper"><span class="pre">CompiledWrapper</span></a></span></span><a class="headerlink" href="#torch_staintools.functional.compile.lazy_compile" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">torch_staintools.functional.compile.</span></span><span class="sig-name descname"><span class="pre">lazy_compile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dynamic</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#torch_staintools.functional.compile.CompiledWrapper" title="torch_staintools.functional.compile.CompiledWrapper"><span class="pre">CompiledWrapper</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Callable</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#torch_staintools.functional.compile.CompiledWrapper" title="torch_staintools.functional.compile.CompiledWrapper"><span class="pre">CompiledWrapper</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#torch_staintools.functional.compile.lazy_compile" title="Link to this definition"></a></dt>
 <dd><p>Enable or disable torch.compile by torch_staintools.constants.CONFIG.ENABLE_COMPILE.</p>
 <p>If True, function will be compiled and cached. Otherwise, it will be executed in eager mode.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>func</strong> – The function to compile.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>func</strong> – The function to compile.</p></li>
+<li><p><strong>dynamic</strong> – Whether to enable dynamic shapes in torch.compile.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The compiled function or the original function.</p>
