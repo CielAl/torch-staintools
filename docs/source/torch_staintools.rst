@@ -12,6 +12,7 @@ Subpackages
    torch_staintools.cache
    torch_staintools.constants
    torch_staintools.functional
+   torch_staintools.hash
    torch_staintools.normalizer
 
 Submodules

@@ -14,7 +14,16 @@ class Cache(ABC, Generic[C, V]):
     """
 
     __size_limit: int
-    data_cache: C
+    _data_cache: C
+
+    def is_cache_valid(self):
+        return hasattr(self, '_data_cache') and not self._data_cache is None
+
+    @property
+    def data_cache(self):
+        if not self.is_cache_valid():
+            self._data_cache = self._new_cache()
+        return self._data_cache
 
     @abstractmethod
     def __len__(self):
@@ -29,15 +38,20 @@ class Cache(ABC, Generic[C, V]):
     def size_limit(self):
         return self.__size_limit
 
+    @size_limit.setter
+    def size_limit(self, size_limit: int):
+        assert isinstance(size_limit, int)
+        self.__size_limit = size_limit
+
     def __init__(self, size_limit: int):
         """
 
         Args:
-            size_limit: limit of cache size by number of entries (no greater than). If negative then no size limit is
-                enforced.
+            size_limit: limit of cache size by number of entries (no greater than). If zero or negative then no size
+            limit is enforced.
         """
         self.__size_limit = size_limit
-        self.data_cache = self._new_cache()
+        self._data_cache = self._new_cache()
 
     @abstractmethod
     def query(self, key: Hashable):
@@ -195,18 +209,18 @@ class Cache(ABC, Generic[C, V]):
         Args:
             current_size: current size of cache
             in_data_size: size of new data
-            limit_size: current size limit (no greater than). If negative then no size limit is enforced.
+            limit_size: current size limit (no greater than). If zero or negative then no size limit is enforced.
 
         Returns:
             bool. If the size is still in-bound with new data loaded into the cache.
         """
-        if limit_size < 0:
+        if limit_size <= 0:
             return True
         # logger.debug(f"check: {current_size} + {in_data_size} <= {limit_size}")
         return current_size + in_data_size <= limit_size
 
     @abstractmethod
-    def _new_cache(self):
+    def _new_cache(self) -> C:
         raise NotImplementedError
 
     @classmethod

@@ -41,11 +41,12 @@ def ridge(b: torch.Tensor, a: torch.Tensor, alpha: Optional[float] = None):
 
 
 def initialize_code(x: torch.Tensor, weight: torch.Tensor, mode: MODE_INIT, rng: torch.Generator):
-    """ code initialization in dictionary learning.
+    """Code initialization in dictionary learning.
 
     The dictionary learning is to find the sparse decomposition of data X = D * A,
     wherein D is the dictionary and A is the code.
     For ridge initialization, the L2 penalty is customized with constants.INIT_RIDGE_L2
+
     Args:
         x: data. B x num_pixel x num_channel
         weight: dictionary. B x num_channel x num_stain.

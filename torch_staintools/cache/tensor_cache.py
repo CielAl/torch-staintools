@@ -22,7 +22,7 @@ class TensorCache(Cache[Dict[Hashable, torch.Tensor], torch.Tensor]):
 
     """
     # perhaps tensordict can be used in future
-    data_cache: Dict[Hashable, torch.Tensor]
+    _data_cache: Dict[Hashable, torch.Tensor]
     __size_limit: int
     device: torch.device
 
@@ -175,7 +175,13 @@ class TensorCache(Cache[Dict[Hashable, torch.Tensor], torch.Tensor]):
         data_dict = torch.load(path)
         data_dict = TensorCache._to_device(data_dict, self.device, dict_inplace=True)
         self.data_cache.update(data_dict)
-        self.__size_limit = len(self.data_cache)
+        new_data_size = len(self.data_cache)
+        if self.size_limit <= 0:
+            return
+        assert self.size_limit > 0
+        # update
+        self.size_limit = max(self.size_limit, new_data_size)
+
 
     def _new_cache(self) -> Dict:
         """Implementation of creating new cache - built-in dict.
@@ -195,7 +201,7 @@ class TensorCache(Cache[Dict[Hashable, torch.Tensor], torch.Tensor]):
 
         Args:
             size_limit: limit of the cache size by number of entries (no greater than number of keys). Negative value
-                means no limit will be enforced.
+                or zero means no limit will be enforced.
             device: which device (CPU or GPUs) to store the tensor. If None then by default it will be set as
                 torch.device('cpu').
             path: If specified, previously dumped cache file will be loaded from the path.
@@ -222,6 +228,6 @@ class TensorCache(Cache[Dict[Hashable, torch.Tensor], torch.Tensor]):
         """
         if self.device == device:
             return
-        self.data_cache = TensorCache._to_device(self.data_cache, device, dict_inplace=True)
+        self.__data_cache = TensorCache._to_device(self.data_cache, device, dict_inplace=True)
         self.device = device
         return self

@@ -304,7 +304,8 @@ class Augmentor(CachedRNGModule):
             luminosity_threshold: luminosity threshold to find tissue regions (smaller than but positive)
                 a pixel is considered as being tissue if the intensity falls in the open interval of (0, threshold).
             use_cache: whether to use cache to save the stain matrix to avoid re-computation
-            cache_size_limit: size limit of the cache. negative means no limits.
+            cache_size_limit: size limit of the cache. non-positive means no limits. If ```load_path``` is also
+                specified the cache size limit is at least the size of the existing cached data.
             device: what device to hold the cache.
             load_path: If specified, then stain matrix cache will be loaded from the file path. See the `cache`
                 module for more details.

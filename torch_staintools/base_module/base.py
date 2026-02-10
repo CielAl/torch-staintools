@@ -89,7 +89,10 @@ class CachedRNGModule(torch.nn.Module):
         assert self.cache_initialized()
         self.tensor_cache.dump(path)
 
-
+    def load_cache(self, path: str):
+        if not self.cache_initialized():
+            self._tensor_cache = self._init_cache(use_cache=True, cache_size_limit=-1, device=self.device)
+        self._tensor_cache.load(path)
 
 #############################3
 

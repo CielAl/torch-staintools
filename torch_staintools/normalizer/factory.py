@@ -27,7 +27,7 @@ class NormalizerBuilder:
               sparse_stain_solver: METHOD_SPARSE = 'fista',
               sparse_dict_steps: int = PARAM.DICT_ITER_STEPS, # 60
               dict_init: MODE_INIT = 'transpose',
-              concentration_solver: METHOD_FACTORIZE = 'fista',
+              concentration_solver: METHOD_FACTORIZE = 'qr',
               num_stains: int = 2,
               luminosity_threshold: Optional[float] = 0.8,
               perc: int = 1,
@@ -72,8 +72,9 @@ class NormalizerBuilder:
                 If None, the invert of Lipschitz constant of the gradient is used.
             use_cache: whether to use cache to save the stain matrix of input image to normalize.  Only applies
                 to `macenko` and 'vahadane'
-            cache_size_limit: size limit of the cache. negative means no limits. Only applies
-                to `macenko` and 'vahadane'
+            cache_size_limit: size limit of the cache. non-positive means no limits. Only applies
+                to `macenko` and 'vahadane'. If ```load_path``` is also specified the cache size limit is at least
+                the size of the existing cached data.
             device: what device to hold the cache and the normalizer. If none the device is set to cpu. Only applies
                 to `macenko` and 'vahadane'
             load_path: If specified, then stain matrix cache will be loaded from the file path. See the `cache`

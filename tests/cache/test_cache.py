@@ -44,7 +44,6 @@ class TestTensorCache(unittest.TestCase):
         dummy_tensors = TestTensorCache.new_dummy_tensors(num_elements)
         dummy_keys = TestTensorCache.new_dummy_keys(0, num_elements)
         tensor_cache.write_batch(dummy_keys, dummy_tensors)
-
         cache_out = tensor_cache.get_batch_hit(dummy_keys)
         cache_out_stack = cache_out
         self.assertTrue((cache_out_stack == dummy_tensors).all())
