@@ -52,14 +52,14 @@ class TestFunctional(unittest.TestCase):
                       conc_solver: ConcentrationSolver,
                       luminosity_threshold: float,
                       mask: Optional[torch.Tensor],
-                      num_stains: int, rng: Optional[torch.Generator]):
+                      rng: Optional[torch.Generator]):
 
         # lab_tensor = rgb_to_lab(convert_image_dtype(dummy_tensor))
         mask = get_tissue_mask(dummy_tensor, luminosity_threshold, mask)
         od_dummy = rgb2od(dummy_tensor)
         stain_matrix = get_stain_mat(od=od_dummy,
                                      mask=mask,
-                                     num_stains=num_stains, rng=rng)
+                                     )
 
         concentration = conc_solver(od_dummy, stain_matrix, rng=rng)
         reconstructed = img_from_concentration(concentration, stain_matrix, dummy_tensor.shape, (0, 1))
@@ -72,13 +72,12 @@ class TestFunctional(unittest.TestCase):
                             conc_solver: ConcentrationSolver,
                             luminosity_threshold: Optional[float],
                             mask: Optional[torch.Tensor],
-                            num_stains: int, rng: Optional[torch.Generator]):
+                            rng: Optional[torch.Generator]):
 
         result_tuple = TestFunctional.stain_extract(dummy_tensor_ubyte, get_stain_mat,
                                                     conc_solver=conc_solver,
                                                     luminosity_threshold=luminosity_threshold,
                                                     mask=mask,
-                                                    num_stains=num_stains,
                                                     rng=rng)
 
         stain_matrix, concentration, reconstructed = result_tuple
@@ -97,7 +96,7 @@ class TestFunctional(unittest.TestCase):
                               f"Dict pos: {CONFIG.DICT_POSITIVE_DICTIONARY}")
         # size
         batch_size, channel_size, height, width = dummy_tensor_ubyte.shape
-        tester.assertTrue(stain_matrix.shape == (batch_size, num_stains, channel_size))
+        tester.assertTrue(stain_matrix.shape == (batch_size, get_stain_mat.num_stains, channel_size))
 
 
     def eval_wrapper(self, extractor):
@@ -125,27 +124,28 @@ class TestFunctional(unittest.TestCase):
                                                            dummy_tensor_ubyte,
                                                            extractor, luminosity_threshold=None,
                                                            mask=m,
-                                                           num_stains=2, conc_solver=solver, rng=None)
+                                                            conc_solver=solver, rng=None)
                         solver.cfg.positive = False
                         TestFunctional.extract_eval_helper(self,
                                                            dummy_tensor_ubyte,
                                                            extractor, luminosity_threshold=None,
                                                            mask=m,
-                                                           num_stains=2, conc_solver=solver, rng=None)
+                                                           conc_solver=solver, rng=None)
 
     def test_stains(self):
-        macenko = StainExtraction(MacenkoAlg(DEFAULT_MACENKO_CONFIG))
-        vahadane = StainExtraction(VahadaneAlg(DEFAULT_VAHADANE_CONFIG))
+        macenko = StainExtraction(MacenkoAlg(DEFAULT_MACENKO_CONFIG), num_stains=2, rng=None)
+        vahadane = StainExtraction(VahadaneAlg(DEFAULT_VAHADANE_CONFIG), num_stains=2, rng=None)
         # not support num_stains other than 2
         dummy_tensor = TestFunctional.new_dummy_img_tensor_ubyte()
         with self.assertRaises(AssertionError):
+            m3 = StainExtraction(MacenkoAlg(DEFAULT_MACENKO_CONFIG), num_stains=3, rng=None)
             TestFunctional.extract_eval_helper(self,
                                                dummy_tensor,
-                                               macenko,
+                                               m3,
                                                conc_solver=ConcentrationSolver(TestFunctional.POSITIVE_CONC_CFG),
                                                luminosity_threshold=None,
                                                mask=None,
-                                               num_stains=3, rng=None)
+                                               rng=None)
 
         self.eval_wrapper(macenko)
         self.eval_wrapper(vahadane)
@@ -153,10 +153,12 @@ class TestFunctional(unittest.TestCase):
         # github remote end fails due to driver issues. Test it locally.
         # # vahadane with rng and lr
         # vahadane.stain_algorithm.cfg.lr = 0.5
-        # TestFunctional.extract_eval_helper(self, vahadane,
-        #                                    conc_solver=ConcentrationSolver(TestFunctional.POSITIVE_CONC_CFG),
-        #                                    luminosity_threshold=None,
-        #                                    num_stains=3, rng=torch.Generator(1))
+        v3 = StainExtraction(VahadaneAlg(DEFAULT_VAHADANE_CONFIG), num_stains=3, rng=None)
+        TestFunctional.extract_eval_helper(self, dummy_tensor, v3,
+                                           mask=None,
+                                           conc_solver=ConcentrationSolver(TestFunctional.POSITIVE_CONC_CFG),
+                                           luminosity_threshold=None,
+                                           rng=torch.Generator(1))
 
 
     def test_tissue_mask(self):

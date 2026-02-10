@@ -1,9 +1,11 @@
 import torch
 
 from torch_staintools.constants import PARAM
-from torch_staintools.hash.hash_util import _avgpool_resize_area
+from torch_staintools.functional.compile import lazy_compile
+from torch_staintools.hash.hash_util import _avgpool_resize_area, pack_bits_u64
 
 
+@lazy_compile(dynamic=True)
 def _od_dhash_hv_uint64(
     od: torch.Tensor,
     h: int,
@@ -33,11 +35,12 @@ def _od_dhash_hv_uint64(
     v_bits = (small_v[:, :, 1:, :] > small_v[:, :, :-1, :]).reshape(B, nbits)
 
     # LSB order
-    weights = (1 << torch.arange(nbits, device=od.device, dtype=torch.int64))  # .to(torch.uint64)
-    h_hash = (h_bits.to(torch.int64) * weights).sum(dim=1)
-    v_hash = (v_bits.to(torch.int64) * weights).sum(dim=1)
-
-    return h_hash.to(torch.uint64), v_hash.to(torch.uint64)
+    # weights = (1 << torch.arange(nbits, device=od.device, dtype=torch.int64))  # .to(torch.uint64)
+    # h_hash = (h_bits.to(torch.int64) * weights).sum(dim=1)
+    # v_hash = (v_bits.to(torch.int64) * weights).sum(dim=1)
+    h_hash = pack_bits_u64(h_bits)
+    v_hash = pack_bits_u64(v_bits)
+    return h_hash, v_hash
 
 
 @torch.inference_mode()

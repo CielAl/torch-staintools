@@ -1,9 +1,6 @@
 import torch
 from torchvision.transforms.functional import convert_image_dtype
-
 from torch_staintools.functional.compile import lazy_compile
-
-_eps_val = torch.finfo(torch.float32).eps
 
 
 @lazy_compile(dynamic=True)

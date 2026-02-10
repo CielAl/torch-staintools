@@ -1,5 +1,5 @@
 from .base import Cache
-from typing import Dict, Hashable, Optional, TYPE_CHECKING, Union
+from typing import Dict, Hashable, Optional, TYPE_CHECKING, Union, List, Callable
 import torch
 from ..functional.utility.implementation import default_device
 from ..loggers import GlobalLoggers
@@ -25,6 +25,16 @@ class TensorCache(Cache[Dict[Hashable, torch.Tensor], torch.Tensor]):
     data_cache: Dict[Hashable, torch.Tensor]
     __size_limit: int
     device: torch.device
+
+    @classmethod
+    def collect(cls, tensor_batch_list: List[torch.Tensor]) -> torch.Tensor:
+        batch_size = len(tensor_batch_list)
+        assert batch_size > 0
+        out = torch.empty((batch_size, *tensor_batch_list[0].shape),
+                          device=tensor_batch_list[0].device, dtype=tensor_batch_list[0].dtype)
+        for i, m in enumerate(tensor_batch_list):
+            out[i].copy_(m)
+        return out
 
     def __len__(self):
         """Size of cache given by number of entries stored.
@@ -88,6 +98,32 @@ class TensorCache(Cache[Dict[Hashable, torch.Tensor], torch.Tensor]):
         value = TensorCache.validate_value_type(value)
         # logger.debug(f"key={key} - write")
         self.data_cache[key] = value.to(self.device)
+
+    def write_batch(self, keys: List[Hashable], batch: torch.Tensor):
+        """Write a batch of data to the cache.
+
+        Args:
+            keys: list of keys corresponding to individual data points in the batch.
+            batch: batch data to cache.
+
+        Returns:
+
+        """
+        # if not Cache.size_in_bound(len(self), len(keys), self.size_limit):
+        #     return
+        logger.debug(f'{len(self)} - add new cache to {keys[0:3]}...')
+        for k, b in zip(keys, batch):
+            self.write_to_cache(k, b)
+
+
+    def get_batch_hit(self, keys: List[Hashable]) -> torch.Tensor:
+        return TensorCache.collect([self.get(k, func=None) for k in keys])
+
+    def get_batch_miss(self, keys: List[Hashable], func: Callable[..., torch.Tensor], *args, **kwargs) -> torch.Tensor:
+        batch_out = func(*args, **kwargs)
+        assert len(keys) == len(batch_out)
+        self.write_batch(keys, batch_out)
+        return batch_out
 
     @staticmethod
     def _to_device(data_cache: Dict[Hashable, torch.Tensor], device: torch.device, dict_inplace: bool = True):

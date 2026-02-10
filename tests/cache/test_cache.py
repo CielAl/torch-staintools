@@ -45,8 +45,8 @@ class TestTensorCache(unittest.TestCase):
         dummy_keys = TestTensorCache.new_dummy_keys(0, num_elements)
         tensor_cache.write_batch(dummy_keys, dummy_tensors)
 
-        cache_out = tensor_cache.get_batch(dummy_keys, func=None)
-        cache_out_stack = torch.stack(cache_out, dim=0)
+        cache_out = tensor_cache.get_batch_hit(dummy_keys)
+        cache_out_stack = cache_out
         self.assertTrue((cache_out_stack == dummy_tensors).all())
 
         self.assertTrue(len(tensor_cache) == num_elements)
@@ -64,7 +64,7 @@ class TestTensorCache(unittest.TestCase):
             self.assertFalse(key in tensor_cache)
 
         with self.assertRaises(AssertionError):
-            tensor_cache.get_batch(dummy_keys_exceed, None)
+            tensor_cache.get_batch_hit(dummy_keys_exceed)
 
     def test_single(self):
         size_limit = 1

@@ -2,8 +2,6 @@
 
 """
 import traceback
-from functools import partial
-
 import torch
 from torch_staintools.functional.stain_extraction.extractor import StainExtraction, StainAlg
 from ..constants import PARAM
@@ -60,9 +58,9 @@ class StainSeparation(Normalizer):
         """
         super().__init__(cache=cache, device=device, rng=rng)
         self.concentration_solver = concentration_solver
-        self.get_stain_matrix = StainExtraction(stain_alg)
         self.num_stains = num_stains
         self.luminosity_threshold = luminosity_threshold
+        self.get_stain_matrix = StainExtraction(stain_alg, self.num_stains, self.rng)
 
     @torch.inference_mode()
     def fit(self, target, mask: Optional[torch.Tensor] = None):
@@ -83,8 +81,7 @@ class StainSeparation(Normalizer):
         # B x num_stain x num_channel (concentration @ stain_mat --> RGB)
         mask = get_tissue_mask(target, self.luminosity_threshold, mask, ).contiguous()
         target_od = rgb2od(target)
-        stain_matrix_target = self.get_stain_matrix(target_od, num_stains=self.num_stains,
-                                                    rng=self.rng, mask=mask)
+        stain_matrix_target = self.get_stain_matrix(target_od, mask)
         # B x num_stain x num_channel
         self.register_buffer('stain_matrix_target', stain_matrix_target)
         # B x num_pix x num_stain
@@ -138,11 +135,9 @@ class StainSeparation(Normalizer):
         # todo mask
         mask = get_tissue_mask(image, self.luminosity_threshold, mask).contiguous()
         image_od = rgb2od(image)
-        get_stain_partial = partial(self.get_stain_matrix,
-                                    num_stains=self.num_stains, rng=self.rng,
-                                    mask=mask)
-        stain_matrix_source = self.tensor_from_cache(cache_keys=cache_keys, func=get_stain_partial,
-                                                     target=image_od)
+        # todo
+        stain_matrix_source = self.stain_mat_cached(cache_keys=cache_keys, get_stain_mat=self.get_stain_matrix,
+                                                    target=image_od, mask=mask)
 
         # stain_matrix_source -- B x 2 x 3 wherein B is 1. Note that the input batch size is independent of how many
         # template were used and for now we only accept one template a time.

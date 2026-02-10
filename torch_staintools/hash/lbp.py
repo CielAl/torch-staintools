@@ -7,10 +7,11 @@ from torch_staintools.constants import PARAM
 from torch_staintools.functional.compile import lazy_compile
 
 UNIFORM_LENGTH = 59
+RIU_LENGTH = 10
 LBP_WIDTH = 8
 LBP_LENGTH = 2 ** LBP_WIDTH
 
-def _build_lut() -> torch.Tensor:
+def _build_lut_uniform() -> torch.Tensor:
     """
     Returns:
         torch.Tensor: int64. lookup table to map {0 ... 255} -> {0 ... 58}
@@ -37,7 +38,32 @@ def _build_lut() -> torch.Tensor:
     assert next_id == UNIFORM_LENGTH - 1, f"{next_id} != {UNIFORM_LENGTH - 1}"
     return lut
 
-_UNIFORM_LUT = _build_lut()
+def _build_lut_riu(uniform_lut59: torch.Tensor) -> torch.Tensor:
+
+    assert uniform_lut59.shape == (256,)
+    lut = uniform_lut59.to(torch.int64).cpu()
+
+    u2_to_riu2 = torch.empty(59, dtype=torch.int64)
+    u2_to_riu2.fill_(-1)
+
+    for code in range(256):
+        u2_id = int(lut[code].item())
+        if u2_id == 58:
+            continue
+
+        pc = int(code).bit_count()
+        u2_to_riu2[u2_id] = pc
+
+
+    u2_to_riu2[58] = 9
+
+    assert (u2_to_riu2 >= 0).all().item()
+    assert (u2_to_riu2 <= 9).all().item()
+    return u2_to_riu2
+
+
+_UNIFORM_LUT = _build_lut_uniform()
+_RUI_LUT = _build_lut_riu(_UNIFORM_LUT)
 
 
 @lazy_compile(dynamic=True)
@@ -129,6 +155,31 @@ def hist_lbp8_256_to_59(
     return hist59.to(torch.uint16)
 
 
+def u2_hist59_to_riu2_hist10(hist59: torch.Tensor,
+                             lut_riu: torch.Tensor) -> torch.Tensor:
+    """map the u2 (uniform pattern, 59) to riu (rotation-invariance, 10)
+
+    Args:
+        hist59:
+        lut_riu:
+
+    Returns:
+
+    """
+    assert hist59.shape[-1] == 59
+    device = hist59.device
+    B, R, _ = hist59.shape
+
+    # (59,) int64 on device for indexing
+    map59 = lut_riu.to(device=device, dtype=torch.int64)
+
+    # index tensor for scatter_add: (B,R,59)
+    idx = map59.view(1, 1, 59).expand(B, R, 59)
+
+    out = torch.zeros((B, R, RIU_LENGTH), device=device, dtype=torch.int32)
+    out.scatter_add_(dim=-1, index=idx, src=hist59.to(torch.int32))
+    return out
+
 
 def _od_lbp8_hist(code: torch.Tensor, grid_h: int, grid_w: int) -> torch.Tensor:
     B, _, code_h, code_w = code.shape
@@ -170,7 +221,7 @@ def _od_lbp_hist_quantize_levels(
     """Normalization counts and then quantize to uint8 in [0, lvl - 1]
 
     Args:
-        hist: B x num_regions x D. (256 for LBP, or 59 for Uniform Patterns)
+        hist: B x num_regions x D. (256 for LBP, or 59 for Uniform Patterns, 10 for RIU)
         levels: number of quantization levels.
         use_sqrt: apply sqrt after normalization.
 
@@ -202,8 +253,10 @@ def od_lbp8_hash(
     thumb_size: int = PARAM.HASH_LBP_THUMB,
     grid_h: int = PARAM.HASH_LBP_GRID,
     grid_w: int = PARAM.HASH_LBP_GRID,
+    use_riu: bool = PARAM.HASH_LBP_RIU,
     levels: Optional[int] = PARAM.HASH_LBP_QUANTIZE,
     use_sqrt: bool = PARAM.HASH_LBP_SQRT,
+
 ) -> torch.Tensor:
     """
 
@@ -212,6 +265,7 @@ def od_lbp8_hash(
         thumb_size: size of the code thumbnail.
         grid_h: grid height. how many regions along H. (region height = thumb // grid_height)
         grid_w: grid width. how many regions along W. (region width = thumb // grid_width)
+        use_riu: whether further cast to RIU (10bytes)
         levels: number of quantization levels. If None, them bypass.
         use_sqrt: whether to further compress the frequency by sqrt.
 
@@ -228,6 +282,8 @@ def od_lbp8_hash(
     assert code_h % grid_h ==0 and code_w % grid_w ==0,\
         f"thumb={thumb_size}, grid_h={grid_h}, grid_w={grid_w}"
     hist = _od_lbp8_hist(code, grid_h, grid_w)
+    if use_riu:
+        hist = u2_hist59_to_riu2_hist10(hist, _RUI_LUT.to(hist.device))
     if levels is None:
         return hist
     return _od_lbp_hist_quantize_levels(hist, levels, use_sqrt)

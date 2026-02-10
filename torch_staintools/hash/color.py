@@ -3,11 +3,11 @@ from typing import Optional, Tuple
 import torch
 
 from torch_staintools.functional.compile import lazy_compile
+from torch_staintools.hash.hash_util import pack_bits_u64
 
 
 def _angle_generic(unit_chroma: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
-
-
+    # more generic version
     # mean-center across channels
     unit_centered = unit_chroma - unit_chroma.mean(dim=1, keepdim=True)  # (B,C,H,W)
     num_channel = unit_chroma.shape[1]
@@ -26,14 +26,14 @@ def _angle_generic(unit_chroma: torch.Tensor) -> Tuple[torch.Tensor, torch.Tenso
 
 
 def _angle_c3(unit_chroma: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
-    # 2D "angle" from chroma differences (stable because u is bounded)
+    # angle diff for 3-chan input. hardcode differences
     # B x H x W. Assume 3-channel input.
     x = (unit_chroma[:, 0, ...] - unit_chroma[:, 2, ...])  # (B,H,W)
     y = (unit_chroma[:, 1, ...] - unit_chroma[:, 2, ...])  # (B,H,W)
     return x, y
 
 
-@lazy_compile
+@lazy_compile(dynamic=True)
 def _od_hash(od: torch.Tensor,
              mask: torch.Tensor,
              k_bins: int,
@@ -49,8 +49,10 @@ def _od_hash(od: torch.Tensor,
 
     """
     batch_size = od.shape[0]
+    # guard
+    mask = mask.to(od.device)
     eps = torch.finfo(torch.float32).eps # fp16's eps
-    mask = mask.to(od.device, dtype=torch.float32)
+    # mask = (mask > 0).to(od.device, dtype=torch.int32) ## count
 
     # larger sum --> more absorbed light
     # B x 1 x H x W
@@ -75,10 +77,11 @@ def _od_hash(od: torch.Tensor,
     hist_mask = mask.view(batch_size, -1)
     # ones = hist_mask
 
-    hist = torch.zeros(batch_size, k_bins, device=od.device, dtype=torch.float32)
+    hist = torch.zeros(batch_size, k_bins, device=od.device, dtype=torch.int32)
+    # scatter_add_ may not be deterministic
     hist.scatter_add_(1, idx, hist_mask)
 
-    # normalize (optional but usually good)
+    hist = hist.float()
     hist = hist / hist.sum(dim=1, keepdim=True).clamp_min(eps)
 
     # bin->bit via median threshold (balanced bits)
@@ -86,9 +89,11 @@ def _od_hash(od: torch.Tensor,
     bits = (hist > med)  # (B,k_bins)
 
     # pack LSB-first into uint64
-
-    weights = (1 << torch.arange(k_bins, device=od.device, dtype=torch.int64)).to(torch.uint64)
-    return (bits.to(torch.uint64) * weights).sum(dim=1)
+    # breakpoint()
+    weights = (1 << torch.arange(k_bins, device=od.device, dtype=torch.int64))
+    # result =  (bits * weights).sum(dim=1).to(torch.uint64)
+    result = pack_bits_u64(bits)
+    return result
 
 
 @torch.inference_mode()
@@ -110,6 +115,7 @@ def od_angle_hash64(
     # k_bins: number of bins. Must be <=64 for 64bit output.
     batch_size, _, height, width = od.shape
     mask = mask if mask is not None else torch.ones(batch_size, 1, height, width, device=od.device,
-                                                    dtype=torch.float32)
+                                                    dtype=torch.int32)
+    mask = (mask > 0).to(device=od.device, dtype=torch.int32)
     c3 = od.shape[1] == 3
     return _od_hash(od, mask, 64, c3)

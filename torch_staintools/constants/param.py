@@ -35,6 +35,7 @@ class _Param:
     HASH_LBP_GRID: int = 1
     HASH_LBP_QUANTIZE: int = 16
     HASH_LBP_SQRT: bool = True
+    HASH_LBP_RIU: bool = True
     HASH_DHASH_SIZE: int = 8
 
 PARAM: _Param = _Param()

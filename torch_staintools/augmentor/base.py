@@ -1,4 +1,3 @@
-from functools import partial
 import traceback
 import torch
 from typing import Optional, Sequence, Tuple, Hashable, List
@@ -72,14 +71,13 @@ class Augmentor(CachedRNGModule):
         """
         super().__init__(cache, device, rng)
         self.concentration_solver = concentration_solver
-        self.get_stain_matrix = StainExtraction(stain_alg)
-
         self.target_stain_idx = target_stain_idx
         self.sigma_alpha = sigma_alpha
         self.sigma_beta = sigma_beta
 
         self.num_stains = num_stains
         self.luminosity_threshold = luminosity_threshold
+        self.get_stain_matrix = StainExtraction(stain_alg, self.num_stains, self.rng)
 
     @staticmethod
     def __concentration_selected(target_concentration: torch.Tensor,
@@ -240,13 +238,11 @@ class Augmentor(CachedRNGModule):
             # stain_matrix_target -- B x num_stain x num_input_color_channel
             mask = get_tissue_mask(target, self.luminosity_threshold, mask, ).contiguous()
             target_od = rgb2od(target)
-            get_stain_partial = partial(self.get_stain_matrix,
-                                        mask=mask,
-                                        num_stains=self.num_stains, rng=self.rng)
+
             # B x num_stain x num_channels
             # todo
-            target_stain_matrix = self.tensor_from_cache(cache_keys=cache_keys, func=get_stain_partial,
-                                                         target=target_od)
+            target_stain_matrix = self.stain_mat_cached(cache_keys=cache_keys, get_stain_mat=self.get_stain_matrix,
+                                                        target=target_od, mask=mask)
 
             #  B x  num_pixel x num_stain
             concentration = self.concentration_solver(target_od, target_stain_matrix, rng=self.rng)
