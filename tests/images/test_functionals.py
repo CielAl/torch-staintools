@@ -158,7 +158,7 @@ class TestFunctional(unittest.TestCase):
                                            mask=None,
                                            conc_solver=ConcentrationSolver(TestFunctional.POSITIVE_CONC_CFG),
                                            luminosity_threshold=None,
-                                           rng=torch.Generator(1))
+                                           rng=None)
 
 
     def test_tissue_mask(self):
