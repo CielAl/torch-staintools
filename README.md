@@ -42,7 +42,7 @@ If this toolkit helps you in your publication, please feel free to cite with the
   month        = jan,
   year         = 2024,
   publisher    = {Zenodo},
-  version      = {v1.0.4},
+  version      = {v1.0.7},
   doi          = {10.5281/zenodo.10453806},
   url          = {https://doi.org/10.5281/zenodo.10453806}
 }
@@ -95,7 +95,7 @@ If this toolkit helps you in your publication, please feel free to cite with the
 </details>
 
 ## Batched Small Tiles (81 tiles, 256 $\times$ 256 $\times$ 3)
-- Splitting 2500 $\times$ 2500 $\times$ 3 ROI into a batch of 81 smaller patches (256$\times$256$\times$3).
+- Splitting 2500 $\times$ 2500 $\times$ 3 ROI into a batch of 81 smaller patches (256 $\times$ 256 $\times$ 3).
 
 - Representative on-the-fly processing scenario for training and inference.  
 - **TorchDynamo** (`torch.compile`) enabled.
