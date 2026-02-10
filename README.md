@@ -38,7 +38,7 @@ If this toolkit helps you in your publication, please feel free to cite with the
 ```bibtex
 @software{zhou_2024_10453806,
   author       = {Zhou, Yufei},
-  title        = {CielAl/torch-staintools: V1.0.4 Release},
+  title        = {CielAl/torch-staintools: V1.0.7 Release},
   month        = jan,
   year         = 2024,
   publisher    = {Zenodo},
@@ -94,7 +94,7 @@ If this toolkit helps you in your publication, please feel free to cite with the
 | Reinhard | 0.42    | 0.01    | 0.08          |
 </details>
 
-## Batched Small Tiles (81 tiles, 256$\times$256$\times$3)
+## Batched Small Tiles (81 tiles, 256 $\times$ 256 $\times$ 3)
 - Splitting 2500 $\times$ 2500 $\times$ 3 ROI into a batch of 81 smaller patches (256$\times$256$\times$3).
 
 - Representative on-the-fly processing scenario for training and inference.  
